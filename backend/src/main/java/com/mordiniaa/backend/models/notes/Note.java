@@ -18,7 +18,7 @@ import java.util.UUID;
 @Setter
 @ToString
 @MappedSuperclass
-public class Note {
+public abstract class Note {
 
     @Id
     @Field(order = 1)

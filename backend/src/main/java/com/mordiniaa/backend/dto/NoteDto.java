@@ -1,0 +1,20 @@
+package com.mordiniaa.backend.dto;
+
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import java.time.Instant;
+import java.util.UUID;
+
+@Getter
+@Setter
+@SuperBuilder
+public class NoteDto {
+
+    private String id;
+    private String title;
+    private UUID ownerId;
+    private String content;
+    private Instant createdAt;
+    private Instant updatedAt;
+}
