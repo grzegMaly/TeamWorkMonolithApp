@@ -1,12 +1,11 @@
 package com.mordiniaa.backend.models.notes;
 
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -17,7 +16,6 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
-@MappedSuperclass
 public abstract class Note {
 
     @Id
