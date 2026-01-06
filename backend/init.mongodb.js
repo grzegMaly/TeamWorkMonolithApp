@@ -1,4 +1,4 @@
-use team-work;
+use team-work
 
 db.createUser({
     user: "team-work-admin",
@@ -8,7 +8,7 @@ db.createUser({
         {role: "userAdmin", db: "team-work"}
     ],
     pwd: "admin"
-});
+})
 
 db.auth("team-work-admin", "admin")
 
@@ -17,7 +17,7 @@ use team-work
 db.createUser({
     user: "team-work-dev",
     roles: [
-        {role: "readWrite", db: "team-wok"}
+        {role: "readWrite", db: "team-work"}
     ],
     pwd: "password"
 })
