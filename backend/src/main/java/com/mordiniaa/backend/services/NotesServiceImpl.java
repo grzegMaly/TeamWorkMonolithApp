@@ -4,7 +4,7 @@ import com.mordiniaa.backend.dto.NoteDto;
 import com.mordiniaa.backend.mappers.notes.NoteMapper;
 import com.mordiniaa.backend.payload.ApiResponse;
 import com.mordiniaa.backend.payload.CollectionResponse;
-import com.mordiniaa.backend.repositories.NotesRepository;
+import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;

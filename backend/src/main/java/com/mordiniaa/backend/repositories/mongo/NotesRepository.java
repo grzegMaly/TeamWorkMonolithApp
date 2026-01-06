@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.repositories;
+package com.mordiniaa.backend.repositories.mongo;
 
 import com.mordiniaa.backend.models.notes.Note;
 import org.bson.types.ObjectId;
