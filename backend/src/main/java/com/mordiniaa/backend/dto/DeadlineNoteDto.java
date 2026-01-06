@@ -10,6 +10,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
 public class DeadlineNoteDto extends NoteDto {
 
     private Priority priority;
