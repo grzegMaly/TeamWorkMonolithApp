@@ -9,6 +9,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
 public class NoteDto {
 
     private String id;
