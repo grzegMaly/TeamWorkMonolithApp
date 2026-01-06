@@ -14,6 +14,7 @@ public abstract class AbstractNoteDtoMapper<T extends Note, D extends NoteDto> {
                 .id(note.getId().toHexString())
                 .title(note.getTitle())
                 .content(note.getContent())
+                .ownerId(note.getOwnerId())
                 .createdAt(note.getCreatedAt())
                 .updatedAt(note.getUpdatedAt());
     }
