@@ -5,10 +5,6 @@ import com.mordiniaa.backend.models.notes.Note;
 
 public abstract class AbstractNoteDtoMapper<T extends Note, D extends NoteDto> {
 
-    public final boolean supports(Note note) {
-        return supportsTyped(note);
-    }
-
     public final NoteDto toDto(Note note) {
         return toDtoTyped(cast(note));
     }
@@ -23,10 +19,11 @@ public abstract class AbstractNoteDtoMapper<T extends Note, D extends NoteDto> {
     }
 
     @SuppressWarnings("unchecked")
-    public T cast(Note note) {
+    private T cast(Note note) {
         return (T) note;
     }
 
-    public abstract boolean supportsTyped(Note note);
-    public abstract D toDtoTyped(T note);
+    protected abstract D toDtoTyped(T note);
+
+    public abstract Class<T> getSupportedClass();
 }
