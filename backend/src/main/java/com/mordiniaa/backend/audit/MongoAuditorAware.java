@@ -1,16 +1,17 @@
 package com.mordiniaa.backend.audit;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component("mongoAuditor")
-public class MongoAuditorAware {
+public class MongoAuditorAware implements AuditorAware<String> {
 
-    @Bean
-    public AuditorAware<String> getCurrentAuditor() {
-        return () -> Optional.of("MONGO_TEST");
+    @NonNull
+    @Override
+    public Optional<String> getCurrentAuditor() {
+        return Optional.of("MONGO_TEST");
     }
 }
