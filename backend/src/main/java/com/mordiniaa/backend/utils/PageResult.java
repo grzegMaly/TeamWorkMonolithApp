@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 
 @Getter
 @Setter
@@ -13,5 +14,12 @@ import lombok.Setter;
 public class PageResult<T> {
 
     private T data;
-    private PageMeta page;
+    private PageMeta pageMeta;
+
+    public void setUpPage(Page<?> page) {
+        pageMeta.setPage(page.getNumber());
+        pageMeta.setTotalPages(page.getTotalPages());
+        pageMeta.setTotalItems(page.getTotalElements());
+        pageMeta.setSize(page.getSize());
+    }
 }
