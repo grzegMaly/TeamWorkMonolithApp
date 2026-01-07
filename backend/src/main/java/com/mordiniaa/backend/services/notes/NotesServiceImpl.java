@@ -4,8 +4,14 @@ import com.mordiniaa.backend.dto.NoteDto;
 import com.mordiniaa.backend.mappers.notes.NoteMapper;
 import com.mordiniaa.backend.models.notes.Note;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
+import com.mordiniaa.backend.utils.PageResult;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,11 +36,25 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public Optional<List<NoteDto>> fetchAllNotesForUser(UUID ownerId) {
+    public PageResult<List<NoteDto>> fetchAllNotesForUser(UUID ownerId, int pageNumber, int pageSize, String sortOrder, String sortKey, String keyword) {
 
-        List<Note> notes = notesRepository.findAllByOwnerId(ownerId);
+        Sort sort = sortOrder.equals("asc")
+                ? Sort.by(sortKey).ascending()
+                : Sort.by(sortKey).descending();
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        return null;
+        TextCriteria criteria = (keyword != null && !keyword.isBlank())
+                ? TextCriteria.forDefaultLanguage().caseSensitive(false).matching(keyword)
+                : null;
+
+        Page<Note> page = notesRepository.findAllByOwnerId(ownerId, pageable, criteria);
+        PageResult<List<NoteDto>> result = new PageResult<>();
+
+
+        result.setData(page.map(noteMapper::toDto).stream().toList());
+        result.setUpPage(page);
+
+        return result;
     }
 
     @Override
