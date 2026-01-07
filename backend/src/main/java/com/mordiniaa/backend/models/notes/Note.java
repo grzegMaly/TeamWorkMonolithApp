@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
@@ -22,6 +23,7 @@ public abstract class Note {
     @Field(order = 1)
     private ObjectId id;
 
+    @TextIndexed
     @Field(name = "title", order = 2)
     private String title;
 
@@ -29,6 +31,7 @@ public abstract class Note {
     @Field(name = "ownerId", order = 3)
     private UUID ownerId;
 
+    @TextIndexed
     @Field(name = "content", order = 4)
     private String content;
 
