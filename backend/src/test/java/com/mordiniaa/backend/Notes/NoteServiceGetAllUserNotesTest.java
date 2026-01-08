@@ -157,4 +157,15 @@ public class NoteServiceGetAllUserNotesTest {
 
         assertEquals(1, data.size());
     }
+
+    @Test
+    @DisplayName("Notes don't equal")
+    void notEqualTest() {
+        PageResult<List<NoteDto>> firstData = notesService.fetchAllNotesForUser(ownerOneId, 0, 1, "asc", "id", null);
+        PageResult<List<NoteDto>> secondData = notesService.fetchAllNotesForUser(ownerTwoId, 0, 1, "asc", "id", null);
+
+        NoteDto firstDto = firstData.getData().getFirst();
+        NoteDto secondDto = secondData.getData().getFirst();
+        assertNotEquals(firstDto, secondDto);
+    }
 }
