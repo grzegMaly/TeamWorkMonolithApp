@@ -35,7 +35,7 @@ public class NotesController {
             @RequestParam(name = "pn", required = false, defaultValue = NotesConstants.PAGE_NUMBER) int pageNumber,
             @RequestParam(name = "ps", required = false, defaultValue = NotesConstants.PAGE_SIZE) int pageSize,
             @RequestParam(name = "pso", required = false, defaultValue = NotesConstants.SORT_ORDER) String sortOrder,
-            @RequestParam(name = "psk", required = false, defaultValue = "id") String sortKey,
+            @RequestParam(name = "psk", required = false, defaultValue = "updatedAt") String sortKey,
             @RequestParam(name = "key", required = false, defaultValue = "") String keyword
     ) {
         PageResult<List<NoteDto>> result = notesService.fetchAllNotesForUser(UUID.randomUUID(), //TODO: Get id from user in security section
