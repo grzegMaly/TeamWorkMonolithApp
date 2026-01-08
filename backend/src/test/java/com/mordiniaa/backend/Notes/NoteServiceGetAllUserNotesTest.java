@@ -93,4 +93,28 @@ public class NoteServiceGetAllUserNotesTest {
     void clear() {
         notesRepository.deleteAll();
     }
+
+    @Test
+    @DisplayName("Pagination Test")
+    void getAllNotesForUser() {
+
+        PageResult<List<NoteDto>> pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 5, "asc", "id", null);
+
+        PageMeta meta = pageResult.getPageMeta();
+        assertEquals(6, meta.getTotalPages());
+        assertFalse(meta.isLastPage());
+
+        pageResult = notesService.fetchAllNotesForUser(ownerOneId, 5, 5, "asc", "id", null);
+        meta = pageResult.getPageMeta();
+        assertEquals(5, meta.getSize());
+        assertEquals(5, meta.getPage());
+        assertTrue(meta.isLastPage());
+
+        pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 25, "asc", "id", null);
+        meta = pageResult.getPageMeta();
+        assertEquals(25, meta.getSize());
+        assertEquals(0, meta.getPage());
+        assertEquals(30, meta.getTotalItems());
+        assertFalse(meta.isLastPage());
+    }
 }
