@@ -70,17 +70,17 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public Optional<NoteDto> createNote(NoteDto noteDto) {
+    public Optional<NoteDto> createNote(UUID ownerId, NoteDto noteDto) {
         return null;
     }
 
     @Override
-    public Optional<NoteDto> updateNote(NoteDto noteDto) {
+    public Optional<NoteDto> updateNote(UUID ownerId, NoteDto noteDto) {
         return null;
     }
 
     @Override
-    public void deleteNote(String noteId) {
+    public void deleteNote(UUID ownerId, String noteId) {
         ObjectId id = new ObjectId(noteId);
     }
 }

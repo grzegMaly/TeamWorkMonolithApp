@@ -12,9 +12,9 @@ public interface NotesService {
 
     PageResult<List<NoteDto>> fetchAllNotesForUser(UUID ownerId, int pageNumber, int pageSize, String sortOrder, String sortKey, String keyword);
 
-    Optional<NoteDto> createNote(NoteDto noteDto);
+    Optional<NoteDto> createNote(UUID ownerId, NoteDto noteDto);
 
-    Optional<NoteDto> updateNote(NoteDto noteDto);
+    Optional<NoteDto> updateNote(UUID ownerId, NoteDto noteDto);
 
-    void deleteNote(String noteId);
+    void deleteNote(UUID ownerId, String noteId);
 }
