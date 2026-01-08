@@ -43,11 +43,14 @@ public class NotesServiceImpl implements NotesService {
                 : Sort.by(sortKey).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
-        TextCriteria criteria = (keyword != null && !keyword.isBlank())
-                ? TextCriteria.forDefaultLanguage().caseSensitive(false).matching(keyword)
-                : null;
+        Page<Note> page =
+                (keyword != null && !keyword.isBlank())
+                        ? notesRepository.findAllByOwnerId(
+                        ownerId,
+                        pageable,
+                        TextCriteria.forDefaultLanguage().caseSensitive(false).matching(keyword))
+                        : notesRepository.findAllByOwnerId(ownerId, pageable);
 
-        Page<Note> page = notesRepository.findAllByOwnerId(ownerId, pageable, criteria);
         PageResult<List<NoteDto>> result = new PageResult<>();
 
 
