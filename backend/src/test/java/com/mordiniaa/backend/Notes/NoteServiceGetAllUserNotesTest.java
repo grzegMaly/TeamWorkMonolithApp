@@ -117,4 +117,35 @@ public class NoteServiceGetAllUserNotesTest {
         assertEquals(30, meta.getTotalItems());
         assertFalse(meta.isLastPage());
     }
+
+    @Test
+    @DisplayName("Title sort test")
+    void titleSortTest() {
+        PageResult<List<NoteDto>> pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "asc", "title", null);
+        List<NoteDto> data = pageResult.getData();
+        List<Integer> numbers = data.stream()
+                .map(NoteDto::getTitle)
+                .map(title -> Integer.valueOf(title.split(" ")[0]))
+                .toList();
+
+        for (int i = 0; i < numbers.size(); i++) {
+            if (i != numbers.size() - 1) {
+                assertTrue(numbers.get(i) < numbers.get(i + 1));
+            }
+        }
+
+        pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "desc", "title", null);
+        data = pageResult.getData();
+        data.forEach(dto -> System.out.println(dto.getTitle()));
+        numbers = data.stream()
+                .map(NoteDto::getTitle)
+                .map(title -> Integer.valueOf(title.split(" ")[0]))
+                .toList();
+
+        for (int i = 0; i < numbers.size(); i++) {
+            if (i != numbers.size() - 1) {
+                assertTrue(numbers.get(i) > numbers.get(i + 1));
+            }
+        }
+    }
 }
