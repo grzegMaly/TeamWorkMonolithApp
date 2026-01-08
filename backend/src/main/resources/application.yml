@@ -8,3 +8,4 @@ spring:
       database: team-work
       username: team-work-dev
       password: ${MONGODB_USER_PWD}
+      authentication-database: team-work
