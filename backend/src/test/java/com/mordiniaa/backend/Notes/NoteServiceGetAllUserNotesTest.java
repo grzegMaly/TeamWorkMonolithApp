@@ -164,4 +164,20 @@ public class NoteServiceGetAllUserNotesTest {
         NoteDto secondDto = secondData.getData().getFirst();
         assertNotEquals(firstDto, secondDto);
     }
+
+    @Test
+    @DisplayName("Invalid sorting order")
+    void invalidSortOrderTest() {
+        assertDoesNotThrow(() -> notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "asc", "title", null),
+                "Should not throw exception for asc");
+        assertDoesNotThrow(() -> notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "desc", "title", null),
+                "Should not throw exception for desc");
+
+        assertThrows(RuntimeException.class,
+                () -> notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "sdfe", "title", null),
+                "Should throw exception for asc");
+        assertThrows(RuntimeException.class,
+                () -> notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "desdversc", "title", null),
+                "Should throw exception for desc");
+    }
 }
