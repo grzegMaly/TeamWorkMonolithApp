@@ -17,6 +17,7 @@ public class PageResult<T> {
     private PageMeta pageMeta;
 
     public void setUpPage(Page<?> page) {
+        this.pageMeta = new PageMeta();
         pageMeta.setPage(page.getNumber());
         pageMeta.setTotalPages(page.getTotalPages());
         pageMeta.setTotalItems(page.getTotalElements());
