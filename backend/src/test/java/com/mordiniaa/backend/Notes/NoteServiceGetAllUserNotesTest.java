@@ -148,4 +148,13 @@ public class NoteServiceGetAllUserNotesTest {
             }
         }
     }
+
+    @Test
+    @DisplayName("Test Text Criteria")
+    void textCriteriaTest() {
+        PageResult<List<NoteDto>> pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "asc", "id", "03");
+        List<NoteDto> data = pageResult.getData();
+
+        assertEquals(1, data.size());
+    }
 }
