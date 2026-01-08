@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.services.notes;
 
+import com.mordiniaa.backend.config.NotesConstants;
 import com.mordiniaa.backend.dto.NoteDto;
 import com.mordiniaa.backend.mappers.notes.NoteMapper;
 import com.mordiniaa.backend.models.notes.Note;
@@ -38,7 +39,15 @@ public class NotesServiceImpl implements NotesService {
     @Override
     public PageResult<List<NoteDto>> fetchAllNotesForUser(UUID ownerId, int pageNumber, int pageSize, String sortOrder, String sortKey, String keyword) {
 
-        Sort sort = sortOrder.equals("asc")
+        if (!sortOrder.equalsIgnoreCase("asc") && !sortOrder.equalsIgnoreCase("desc")) {
+            throw new RuntimeException();
+        }
+
+        if (!NotesConstants.ALLOWED_SORTING_KEYS.contains(sortKey)) {
+            throw new RuntimeException(); //TODO: Change
+        }
+
+        Sort sort = sortOrder.equalsIgnoreCase("asc")
                 ? Sort.by(sortKey).ascending()
                 : Sort.by(sortKey).descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
