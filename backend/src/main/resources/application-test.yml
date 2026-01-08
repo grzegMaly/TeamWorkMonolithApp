@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: team-work-test
+      username: team-work-tester
+      password: ${MONGODB_USER_PWD}
+      authentication-database: team-work-test
