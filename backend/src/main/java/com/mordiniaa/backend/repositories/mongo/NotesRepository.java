@@ -18,4 +18,6 @@ public interface NotesRepository extends MongoRepository<Note, ObjectId> {
     Page<Note> findAllByOwnerId(UUID ownerId, Pageable pageable, TextCriteria textCriteria);
 
     Optional<Note> findNoteByIdAndOwnerId(ObjectId id, UUID ownerId);
+
+    void deleteAllByOwnerId(UUID ownerId);
 }
