@@ -192,4 +192,13 @@ public class NoteServiceGetAllUserNotesTest {
         notesRepository.deleteAllByOwnerId(ownerTwoId);
         assertTrue(notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "asc", "updatedAt", null).getData().isEmpty());
     }
+
+    @Test
+    @DisplayName("Page out of range test")
+    void pageOutOfRangeTest() {
+
+        PageResult<List<NoteDto>> result = notesService.fetchAllNotesForUser(ownerOneId, 999, 10, "asc", "updatedAt", null);
+        assertTrue(result.getData().isEmpty());
+        assertTrue(result.getPageMeta().isLastPage());
+    }
 }
