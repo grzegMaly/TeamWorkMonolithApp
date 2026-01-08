@@ -10,8 +10,10 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class NoteDto {
 
+    @EqualsAndHashCode.Include
     private String id;
     private String title;
     private UUID ownerId;
