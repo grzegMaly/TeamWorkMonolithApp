@@ -18,9 +18,10 @@ public class PageResult<T> {
 
     public void setUpPage(Page<?> page) {
         this.pageMeta = new PageMeta();
-        pageMeta.setPage(page.getNumber());
-        pageMeta.setTotalPages(page.getTotalPages());
-        pageMeta.setTotalItems(page.getTotalElements());
-        pageMeta.setSize(page.getSize());
+        this.pageMeta.setPage(page.getNumber());
+        this.pageMeta.setTotalPages(page.getTotalPages());
+        this.pageMeta.setTotalItems(page.getTotalElements());
+        this.pageMeta.setSize(page.getSize());
+        this.pageMeta.setLastPage(page.isLast());
     }
 }
