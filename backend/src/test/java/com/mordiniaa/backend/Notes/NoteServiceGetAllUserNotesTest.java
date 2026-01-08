@@ -180,4 +180,16 @@ public class NoteServiceGetAllUserNotesTest {
                 () -> notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "desdversc", "title", null),
                 "Should throw exception for desc");
     }
+
+    @Test
+    @DisplayName("Empty Result")
+    void emptyResultTest() {
+
+        assertFalse(notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "asc", "updatedAt", null).getData().isEmpty());
+        notesRepository.deleteAllByOwnerId(ownerOneId);
+        assertTrue(notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "asc", "updatedAt", null).getData().isEmpty());
+        assertFalse(notesService.fetchAllNotesForUser(ownerTwoId, 0, 10, "asc", "updatedAt", null).getData().isEmpty());
+        notesRepository.deleteAllByOwnerId(ownerTwoId);
+        assertTrue(notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "asc", "updatedAt", null).getData().isEmpty());
+    }
 }
