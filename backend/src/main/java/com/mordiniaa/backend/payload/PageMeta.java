@@ -15,4 +15,5 @@ public class PageMeta {
     private int size;
     private long totalItems;
     private int totalPages;
+    private boolean lastPage;
 }
