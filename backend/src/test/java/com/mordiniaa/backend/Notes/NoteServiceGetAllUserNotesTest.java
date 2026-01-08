@@ -98,19 +98,19 @@ public class NoteServiceGetAllUserNotesTest {
     @DisplayName("Pagination Test")
     void getAllNotesForUser() {
 
-        PageResult<List<NoteDto>> pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 5, "asc", "id", null);
+        PageResult<List<NoteDto>> pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 5, "asc", "updatedAt", null);
 
         PageMeta meta = pageResult.getPageMeta();
         assertEquals(6, meta.getTotalPages());
         assertFalse(meta.isLastPage());
 
-        pageResult = notesService.fetchAllNotesForUser(ownerOneId, 5, 5, "asc", "id", null);
+        pageResult = notesService.fetchAllNotesForUser(ownerOneId, 5, 5, "asc", "updatedAt", null);
         meta = pageResult.getPageMeta();
         assertEquals(5, meta.getSize());
         assertEquals(5, meta.getPage());
         assertTrue(meta.isLastPage());
 
-        pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 25, "asc", "id", null);
+        pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 25, "asc", "updatedAt", null);
         meta = pageResult.getPageMeta();
         assertEquals(25, meta.getSize());
         assertEquals(0, meta.getPage());
@@ -128,10 +128,8 @@ public class NoteServiceGetAllUserNotesTest {
                 .map(title -> Integer.valueOf(title.split(" ")[0]))
                 .toList();
 
-        for (int i = 0; i < numbers.size(); i++) {
-            if (i != numbers.size() - 1) {
-                assertTrue(numbers.get(i) < numbers.get(i + 1));
-            }
+        for (int i = 0; i < numbers.size() - 1; i++) {
+            assertTrue(numbers.get(i) < numbers.get(i + 1));
         }
 
         pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "desc", "title", null);
@@ -142,17 +140,15 @@ public class NoteServiceGetAllUserNotesTest {
                 .map(title -> Integer.valueOf(title.split(" ")[0]))
                 .toList();
 
-        for (int i = 0; i < numbers.size(); i++) {
-            if (i != numbers.size() - 1) {
-                assertTrue(numbers.get(i) > numbers.get(i + 1));
-            }
+        for (int i = 0; i < numbers.size() - 1; i++) {
+            assertTrue(numbers.get(i) > numbers.get(i + 1));
         }
     }
 
     @Test
     @DisplayName("Test Text Criteria")
     void textCriteriaTest() {
-        PageResult<List<NoteDto>> pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "asc", "id", "03");
+        PageResult<List<NoteDto>> pageResult = notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "asc", "updatedAt", "03");
         List<NoteDto> data = pageResult.getData();
 
         assertEquals(1, data.size());
@@ -161,8 +157,8 @@ public class NoteServiceGetAllUserNotesTest {
     @Test
     @DisplayName("Notes don't equal")
     void notEqualTest() {
-        PageResult<List<NoteDto>> firstData = notesService.fetchAllNotesForUser(ownerOneId, 0, 1, "asc", "id", null);
-        PageResult<List<NoteDto>> secondData = notesService.fetchAllNotesForUser(ownerTwoId, 0, 1, "asc", "id", null);
+        PageResult<List<NoteDto>> firstData = notesService.fetchAllNotesForUser(ownerOneId, 0, 1, "asc", "updatedAt", null);
+        PageResult<List<NoteDto>> secondData = notesService.fetchAllNotesForUser(ownerTwoId, 0, 1, "asc", "updatedAt", null);
 
         NoteDto firstDto = firstData.getData().getFirst();
         NoteDto secondDto = secondData.getData().getFirst();
