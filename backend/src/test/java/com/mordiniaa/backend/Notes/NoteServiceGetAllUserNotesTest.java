@@ -201,4 +201,10 @@ public class NoteServiceGetAllUserNotesTest {
         assertTrue(result.getData().isEmpty());
         assertTrue(result.getPageMeta().isLastPage());
     }
+
+    @Test
+    @DisplayName("Sort Key Not Allowed")
+    void sortKeyNotAllowedTest() {
+        assertThrows(Exception.class, () -> notesService.fetchAllNotesForUser(ownerOneId, 0, 10, "asc", "category", null));
+    }
 }
