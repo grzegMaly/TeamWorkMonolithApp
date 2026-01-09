@@ -5,5 +5,5 @@ spring:
       port: 27017
       database: team-work-test
       username: team-work-tester
-      password: ${MONGODB_USER_PWD}
+      password: password
       authentication-database: team-work-test

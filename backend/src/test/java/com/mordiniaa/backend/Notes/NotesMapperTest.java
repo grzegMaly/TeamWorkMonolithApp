@@ -2,9 +2,9 @@ package com.mordiniaa.backend.Notes;
 
 import com.mordiniaa.backend.dto.DeadlineNoteDto;
 import com.mordiniaa.backend.dto.RegularNoteDto;
-import com.mordiniaa.backend.mappers.notes.DeadlineNoteDtoMapper;
 import com.mordiniaa.backend.mappers.notes.NoteMapper;
-import com.mordiniaa.backend.mappers.notes.RegularNoteDtoMapper;
+import com.mordiniaa.backend.mappers.notes.dtoMappers.DeadlineNoteDtoMapper;
+import com.mordiniaa.backend.mappers.notes.dtoMappers.RegularNoteDtoMapper;
 import com.mordiniaa.backend.models.notes.deadline.DeadlineNote;
 import com.mordiniaa.backend.models.notes.deadline.Priority;
 import com.mordiniaa.backend.models.notes.deadline.Status;
