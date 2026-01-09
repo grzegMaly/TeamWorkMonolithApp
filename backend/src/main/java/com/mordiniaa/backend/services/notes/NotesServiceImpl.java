@@ -5,6 +5,7 @@ import com.mordiniaa.backend.dto.NoteDto;
 import com.mordiniaa.backend.mappers.notes.NoteMapper;
 import com.mordiniaa.backend.models.notes.Note;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
+import com.mordiniaa.backend.request.note.CreateNoteRequest;
 import com.mordiniaa.backend.utils.PageResult;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -70,17 +71,21 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public Optional<NoteDto> createNote(NoteDto noteDto) {
+    public NoteDto createNote(UUID ownerId, CreateNoteRequest createNoteRequest) {
+        Note mappedNote = noteMapper.toModel(createNoteRequest);
+        mappedNote.setOwnerId(ownerId);
+
+        Note savedNote = notesRepository.save(mappedNote);
+        return noteMapper.toDto(savedNote);
+    }
+
+    @Override
+    public Optional<NoteDto> updateNote(UUID ownerId, NoteDto noteDto) {
         return null;
     }
 
     @Override
-    public Optional<NoteDto> updateNote(NoteDto noteDto) {
-        return null;
-    }
-
-    @Override
-    public void deleteNote(String noteId) {
+    public void deleteNote(UUID ownerId, String noteId) {
         ObjectId id = new ObjectId(noteId);
     }
 }

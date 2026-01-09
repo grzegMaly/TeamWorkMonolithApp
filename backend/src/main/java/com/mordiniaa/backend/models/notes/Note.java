@@ -1,8 +1,10 @@
 package com.mordiniaa.backend.models.notes;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -18,6 +20,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@NoArgsConstructor
 @Document(collection = "notes")
 public abstract class Note {
 

@@ -1,6 +1,7 @@
 package com.mordiniaa.backend.services.notes;
 
 import com.mordiniaa.backend.dto.NoteDto;
+import com.mordiniaa.backend.request.note.CreateNoteRequest;
 import com.mordiniaa.backend.utils.PageResult;
 
 import java.util.List;
@@ -12,9 +13,9 @@ public interface NotesService {
 
     PageResult<List<NoteDto>> fetchAllNotesForUser(UUID ownerId, int pageNumber, int pageSize, String sortOrder, String sortKey, String keyword);
 
-    Optional<NoteDto> createNote(NoteDto noteDto);
+    NoteDto createNote(UUID ownerId, CreateNoteRequest createNoteRequest);
 
-    Optional<NoteDto> updateNote(NoteDto noteDto);
+    Optional<NoteDto> updateNote(UUID ownerId, NoteDto noteDto);
 
-    void deleteNote(String noteId);
+    void deleteNote(UUID ownerId, String noteId);
 }

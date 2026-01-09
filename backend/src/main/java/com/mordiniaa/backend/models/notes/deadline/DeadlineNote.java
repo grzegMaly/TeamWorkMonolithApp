@@ -2,8 +2,10 @@ package com.mordiniaa.backend.models.notes.deadline;
 
 import com.mordiniaa.backend.models.notes.Note;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -12,6 +14,8 @@ import java.time.Instant;
 
 @Getter
 @Setter
+@SuperBuilder
+@NoArgsConstructor
 @TypeAlias("deadline")
 @ToString(callSuper = true)
 @Document(collection = "notes")
