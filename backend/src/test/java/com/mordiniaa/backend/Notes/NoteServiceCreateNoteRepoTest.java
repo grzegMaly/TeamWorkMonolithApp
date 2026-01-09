@@ -53,7 +53,7 @@ public class NoteServiceCreateNoteRepoTest {
     }
 
     @Test
-    @DisplayName("Create Regular Note Request")
+    @DisplayName("Create Regular Note Test")
     void createRegularNoteTest() {
 
         CreateRegularNoteRequest createRegularNoteRequest = new CreateRegularNoteRequest();
