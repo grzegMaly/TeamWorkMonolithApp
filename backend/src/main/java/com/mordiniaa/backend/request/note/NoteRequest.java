@@ -1,4 +1,8 @@
 package com.mordiniaa.backend.request.note;
 
-public class NoteRequest {
+public interface NoteRequest {
+
+    String getTitle();
+
+    String getContent();
 }
