@@ -87,4 +87,21 @@ public class NoteMapperUpdateModelTest {
         assertEquals(createdAt, regularNote.getCreatedAt());
         assertEquals(updatedAt, regularNote.getUpdatedAt());
     }
+
+    @Test
+    @DisplayName("Patch Regular Note Content")
+    void patchRegularNoteContentTest() {
+
+        PatchRegularNoteRequest patchRegularNoteRequest = new PatchRegularNoteRequest();
+        patchRegularNoteRequest.setContent(updatedContent);
+
+        noteMapper.updateNote(regularNote, patchRegularNoteRequest);
+
+        assertEquals(updatedContent, regularNote.getContent());
+
+        assertEquals(title, regularNote.getTitle());
+        assertEquals(category, regularNote.getCategory());
+        assertEquals(createdAt, regularNote.getCreatedAt());
+        assertEquals(updatedAt, regularNote.getUpdatedAt());
+    }
 }
