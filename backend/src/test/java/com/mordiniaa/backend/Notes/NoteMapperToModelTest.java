@@ -77,4 +77,19 @@ public class NoteMapperToModelTest {
         assertEquals(content, regularNote.getContent());
         assertEquals(category, regularNote.getCategory());
     }
+
+    @Test
+    @DisplayName("Regular Note Model Not Equals Test")
+    void regularNoteModelNotEqualsTest() {
+
+        RegularNote regularNote = (RegularNote) noteMapper.toModel(createRegularNoteRequest);
+
+        assertNotNull(regularNote.getTitle());
+        assertNotNull(regularNote.getContent());
+        assertNotNull(regularNote.getCategory());
+
+        assertNotEquals("Custom Title", regularNote.getTitle());
+        assertNotEquals("Custom Content", regularNote.getContent());
+        assertNotEquals(Category.RECEIPT, regularNote.getCategory());
+    }
 }
