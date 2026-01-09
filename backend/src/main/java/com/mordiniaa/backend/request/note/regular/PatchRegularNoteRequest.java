@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PatchRegularNoteRequest extends PatchNoteRequest {
+public class PatchRegularNoteRequest extends PatchNoteRequest implements RegularNoteRequest {
 
     private Category category;
 }
