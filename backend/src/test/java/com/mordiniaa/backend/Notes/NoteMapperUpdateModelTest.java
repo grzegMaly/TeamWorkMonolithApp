@@ -178,4 +178,23 @@ public class NoteMapperUpdateModelTest {
         assertEquals(updatedAt, deadlineNote.getUpdatedAt());
         assertEquals(deadline, deadlineNote.getDeadline());
     }
+
+    @Test
+    @DisplayName("Patch Deadline Note Priority")
+    void DeadlineNotePriorityTest() {
+
+        PatchDeadlineNoteRequest patchDeadlineNoteRequest = new PatchDeadlineNoteRequest();
+        patchDeadlineNoteRequest.setPriority(updatedPriority);
+
+        noteMapper.updateNote(deadlineNote, patchDeadlineNoteRequest);
+
+        assertEquals(updatedPriority, deadlineNote.getPriority());
+
+        assertEquals(title, deadlineNote.getTitle());
+        assertEquals(content, deadlineNote.getContent());
+        assertEquals(status, deadlineNote.getStatus());
+        assertEquals(createdAt, deadlineNote.getCreatedAt());
+        assertEquals(updatedAt, deadlineNote.getUpdatedAt());
+        assertEquals(deadline, deadlineNote.getDeadline());
+    }
 }
