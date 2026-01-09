@@ -2,6 +2,7 @@ package com.mordiniaa.backend.services.notes;
 
 import com.mordiniaa.backend.dto.NoteDto;
 import com.mordiniaa.backend.request.note.CreateNoteRequest;
+import com.mordiniaa.backend.request.note.PatchNoteRequest;
 import com.mordiniaa.backend.utils.PageResult;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface NotesService {
 
     NoteDto createNote(UUID ownerId, CreateNoteRequest createNoteRequest);
 
-    Optional<NoteDto> updateNote(UUID ownerId, NoteDto noteDto);
+    Optional<NoteDto> updateNote(UUID ownerId, String noteId, PatchNoteRequest patchNoteRequest);
 
     void deleteNote(UUID ownerId, String noteId);
 }

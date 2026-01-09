@@ -6,6 +6,7 @@ import com.mordiniaa.backend.mappers.notes.NoteMapper;
 import com.mordiniaa.backend.models.notes.Note;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.CreateNoteRequest;
+import com.mordiniaa.backend.request.note.PatchNoteRequest;
 import com.mordiniaa.backend.utils.PageResult;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -80,7 +81,7 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public Optional<NoteDto> updateNote(UUID ownerId, NoteDto noteDto) {
+    public Optional<NoteDto> updateNote(UUID ownerId, String noteId, PatchNoteRequest patchNoteRequest) {
         return null;
     }
 
