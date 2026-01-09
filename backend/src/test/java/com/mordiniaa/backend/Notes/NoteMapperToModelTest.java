@@ -132,4 +132,14 @@ public class NoteMapperToModelTest {
         assertNotEquals(Priority.HIGH, deadlineNote.getPriority());
         assertNotEquals(Instant.now().plus(1, ChronoUnit.DAYS), deadlineNote.getDeadline());
     }
+
+    @Test
+    @DisplayName("Unsupported request type throws exception")
+    void unsupportedRequestTypeTest() {
+
+        PatchRegularNoteRequest patchRegularNoteRequest = new PatchRegularNoteRequest();
+        patchRegularNoteRequest.setTitle("X");
+
+        assertThrows(RuntimeException.class, () -> noteMapper.toModel(patchRegularNoteRequest));
+    }
 }
