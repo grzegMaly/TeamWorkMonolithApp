@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class NotesServiceGetNoteByIdTest {
+public class NotesServiceGetNoteByIdMockTest {
 
     @InjectMocks
     private NotesServiceImpl notesService;
