@@ -34,19 +34,19 @@ public class NoteMapperUpdateModelTest {
     @Autowired
     private NoteMapper noteMapper;
 
-    private String title = "Title";
-    private String updatedTitle = "Updated Title";
-    private String content = "Content";
-    private String updatedContent = "Updated Content";
-    private Category category = Category.MEETING;
-    private Category updatedCategory = Category.DIARY;
-    private Status status = Status.COMPLETED;
-    private Status updatedStatus = Status.NEW;
-    private Priority priority = Priority.MEDIUM;
-    private Priority updatedPriority = Priority.HIGH;
-    private Instant createdAt = Instant.now().minus(2, ChronoUnit.DAYS);
-    private Instant updatedAt = createdAt.plus(1, ChronoUnit.DAYS);
-    private Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS);
+    private final String title = "Title";
+    private final String updatedTitle = "Updated Title";
+    private final String content = "Content";
+    private final String updatedContent = "Updated Content";
+    private final Category category = Category.MEETING;
+    private final Category updatedCategory = Category.DIARY;
+    private final Status status = Status.COMPLETED;
+    private final Status updatedStatus = Status.NEW;
+    private final Priority priority = Priority.MEDIUM;
+    private final Priority updatedPriority = Priority.HIGH;
+    private final Instant createdAt = Instant.now().minus(2, ChronoUnit.DAYS);
+    private final Instant updatedAt = createdAt.plus(1, ChronoUnit.DAYS);
+    private final Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS);
 
     private RegularNote regularNote;
     private DeadlineNote deadlineNote;
@@ -118,6 +118,25 @@ public class NoteMapperUpdateModelTest {
 
         assertEquals(title, regularNote.getTitle());
         assertEquals(content, regularNote.getContent());
+        assertEquals(createdAt, regularNote.getCreatedAt());
+        assertEquals(updatedAt, regularNote.getUpdatedAt());
+    }
+
+    @Test
+    @DisplayName("Patch Regular Note All")
+    void patchRegularNoteAllTest() {
+
+        PatchRegularNoteRequest patchRegularNoteRequest = new PatchRegularNoteRequest();
+        patchRegularNoteRequest.setTitle(updatedTitle);
+        patchRegularNoteRequest.setContent(updatedContent);
+        patchRegularNoteRequest.setCategory(updatedCategory);
+
+        noteMapper.updateNote(regularNote, patchRegularNoteRequest);
+
+        assertEquals(updatedTitle, regularNote.getTitle());
+        assertEquals(updatedCategory, regularNote.getCategory());
+        assertEquals(updatedContent, regularNote.getContent());
+
         assertEquals(createdAt, regularNote.getCreatedAt());
         assertEquals(updatedAt, regularNote.getUpdatedAt());
     }
