@@ -22,6 +22,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -256,6 +257,26 @@ public class NoteMapperUpdateModelTest {
         assertEquals(updatedStatus, deadlineNote.getStatus());
         assertEquals(updatedDeadline, deadlineNote.getDeadline());
 
+        assertEquals(createdAt, deadlineNote.getCreatedAt());
+        assertEquals(updatedAt, deadlineNote.getUpdatedAt());
+    }
+
+    @Test
+    @DisplayName("Patch Deadline Note Invalid Deadline")
+    void DeadlineNoteInvalidDeadlineTest() {
+
+        PatchDeadlineNoteRequest patchDeadlineNoteRequest = new PatchDeadlineNoteRequest();
+        Instant invalidDeadline = Instant.now().minus(2, ChronoUnit.DAYS);
+        patchDeadlineNoteRequest.setDeadline(invalidDeadline);
+
+        noteMapper.updateNote(deadlineNote, patchDeadlineNoteRequest);
+
+        assertNotEquals(invalidDeadline, deadlineNote.getDeadline());
+
+        assertEquals(title, deadlineNote.getTitle());
+        assertEquals(content, deadlineNote.getContent());
+        assertEquals(priority, deadlineNote.getPriority());
+        assertEquals(status, deadlineNote.getStatus());
         assertEquals(createdAt, deadlineNote.getCreatedAt());
         assertEquals(updatedAt, deadlineNote.getUpdatedAt());
     }
