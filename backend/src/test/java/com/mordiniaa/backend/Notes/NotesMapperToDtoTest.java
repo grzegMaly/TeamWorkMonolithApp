@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
         RegularNoteDtoMapper.class,
         DeadlineNoteDtoMapper.class
 })
-public class NotesMapperTest {
+public class NotesMapperToDtoTest {
 
     @Autowired
     private NoteMapper noteMapper;
