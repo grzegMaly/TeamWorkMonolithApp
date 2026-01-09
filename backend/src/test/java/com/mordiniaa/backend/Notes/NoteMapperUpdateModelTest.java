@@ -47,6 +47,7 @@ public class NoteMapperUpdateModelTest {
     private final Instant createdAt = Instant.now().minus(2, ChronoUnit.DAYS);
     private final Instant updatedAt = createdAt.plus(1, ChronoUnit.DAYS);
     private final Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS);
+    private final Instant updatedDeadline = Instant.now().plus(5, ChronoUnit.DAYS);
 
     private RegularNote regularNote;
     private DeadlineNote deadlineNote;
@@ -215,5 +216,24 @@ public class NoteMapperUpdateModelTest {
         assertEquals(createdAt, deadlineNote.getCreatedAt());
         assertEquals(updatedAt, deadlineNote.getUpdatedAt());
         assertEquals(deadline, deadlineNote.getDeadline());
+    }
+
+    @Test
+    @DisplayName("Patch Deadline Note Deadline")
+    void DeadlineNoteDeadlineTest() {
+
+        PatchDeadlineNoteRequest patchDeadlineNoteRequest = new PatchDeadlineNoteRequest();
+        patchDeadlineNoteRequest.setDeadline(updatedDeadline);
+
+        noteMapper.updateNote(deadlineNote, patchDeadlineNoteRequest);
+
+        assertEquals(updatedDeadline, deadlineNote.getDeadline());
+
+        assertEquals(title, deadlineNote.getTitle());
+        assertEquals(content, deadlineNote.getContent());
+        assertEquals(priority, deadlineNote.getPriority());
+        assertEquals(status, deadlineNote.getStatus());
+        assertEquals(createdAt, deadlineNote.getCreatedAt());
+        assertEquals(updatedAt, deadlineNote.getUpdatedAt());
     }
 }
