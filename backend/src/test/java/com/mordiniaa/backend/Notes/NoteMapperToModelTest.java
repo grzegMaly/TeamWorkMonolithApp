@@ -60,4 +60,21 @@ public class NoteMapperToModelTest {
         createDeadlineNoteRequest.setPriority(priority);
         createDeadlineNoteRequest.setDeadline(deadline);
     }
+
+    @Test
+    @DisplayName("Regular Note Model Test")
+    void regularNoteModelTest() {
+
+        RegularNote regularNote = (RegularNote) noteMapper.toModel(createRegularNoteRequest);
+
+        assertNotNull(regularNote.getTitle());
+        assertNotNull(regularNote.getContent());
+        assertNotNull(regularNote.getCategory());
+
+        assertFalse(regularNote.isArchived());
+
+        assertEquals(title, regularNote.getTitle());
+        assertEquals(content, regularNote.getContent());
+        assertEquals(category, regularNote.getCategory());
+    }
 }
