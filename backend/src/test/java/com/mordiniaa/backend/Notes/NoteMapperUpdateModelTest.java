@@ -8,6 +8,7 @@ import com.mordiniaa.backend.models.notes.deadline.Priority;
 import com.mordiniaa.backend.models.notes.deadline.Status;
 import com.mordiniaa.backend.models.notes.regular.Category;
 import com.mordiniaa.backend.models.notes.regular.RegularNote;
+import com.mordiniaa.backend.request.note.deadline.CreateDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.deadline.PatchDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,8 +22,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -279,5 +279,15 @@ public class NoteMapperUpdateModelTest {
         assertEquals(status, deadlineNote.getStatus());
         assertEquals(createdAt, deadlineNote.getCreatedAt());
         assertEquals(updatedAt, deadlineNote.getUpdatedAt());
+    }
+
+    @Test
+    @DisplayName("Unsupported Request Type Throws Exception")
+    void unsupportedRequestTypeTest() {
+
+        CreateDeadlineNoteRequest createDeadlineNoteRequest = new CreateDeadlineNoteRequest();
+        createDeadlineNoteRequest.setTitle("X");
+
+        assertThrows(RuntimeException.class, () -> noteMapper.toModel(createDeadlineNoteRequest));
     }
 }
