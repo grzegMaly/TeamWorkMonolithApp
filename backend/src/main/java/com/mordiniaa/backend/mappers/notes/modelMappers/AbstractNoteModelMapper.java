@@ -7,22 +7,49 @@ import java.util.Set;
 
 public abstract class AbstractNoteModelMapper<T extends NoteRequest, D extends Note> {
 
-    public final Note toModel(NoteRequest noteRequest) {
-        return toModelTyped(cast(noteRequest));
-    }
+    protected abstract D toModelTyped(T noteRequest);
 
-    protected void mapBase(NoteRequest noteRequest, Note.NoteBuilder<?, ?> builder) {
-        builder.archived(false)
-                .title(noteRequest.getTitle())
-                .content(noteRequest.getContent());
-    }
+    public abstract Set<Class<? extends NoteRequest>> getSupportedRequestClasses();
+
+    public abstract Class<? extends Note> getSupportedClass();
 
     @SuppressWarnings("unchecked")
     private T cast(NoteRequest noteRequest) {
         return (T) noteRequest;
     }
 
-    protected abstract D toModelTyped(T noteRequest);
+    @SuppressWarnings("unchecked")
+    private D cast(Note note) {
+        return (D) note;
+    }
 
-    public abstract Set<Class<? extends NoteRequest>> getSupportedClasses();
+    public final Note toModel(NoteRequest noteRequest) {
+        return toModelTyped(cast(noteRequest));
+    }
+
+    public final void updateNote(Note note, NoteRequest noteRequest) {
+        updateModelTyped(cast(note), cast(noteRequest));
+    }
+
+    protected void mapBase(NoteRequest noteRequest, Note.NoteBuilder<?, ?> builder) {
+        builder.archived(false)
+                .title(noteRequest.getTitle().trim())
+                .content(noteRequest.getContent().trim());
+    }
+
+    protected void updateBase(Note note, NoteRequest noteRequest) {
+        if (checkUpdateString(noteRequest.getTitle()))
+            note.setTitle(noteRequest.getTitle().trim());
+
+        if (checkUpdateString(noteRequest.getContent()))
+            note.setContent(noteRequest.getContent().trim());
+    }
+
+    protected void updateModelTyped(D note, T noteRequest) {
+        updateBase(note, noteRequest);
+    }
+
+    protected boolean checkUpdateString(String field) {
+        return field != null && !field.isBlank();
+    }
 }

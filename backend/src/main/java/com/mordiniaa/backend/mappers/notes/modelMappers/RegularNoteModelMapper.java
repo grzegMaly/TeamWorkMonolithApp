@@ -21,10 +21,24 @@ public class RegularNoteModelMapper extends AbstractNoteModelMapper<RegularNoteR
     }
 
     @Override
-    public Set<Class<? extends NoteRequest>> getSupportedClasses() {
+    public Set<Class<? extends NoteRequest>> getSupportedRequestClasses() {
         return Set.of(
                 CreateRegularNoteRequest.class,
                 PatchRegularNoteRequest.class
         );
+    }
+
+    @Override
+    public Class<RegularNote> getSupportedClass() {
+        return RegularNote.class;
+    }
+
+    @Override
+    protected void updateModelTyped(RegularNote note, RegularNoteRequest noteRequest) {
+
+        super.updateModelTyped(note, noteRequest);
+
+        if (noteRequest.getCategory() != null)
+            note.setCategory(noteRequest.getCategory());
     }
 }

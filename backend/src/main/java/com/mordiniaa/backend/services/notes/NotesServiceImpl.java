@@ -6,6 +6,7 @@ import com.mordiniaa.backend.mappers.notes.NoteMapper;
 import com.mordiniaa.backend.models.notes.Note;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.CreateNoteRequest;
+import com.mordiniaa.backend.request.note.PatchNoteRequest;
 import com.mordiniaa.backend.utils.PageResult;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -72,6 +73,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public NoteDto createNote(UUID ownerId, CreateNoteRequest createNoteRequest) {
+
         Note mappedNote = noteMapper.toModel(createNoteRequest);
         mappedNote.setOwnerId(ownerId);
 
@@ -80,8 +82,19 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public Optional<NoteDto> updateNote(UUID ownerId, NoteDto noteDto) {
-        return null;
+    public NoteDto updateNote(UUID ownerId, String noteId, PatchNoteRequest patchNoteRequest) {
+
+        if (!ObjectId.isValid(noteId)) {
+            throw new RuntimeException();
+        }
+
+        ObjectId id = new ObjectId(noteId);
+        Note note = notesRepository.findNoteByIdAndOwnerId(id, ownerId)
+                .orElseThrow(RuntimeException::new); //TODO: Change in exceptions section
+        noteMapper.updateNote(note, patchNoteRequest);
+
+        Note savedNote = notesRepository.save(note);
+        return noteMapper.toDto(savedNote);
     }
 
     @Override
