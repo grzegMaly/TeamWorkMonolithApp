@@ -70,4 +70,21 @@ public class NoteMapperUpdateModelTest {
         deadlineNote.setCreatedAt(createdAt);
         deadlineNote.setUpdatedAt(updatedAt);
     }
+
+    @Test
+    @DisplayName("Patch Regular Note Title")
+    void patchRegularNoteTitle() {
+
+        PatchRegularNoteRequest patchRegularNoteRequest = new PatchRegularNoteRequest();
+        patchRegularNoteRequest.setTitle(updatedTitle);
+
+        noteMapper.updateNote(regularNote, patchRegularNoteRequest);
+
+        assertEquals(updatedTitle, regularNote.getTitle());
+
+        assertEquals(content, regularNote.getContent());
+        assertEquals(category, regularNote.getCategory());
+        assertEquals(createdAt, regularNote.getCreatedAt());
+        assertEquals(updatedAt, regularNote.getUpdatedAt());
+    }
 }
