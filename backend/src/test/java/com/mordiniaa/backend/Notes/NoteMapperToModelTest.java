@@ -92,4 +92,25 @@ public class NoteMapperToModelTest {
         assertNotEquals("Custom Content", regularNote.getContent());
         assertNotEquals(Category.RECEIPT, regularNote.getCategory());
     }
+
+    @Test
+    @DisplayName("Deadline Note Model Test")
+    void deadlineNoteModelTest() {
+
+        DeadlineNote deadlineNote = (DeadlineNote) noteMapper.toModel(createDeadlineNoteRequest);
+
+        assertNotNull(deadlineNote.getTitle());
+        assertNotNull(deadlineNote.getContent());
+        assertNotNull(deadlineNote.getStatus());
+        assertNotNull(deadlineNote.getPriority());
+        assertNotNull(deadlineNote.getDeadline());
+
+        assertFalse(deadlineNote.isArchived());
+
+        assertEquals(title, deadlineNote.getTitle());
+        assertEquals(content, deadlineNote.getContent());
+        assertEquals(status, deadlineNote.getStatus());
+        assertEquals(priority, deadlineNote.getPriority());
+        assertEquals(deadline, deadlineNote.getDeadline());
+    }
 }
