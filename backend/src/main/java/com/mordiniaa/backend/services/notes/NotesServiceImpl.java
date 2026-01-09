@@ -73,6 +73,7 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public NoteDto createNote(UUID ownerId, CreateNoteRequest createNoteRequest) {
+
         Note mappedNote = noteMapper.toModel(createNoteRequest);
         mappedNote.setOwnerId(ownerId);
 
@@ -81,8 +82,19 @@ public class NotesServiceImpl implements NotesService {
     }
 
     @Override
-    public Optional<NoteDto> updateNote(UUID ownerId, String noteId, PatchNoteRequest patchNoteRequest) {
-        return null;
+    public NoteDto updateNote(UUID ownerId, String noteId, PatchNoteRequest patchNoteRequest) {
+
+        if (!ObjectId.isValid(noteId)) {
+            throw new RuntimeException();
+        }
+
+        ObjectId id = new ObjectId(noteId);
+        Note note = notesRepository.findNoteByIdAndOwnerId(id, ownerId)
+                .orElseThrow(RuntimeException::new); //TODO: Change in exceptions section
+        noteMapper.updateNote(note, patchNoteRequest);
+
+        Note savedNote = notesRepository.save(note);
+        return noteMapper.toDto(savedNote);
     }
 
     @Override
