@@ -16,7 +16,7 @@ public interface NotesService {
 
     NoteDto createNote(UUID ownerId, CreateNoteRequest createNoteRequest);
 
-    Optional<NoteDto> updateNote(UUID ownerId, String noteId, PatchNoteRequest patchNoteRequest);
+    NoteDto updateNote(UUID ownerId, String noteId, PatchNoteRequest patchNoteRequest);
 
     void deleteNote(UUID ownerId, String noteId);
 }
