@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.request.note.deadline;
+package com.mordiniaa.backend.request.note.regular;
 
 import com.mordiniaa.backend.models.notes.regular.Category;
 import com.mordiniaa.backend.request.note.PatchNoteRequest;

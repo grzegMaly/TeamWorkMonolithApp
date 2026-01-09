@@ -1,6 +1,8 @@
-package com.mordiniaa.backend.request.note;
+package com.mordiniaa.backend.request.note.regular;
 
 import com.mordiniaa.backend.models.notes.regular.Category;
+import com.mordiniaa.backend.request.note.CreateNoteRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,5 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CreateRegularNoteRequest extends CreateNoteRequest {
 
+    @NotNull(message = "Category is required")
     private Category category;
 }
