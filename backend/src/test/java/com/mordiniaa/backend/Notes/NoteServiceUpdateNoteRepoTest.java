@@ -182,4 +182,26 @@ public class NoteServiceUpdateNoteRepoTest {
 
         assertTrue(updatedNote.getUpdatedAt().isAfter(updatedNote.getCreatedAt()));
     }
+
+    @Test
+    @DisplayName("Deadline Note Update Valid Deadline Test")
+    void deadlineNoteUpdateValidDeadlineTest() {
+
+
+        Instant updatedDeadline = Instant.now().plus(12, ChronoUnit.DAYS);
+        PatchDeadlineNoteRequest patchDeadlineNoteRequest = new PatchDeadlineNoteRequest();
+        patchDeadlineNoteRequest.setDeadline(updatedDeadline);
+
+        String noteId = deadlineNote.getId().toHexString();
+        DeadlineNoteDto updatedNote = (DeadlineNoteDto) notesService.updateNote(ownerId, noteId, patchDeadlineNoteRequest);
+
+        assertNotNull(updatedNote);
+        assertNotNull(updatedNote.getDeadline());
+        assertEquals(updatedDeadline, updatedNote.getDeadline());
+
+        assertNotNull(updatedNote.getCreatedAt());
+        assertNotNull(updatedNote.getUpdatedAt());
+
+        assertTrue(updatedNote.getUpdatedAt().isAfter(updatedNote.getCreatedAt()));
+    }
 }
