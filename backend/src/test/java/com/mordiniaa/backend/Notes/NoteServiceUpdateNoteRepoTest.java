@@ -30,6 +30,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -66,7 +67,7 @@ public class NoteServiceUpdateNoteRepoTest {
 
     private final Priority priority = Priority.HIGH;
     private final Status status = Status.CANCELED;
-    private final Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS);
+    private final Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
 
     private RegularNote regularNote;
     private DeadlineNote deadlineNote;
@@ -187,7 +188,6 @@ public class NoteServiceUpdateNoteRepoTest {
     @DisplayName("Deadline Note Update Valid Deadline Test")
     void deadlineNoteUpdateValidDeadlineTest() {
 
-
         Instant updatedDeadline = Instant.now().plus(12, ChronoUnit.DAYS);
         PatchDeadlineNoteRequest patchDeadlineNoteRequest = new PatchDeadlineNoteRequest();
         patchDeadlineNoteRequest.setDeadline(updatedDeadline);
@@ -198,6 +198,29 @@ public class NoteServiceUpdateNoteRepoTest {
         assertNotNull(updatedNote);
         assertNotNull(updatedNote.getDeadline());
         assertEquals(updatedDeadline, updatedNote.getDeadline());
+
+        assertNotNull(updatedNote.getCreatedAt());
+        assertNotNull(updatedNote.getUpdatedAt());
+
+        assertTrue(updatedNote.getUpdatedAt().isAfter(updatedNote.getCreatedAt()));
+    }
+
+    @Test
+    @DisplayName("Deadline Note Update Invalid Deadline Test")
+    void deadlineNoteUpdateInvalidDeadlineTest() {
+
+        Instant updatedDeadline = Instant.now().minus(5, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
+        PatchDeadlineNoteRequest patchDeadlineNoteRequest = new PatchDeadlineNoteRequest();
+        patchDeadlineNoteRequest.setDeadline(updatedDeadline);
+
+        String noteId = deadlineNote.getId().toHexString();
+        DeadlineNoteDto updatedNote = (DeadlineNoteDto) notesService.updateNote(ownerId, noteId, patchDeadlineNoteRequest);
+
+        assertNotNull(updatedNote);
+        assertNotNull(updatedNote.getDeadline());
+
+        assertNotEquals(updatedDeadline, updatedNote.getDeadline());
+        assertEquals(deadline, updatedNote.getDeadline());
 
         assertNotNull(updatedNote.getCreatedAt());
         assertNotNull(updatedNote.getUpdatedAt());
