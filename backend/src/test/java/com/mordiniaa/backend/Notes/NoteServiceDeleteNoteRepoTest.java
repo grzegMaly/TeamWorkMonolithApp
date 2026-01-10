@@ -116,4 +116,13 @@ public class NoteServiceDeleteNoteRepoTest {
         String noteId = deadlineNote.getId().toHexString();
         assertDoesNotThrow(() -> notesService.deleteNote(ownerId, noteId));
     }
+
+    @Test
+    @DisplayName("Delete Deadline Note Owner Not Found Test")
+    void deleteDeadlineNoteOwnerNotFoundTest() {
+
+        String noteId = deadlineNote.getId().toHexString();
+        UUID ownerId = UUID.randomUUID();
+        assertThrows(RuntimeException.class, () -> notesService.deleteNote(ownerId, noteId));
+    }
 }
