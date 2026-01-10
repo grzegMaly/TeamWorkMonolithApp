@@ -99,4 +99,13 @@ public class NoteServiceDeleteNoteRepoTest {
         String noteId = ObjectId.get().toHexString();
         assertThrows(RuntimeException.class, () -> notesService.deleteNote(ownerId, noteId));
     }
+
+    @Test
+    @DisplayName("Delete Regular Note Owner Not Found Test")
+    void deleteRegularNoteOwnerNotFoundTest() {
+
+        String noteId = regularNote.getId().toHexString();
+        UUID ownerId = UUID.randomUUID();
+        assertThrows(RuntimeException.class, () -> notesService.deleteNote(ownerId, noteId));
+    }
 }
