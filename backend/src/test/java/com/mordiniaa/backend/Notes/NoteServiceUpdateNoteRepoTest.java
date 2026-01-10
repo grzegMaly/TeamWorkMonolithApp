@@ -15,6 +15,7 @@ import com.mordiniaa.backend.models.notes.regular.Category;
 import com.mordiniaa.backend.models.notes.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.deadline.PatchDeadlineNoteRequest;
+import com.mordiniaa.backend.request.note.regular.CreateRegularNoteRequest;
 import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;
 import com.mordiniaa.backend.services.notes.NotesServiceImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -30,7 +31,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -67,7 +67,7 @@ public class NoteServiceUpdateNoteRepoTest {
 
     private final Priority priority = Priority.HIGH;
     private final Status status = Status.CANCELED;
-    private final Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
+    private Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS);
 
     private RegularNote regularNote;
     private DeadlineNote deadlineNote;
@@ -84,6 +84,8 @@ public class NoteServiceUpdateNoteRepoTest {
                 .category(category)
                 .build()
         );
+        regularNote = (RegularNote) notesRepository.findNoteByIdAndOwnerId(regularNote.getId(), ownerId)
+                .orElseThrow(RuntimeException::new);
 
         deadlineNote = notesRepository.save(DeadlineNote.builder()
                 .ownerId(ownerId)
@@ -94,6 +96,9 @@ public class NoteServiceUpdateNoteRepoTest {
                 .deadline(deadline)
                 .build()
         );
+        deadlineNote = (DeadlineNote) notesRepository.findNoteByIdAndOwnerId(deadlineNote.getId(), ownerId)
+                .orElseThrow(RuntimeException::new);
+        deadline = deadlineNote.getDeadline();
     }
 
     @AfterEach
@@ -226,5 +231,15 @@ public class NoteServiceUpdateNoteRepoTest {
         assertNotNull(updatedNote.getUpdatedAt());
 
         assertTrue(updatedNote.getUpdatedAt().isAfter(updatedNote.getCreatedAt()));
+    }
+
+    @Test
+    @DisplayName("Update Wrong Request")
+    void updateWronPatchTest() {
+
+        PatchDeadlineNoteRequest patchDeadlineNoteRequest = new PatchDeadlineNoteRequest();
+
+        String noteId = regularNote.getId().toHexString();
+        assertThrows(RuntimeException.class, () -> notesService.updateNote(ownerId, noteId, patchDeadlineNoteRequest));
     }
 }
