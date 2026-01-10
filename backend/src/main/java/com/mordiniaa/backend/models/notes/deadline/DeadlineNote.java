@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 @Getter
 @Setter
@@ -29,4 +30,10 @@ public class DeadlineNote extends Note {
 
     @Field(name = "deadline", order = 103)
     private Instant deadline;
+
+    public void setDeadline(Instant deadline) {
+        this.deadline = deadline == null
+                ? null
+                : deadline.truncatedTo(ChronoUnit.MILLIS);
+    }
 }
