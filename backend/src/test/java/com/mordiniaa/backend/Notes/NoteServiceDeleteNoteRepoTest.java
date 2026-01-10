@@ -9,6 +9,7 @@ import com.mordiniaa.backend.models.notes.regular.Category;
 import com.mordiniaa.backend.models.notes.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.services.notes.NotesServiceImpl;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -88,6 +89,14 @@ public class NoteServiceDeleteNoteRepoTest {
     void deleteRegularNoteInvalidIdTest() {
 
         String noteId = "2f3wqedcw354t435tgwefrw";
+        assertThrows(RuntimeException.class, () -> notesService.deleteNote(ownerId, noteId));
+    }
+
+    @Test
+    @DisplayName("Delete Regular Note Id Not Found Test")
+    void deleteRegularNoteIdNotFoundTest() {
+
+        String noteId = ObjectId.get().toHexString();
         assertThrows(RuntimeException.class, () -> notesService.deleteNote(ownerId, noteId));
     }
 }
