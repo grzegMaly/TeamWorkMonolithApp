@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.Notes;
 
+import com.mordiniaa.backend.dto.DeadlineNoteDto;
 import com.mordiniaa.backend.dto.NoteDto;
 import com.mordiniaa.backend.dto.RegularNoteDto;
 import com.mordiniaa.backend.mappers.notes.NoteMapper;
@@ -13,6 +14,7 @@ import com.mordiniaa.backend.models.notes.deadline.Status;
 import com.mordiniaa.backend.models.notes.regular.Category;
 import com.mordiniaa.backend.models.notes.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
+import com.mordiniaa.backend.request.note.deadline.PatchDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;
 import com.mordiniaa.backend.services.notes.NotesServiceImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -60,11 +62,11 @@ public class NoteServiceUpdateNoteRepoTest {
     private final String title = "Title";
     private final String content = "Content";
 
-    private Category category = Category.DIARY;
+    private final Category category = Category.DIARY;
 
-    private Priority priority = Priority.HIGH;
-    private Status status = Status.CANCELED;
-    private Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS);
+    private final Priority priority = Priority.HIGH;
+    private final Status status = Status.CANCELED;
+    private final Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS);
 
     private RegularNote regularNote;
     private DeadlineNote deadlineNote;
@@ -115,6 +117,8 @@ public class NoteServiceUpdateNoteRepoTest {
 
         assertEquals(ownerId, updatedNote.getOwnerId());
         assertEquals(updatedTitle, updatedNote.getTitle(), "Titles should be the same");
+
+        assertTrue(updatedNote.getUpdatedAt().isAfter(updatedNote.getCreatedAt()));
     }
 
     @Test
@@ -134,6 +138,8 @@ public class NoteServiceUpdateNoteRepoTest {
 
         assertEquals(ownerId, updatedNote.getOwnerId());
         assertEquals(updatedCategory, updatedNote.getCategory());
+
+        assertTrue(updatedNote.getUpdatedAt().isAfter(updatedNote.getCreatedAt()));
     }
 
     @Test
@@ -152,5 +158,28 @@ public class NoteServiceUpdateNoteRepoTest {
         assertNotEquals(updatedTitle, updatedNote.getTitle());
         assertNotNull(updatedNote.getTitle());
         assertEquals(title, updatedNote.getTitle());
+
+        assertTrue(updatedNote.getUpdatedAt().isAfter(updatedNote.getCreatedAt()));
+    }
+
+    @Test
+    @DisplayName("Deadline Note Update Status Test")
+    void deadlineNoteUpdateStatusTest() {
+
+        Status updatedStatus = Status.NEW;
+        PatchDeadlineNoteRequest patchDeadlineNoteRequest = new PatchDeadlineNoteRequest();
+        patchDeadlineNoteRequest.setStatus(updatedStatus);
+
+        String noteId = deadlineNote.getId().toHexString();
+        DeadlineNoteDto updatedNote = (DeadlineNoteDto) notesService.updateNote(ownerId, noteId, patchDeadlineNoteRequest);
+
+        assertNotNull(updatedNote);
+        assertEquals(updatedStatus, updatedNote.getStatus());
+
+        assertNotNull(updatedNote.getCreatedAt());
+        assertNotNull(updatedNote.getUpdatedAt());
+        assertNotNull(updatedNote.getDeadline());
+
+        assertTrue(updatedNote.getUpdatedAt().isAfter(updatedNote.getCreatedAt()));
     }
 }
