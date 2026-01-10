@@ -28,12 +28,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
@@ -55,12 +53,9 @@ public class NoteServiceUpdateNoteRepoTest {
     private NotesRepository notesRepository;
 
     @Autowired
-    private NoteMapper noteMapper;
-
-    @Autowired
     private NotesServiceImpl notesService;
 
-    private UUID ownerId;
+    private final UUID ownerId = UUID.randomUUID();
 
     private final String title = "Title";
     private final String content = "Content";
@@ -100,7 +95,7 @@ public class NoteServiceUpdateNoteRepoTest {
 
     @AfterEach
     void clean() {
-        notesRepository.deleteAll(List.of(regularNote, deadlineNote));
+        notesRepository.deleteAll();
     }
 
     @Test
@@ -118,6 +113,7 @@ public class NoteServiceUpdateNoteRepoTest {
         assertNotNull(updatedNote.getCreatedAt());
         assertNotNull(updatedNote.getUpdatedAt());
 
+        assertEquals(ownerId, updatedNote.getOwnerId());
         assertEquals(updatedTitle, updatedNote.getTitle(), "Titles should be the same");
     }
 
@@ -136,6 +132,25 @@ public class NoteServiceUpdateNoteRepoTest {
         assertNotNull(updatedNote.getCreatedAt());
         assertNotNull(updatedNote.getUpdatedAt());
 
+        assertEquals(ownerId, updatedNote.getOwnerId());
         assertEquals(updatedCategory, updatedNote.getCategory());
+    }
+
+    @Test
+    @DisplayName("Regular Note Update Title Empty String Test")
+    void regularNoteUpdateTitleEmptyStringTest() {
+
+        String updatedTitle = "   ";
+        PatchRegularNoteRequest patchRegularNoteRequest = new PatchRegularNoteRequest();
+        patchRegularNoteRequest.setTitle(updatedTitle);
+
+        String noteId = regularNote.getId().toHexString();
+        RegularNoteDto updatedNote = (RegularNoteDto) notesService.updateNote(ownerId, noteId, patchRegularNoteRequest);
+
+        assertNotNull(updatedNote);
+
+        assertNotEquals(updatedTitle, updatedNote.getTitle());
+        assertNotNull(updatedNote.getTitle());
+        assertEquals(title, updatedNote.getTitle());
     }
 }
