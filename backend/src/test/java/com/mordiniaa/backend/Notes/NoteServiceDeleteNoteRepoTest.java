@@ -82,4 +82,12 @@ public class NoteServiceDeleteNoteRepoTest {
         String noteId = regularNote.getId().toHexString();
         assertDoesNotThrow(() -> notesService.deleteNote(ownerId, noteId));
     }
+
+    @Test
+    @DisplayName("Delete Regular Note Invalid Id Test")
+    void deleteRegularNoteInvalidIdTest() {
+
+        String noteId = "2f3wqedcw354t435tgwefrw";
+        assertThrows(RuntimeException.class, () -> notesService.deleteNote(ownerId, noteId));
+    }
 }
