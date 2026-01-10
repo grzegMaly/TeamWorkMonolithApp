@@ -74,4 +74,12 @@ public class NoteServiceDeleteNoteRepoTest {
                 .deadline(Instant.now().plus(3, ChronoUnit.DAYS))
                 .build());
     }
+
+    @Test
+    @DisplayName("Delete Regular Note Valid Test")
+    void deleteRegularNoteValidTest() {
+
+        String noteId = regularNote.getId().toHexString();
+        assertDoesNotThrow(() -> notesService.deleteNote(ownerId, noteId));
+    }
 }
