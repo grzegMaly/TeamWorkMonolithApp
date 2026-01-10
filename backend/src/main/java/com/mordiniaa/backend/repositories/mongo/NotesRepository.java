@@ -19,5 +19,5 @@ public interface NotesRepository extends MongoRepository<Note, ObjectId> {
 
     Optional<Note> findNoteByIdAndOwnerId(ObjectId id, UUID ownerId);
 
-    void deleteAllByOwnerId(UUID ownerId);
+    boolean deleteByIdAndOwnerId(ObjectId id, UUID ownerId);
 }

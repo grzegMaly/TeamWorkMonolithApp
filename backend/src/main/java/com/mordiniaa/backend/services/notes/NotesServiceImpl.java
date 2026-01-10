@@ -99,6 +99,13 @@ public class NotesServiceImpl implements NotesService {
 
     @Override
     public void deleteNote(UUID ownerId, String noteId) {
-        ObjectId id = new ObjectId(noteId);
+
+        if (!ObjectId.isValid(noteId)) {
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        boolean result = notesRepository.deleteByIdAndOwnerId(new ObjectId(noteId), ownerId);
+        if (!result)
+            throw new RuntimeException(); // TODO: Change to NotFound in Exceptions Section
     }
 }
