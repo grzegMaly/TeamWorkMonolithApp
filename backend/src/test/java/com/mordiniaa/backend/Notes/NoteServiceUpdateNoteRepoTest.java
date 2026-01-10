@@ -1,6 +1,10 @@
 package com.mordiniaa.backend.Notes;
 
+import com.mordiniaa.backend.dto.NoteDto;
+import com.mordiniaa.backend.dto.RegularNoteDto;
 import com.mordiniaa.backend.mappers.notes.NoteMapper;
+import com.mordiniaa.backend.mappers.notes.dtoMappers.DeadlineNoteDtoMapper;
+import com.mordiniaa.backend.mappers.notes.dtoMappers.RegularNoteDtoMapper;
 import com.mordiniaa.backend.mappers.notes.modelMappers.DeadlineNoteModelMapper;
 import com.mordiniaa.backend.mappers.notes.modelMappers.RegularNoteModelMapper;
 import com.mordiniaa.backend.models.notes.deadline.DeadlineNote;
@@ -9,6 +13,7 @@ import com.mordiniaa.backend.models.notes.deadline.Status;
 import com.mordiniaa.backend.models.notes.regular.Category;
 import com.mordiniaa.backend.models.notes.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
+import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;
 import com.mordiniaa.backend.services.notes.NotesServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,12 +32,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @DataMongoTest
 @Import({
         NoteMapper.class,
+        RegularNoteDtoMapper.class,
+        DeadlineNoteDtoMapper.class,
         RegularNoteModelMapper.class,
         DeadlineNoteModelMapper.class,
         NotesServiceImpl.class
@@ -92,5 +101,23 @@ public class NoteServiceUpdateNoteRepoTest {
     @AfterEach
     void clean() {
         notesRepository.deleteAll(List.of(regularNote, deadlineNote));
+    }
+
+    @Test
+    @DisplayName("Regular Note Update Title Test")
+    void regularNoteUpdateTitleTest() {
+
+        String updatedTitle = "X";
+        PatchRegularNoteRequest patchRegularNoteRequest = new PatchRegularNoteRequest();
+        patchRegularNoteRequest.setTitle(updatedTitle);
+
+        String noteId = regularNote.getId().toHexString();
+        NoteDto updatedNote = notesService.updateNote(ownerId, noteId, patchRegularNoteRequest);
+
+        assertNotNull(updatedNote);
+        assertNotNull(updatedNote.getCreatedAt());
+        assertNotNull(updatedNote.getUpdatedAt());
+
+        assertEquals(updatedTitle, updatedNote.getTitle(), "Titles should be the same");
     }
 }
