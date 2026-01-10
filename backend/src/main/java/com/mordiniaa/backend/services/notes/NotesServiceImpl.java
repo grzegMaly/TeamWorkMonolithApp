@@ -14,8 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ public class NotesServiceImpl implements NotesService {
 
     private final NotesRepository notesRepository;
     private final NoteMapper noteMapper;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public Optional<NoteDto> getNoteById(String noteId, UUID ownerId) {
@@ -104,8 +107,8 @@ public class NotesServiceImpl implements NotesService {
             throw new RuntimeException(); // TODO: Change In Exceptions Section
         }
 
-        boolean result = notesRepository.deleteByIdAndOwnerId(new ObjectId(noteId), ownerId);
-        if (!result)
+        long result = notesRepository.deleteByIdAndOwnerId(new ObjectId(noteId), ownerId);
+        if (result != 1)
             throw new RuntimeException(); // TODO: Change to NotFound in Exceptions Section
     }
 }
