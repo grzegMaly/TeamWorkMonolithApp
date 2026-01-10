@@ -48,7 +48,7 @@ public class NoteServiceDeleteNoteRepoTest {
     @Autowired
     private NotesRepository notesRepository;
 
-    private UUID ownerId = UUID.randomUUID();
+    private final UUID ownerId = UUID.randomUUID();
 
     private RegularNote regularNote;
     private DeadlineNote deadlineNote;
@@ -107,5 +107,13 @@ public class NoteServiceDeleteNoteRepoTest {
         String noteId = regularNote.getId().toHexString();
         UUID ownerId = UUID.randomUUID();
         assertThrows(RuntimeException.class, () -> notesService.deleteNote(ownerId, noteId));
+    }
+
+    @Test
+    @DisplayName("Delete Deadline Note Valid Test")
+    void deleteDeadlineNoteValidTest() {
+
+        String noteId = deadlineNote.getId().toHexString();
+        assertDoesNotThrow(() -> notesService.deleteNote(ownerId, noteId));
     }
 }
