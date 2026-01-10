@@ -120,4 +120,22 @@ public class NoteServiceUpdateNoteRepoTest {
 
         assertEquals(updatedTitle, updatedNote.getTitle(), "Titles should be the same");
     }
+
+    @Test
+    @DisplayName("Regular Note Update Category Test")
+    void regularNoteUpdateCategoryTest() {
+
+        Category updatedCategory = Category.MEETING;
+        PatchRegularNoteRequest patchRegularNoteRequest = new PatchRegularNoteRequest();
+        patchRegularNoteRequest.setCategory(updatedCategory);
+
+        String noteId = regularNote.getId().toString();
+        RegularNoteDto updatedNote = (RegularNoteDto) notesService.updateNote(ownerId, noteId, patchRegularNoteRequest);
+
+        assertNotNull(updatedNote);
+        assertNotNull(updatedNote.getCreatedAt());
+        assertNotNull(updatedNote.getUpdatedAt());
+
+        assertEquals(updatedCategory, updatedNote.getCategory());
+    }
 }
