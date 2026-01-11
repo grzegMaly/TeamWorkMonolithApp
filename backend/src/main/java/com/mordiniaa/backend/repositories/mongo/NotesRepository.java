@@ -31,5 +31,5 @@ public interface NotesRepository extends MongoRepository<Note, ObjectId> {
 
     @Query("{'_id': ?1, 'ownerId': ?0}")
     @Update("{$bit:  {archived: {$xor: 1}}}")
-    UpdateResult changeArchivedStatusForNote(UUID ownerId, ObjectId noteId);
+    long changeArchivedStatusForNote(UUID ownerId, ObjectId noteId);
 }
