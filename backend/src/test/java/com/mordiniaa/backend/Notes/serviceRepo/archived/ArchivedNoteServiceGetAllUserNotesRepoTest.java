@@ -136,4 +136,30 @@ public class ArchivedNoteServiceGetAllUserNotesRepoTest {
 
         assertTrue(noteIds.containsAll(dtoIds));
     }
+
+    @Test
+    @DisplayName("All Notes User Two Archived True Test")
+    void getAllArchivedNotesForUserTwo() {
+
+        PageResult<List<NoteDto>> pageResult = archivedNotesService.fetchAllArchivedNotes(ownerIdTwo, 0, 30);
+        Set<String> dtoIds = pageResult.getData().stream()
+                .map(NoteDto::getId)
+                .collect(Collectors.toSet());
+
+        Query query = new Query();
+        query.addCriteria(
+                Criteria.where("archived").is(true)
+                        .and("ownerId").is(ownerIdTwo)
+        ).limit(30);
+
+        Set<String> noteIds = mongoTemplate.find(query, Note.class).stream()
+                .map(Note::getId)
+                .map(ObjectId::toHexString)
+                .collect(Collectors.toSet());
+
+        assertEquals(26, dtoIds.size());
+        assertEquals(dtoIds.size(), noteIds.size());
+
+        assertTrue(noteIds.containsAll(dtoIds));
+    }
 }
