@@ -126,4 +126,11 @@ public class ArchivedNoteServiceSwitchArchivedTest {
         assertNotNull(updatedNote);
         assertFalse(updatedNote.isArchived());
     }
+
+    @Test
+    @DisplayName("Exception Note Not Found")
+    void exceptionNoteNotFoundTest() {
+
+        assertThrows(RuntimeException.class, () -> archivedNotesService.switchArchivedNoteForUser(ownerId, ObjectId.get().toHexString()));
+    }
 }
