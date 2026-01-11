@@ -3,6 +3,7 @@ package com.mordiniaa.backend.controllers.notesController;
 import com.mordiniaa.backend.config.NotesConstants;
 import com.mordiniaa.backend.dto.NoteDto;
 import com.mordiniaa.backend.payload.CollectionResponse;
+import com.mordiniaa.backend.services.notes.ArchivedNotesService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/notes/archive")
 public class ArchivedNotesController {
 
+    private final ArchivedNotesService archivedNotesService;
+
     @GetMapping
     public ResponseEntity<CollectionResponse<NoteDto>> getAllArchivedNotesForUser(
             @RequestParam(name = "pn", required = false, defaultValue = NotesConstants.PAGE_NUMBER) @PositiveOrZero int pageNumber,
@@ -26,7 +29,7 @@ public class ArchivedNotesController {
     }
 
     @PutMapping("/{noteId}")
-    public ResponseEntity<Void> switchArchived() {
+    public ResponseEntity<Void> switchArchived(@PathVariable String noteId) {
         return null;
     }
 }
