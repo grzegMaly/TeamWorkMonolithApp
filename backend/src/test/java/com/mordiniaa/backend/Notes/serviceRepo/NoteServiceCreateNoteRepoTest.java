@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.Notes;
+package com.mordiniaa.backend.Notes.serviceRepo;
 
 import com.mordiniaa.backend.BackendApplication;
 import com.mordiniaa.backend.dto.DeadlineNoteDto;

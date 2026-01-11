@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.Notes;
+package com.mordiniaa.backend.Notes.serviceRepo;
 
 import com.mordiniaa.backend.BackendApplication;
 import com.mordiniaa.backend.dto.NoteDto;
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = BackendApplication.class)
-public class NoteServiceGetAllUserNotesTest {
+public class NoteServiceGetAllUserNotesRepoTest {
 
     @Autowired
     private NotesServiceImpl notesService;

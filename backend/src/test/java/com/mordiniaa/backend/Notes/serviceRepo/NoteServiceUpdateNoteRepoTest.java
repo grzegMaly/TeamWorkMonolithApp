@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.Notes;
+package com.mordiniaa.backend.Notes.serviceRepo;
 
 import com.mordiniaa.backend.dto.DeadlineNoteDto;
 import com.mordiniaa.backend.dto.NoteDto;
@@ -15,7 +15,6 @@ import com.mordiniaa.backend.models.notes.regular.Category;
 import com.mordiniaa.backend.models.notes.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.deadline.PatchDeadlineNoteRequest;
-import com.mordiniaa.backend.request.note.regular.CreateRegularNoteRequest;
 import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;
 import com.mordiniaa.backend.services.notes.NotesServiceImpl;
 import org.junit.jupiter.api.AfterEach;

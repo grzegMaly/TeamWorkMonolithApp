@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.Notes;
+package com.mordiniaa.backend.Notes.mapper;
 
 import com.mordiniaa.backend.mappers.notes.NoteMapper;
 import com.mordiniaa.backend.mappers.notes.modelMappers.DeadlineNoteModelMapper;

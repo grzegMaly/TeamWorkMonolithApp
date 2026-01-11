@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.Notes;
+package com.mordiniaa.backend.Notes.mapper;
 
 import com.mordiniaa.backend.dto.DeadlineNoteDto;
 import com.mordiniaa.backend.dto.RegularNoteDto;
