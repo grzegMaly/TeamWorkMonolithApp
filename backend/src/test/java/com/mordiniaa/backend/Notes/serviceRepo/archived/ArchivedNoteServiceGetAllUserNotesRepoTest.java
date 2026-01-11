@@ -1,7 +1,6 @@
 package com.mordiniaa.backend.Notes.serviceRepo.archived;
 
 import com.mordiniaa.backend.dto.NoteDto;
-import com.mordiniaa.backend.dto.RegularNoteDto;
 import com.mordiniaa.backend.mappers.notes.NoteMapper;
 import com.mordiniaa.backend.mappers.notes.dtoMappers.DeadlineNoteDtoMapper;
 import com.mordiniaa.backend.mappers.notes.dtoMappers.RegularNoteDtoMapper;
@@ -54,6 +53,7 @@ public class ArchivedNoteServiceGetAllUserNotesRepoTest {
 
     private final UUID ownerIdOne = UUID.randomUUID();
     private final UUID ownerIdTwo = UUID.randomUUID();
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
