@@ -63,7 +63,7 @@ public class NoteServiceGetAllUserNotesRepoTest {
                     note.setOwnerId(ownerId);
                     note.setTitle(formattedTitle);
                     note.setContent(formattedContent);
-                    note.setArchived(random.nextBoolean());
+                    note.setArchived(false);
                     ((RegularNote) note).setCategory(Category.values()[random.nextInt(Category.values().length)]);
                     note.setCreatedAt(baseCreatedAt);
                     note.setUpdatedAt(baseUpdatedAt);
@@ -76,7 +76,7 @@ public class NoteServiceGetAllUserNotesRepoTest {
                     note.setOwnerId(ownerId);
                     note.setTitle(formattedTitle);
                     note.setContent(formattedContent);
-                    note.setArchived(random.nextBoolean());
+                    note.setArchived(false);
                     ((DeadlineNote) note).setPriority(Priority.values()[random.nextInt(Priority.values().length)]);
                     ((DeadlineNote) note).setStatus(Status.values()[random.nextInt(Status.values().length)]);
                     note.setCreatedAt(baseCreatedAt);

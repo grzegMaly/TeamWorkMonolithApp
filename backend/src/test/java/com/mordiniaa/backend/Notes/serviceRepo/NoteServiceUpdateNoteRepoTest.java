@@ -192,7 +192,7 @@ public class NoteServiceUpdateNoteRepoTest {
     @DisplayName("Deadline Note Update Valid Deadline Test")
     void deadlineNoteUpdateValidDeadlineTest() {
 
-        Instant updatedDeadline = Instant.now().plus(12, ChronoUnit.DAYS);
+        Instant updatedDeadline = Instant.now().plus(12, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
         PatchDeadlineNoteRequest patchDeadlineNoteRequest = new PatchDeadlineNoteRequest();
         patchDeadlineNoteRequest.setDeadline(updatedDeadline);
 

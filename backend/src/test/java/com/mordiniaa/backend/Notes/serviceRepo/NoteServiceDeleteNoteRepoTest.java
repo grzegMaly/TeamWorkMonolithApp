@@ -9,6 +9,7 @@ import com.mordiniaa.backend.models.notes.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.services.notes.NotesServiceImpl;
 import org.bson.types.ObjectId;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -73,6 +74,11 @@ public class NoteServiceDeleteNoteRepoTest {
                 .priority(Priority.LOW)
                 .deadline(Instant.now().plus(3, ChronoUnit.DAYS))
                 .build());
+    }
+
+    @AfterEach
+    void clear() {
+        notesRepository.deleteAll();
     }
 
     @Test
