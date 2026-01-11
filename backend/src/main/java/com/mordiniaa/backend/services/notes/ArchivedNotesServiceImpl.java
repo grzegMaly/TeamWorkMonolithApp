@@ -9,6 +9,10 @@ import com.mordiniaa.backend.utils.PageResult;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +24,7 @@ public class ArchivedNotesServiceImpl implements ArchivedNotesService {
 
     private final NotesRepository notesRepository;
     private final NoteMapper noteMapper;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public PageResult<List<NoteDto>> fetchAllArchivedNotes(UUID ownerId, int pageNumber, int pageSize) {
@@ -43,9 +48,22 @@ public class ArchivedNotesServiceImpl implements ArchivedNotesService {
             throw new RuntimeException(); // TODO: Change In Exceptions Section
         }
 
-        ObjectId nId = new ObjectId(noteId);
-        long result = notesRepository.changeArchivedStatusForNote(ownerId, nId);
-        if (result != 1) {
+        Query query = Query.query(
+                Criteria.where("_id").is(new ObjectId(noteId))
+                        .and("ownerId").is(ownerId)
+        );
+
+        Note note = mongoTemplate.findOne(query, Note.class);
+        if (note == null) {
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        Update update = new Update()
+                .set("archived", !note.isArchived());
+
+        UpdateResult result = mongoTemplate.updateFirst(query, update, Note.class);
+
+        if (result.getModifiedCount() != 1) {
             throw new RuntimeException(); // TODO: Change In Exceptions Section
         }
     }
