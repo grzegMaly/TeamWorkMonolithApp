@@ -15,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +38,13 @@ public class NotesServiceImpl implements NotesService {
         if (!ObjectId.isValid(noteId)) {
             throw new IllegalArgumentException("Invalid Id");
         }
-        return notesRepository.findNoteByIdAndOwnerId(new ObjectId(noteId), ownerId)
+
+        Query query = new Query(
+                Criteria.where("_id").is(new ObjectId(noteId))
+                        .and("ownerId").is(ownerId)
+        );
+
+        return Optional.ofNullable(mongoTemplate.findOne(query, Note.class))
                 .map(noteMapper::toDto);
     }
 
