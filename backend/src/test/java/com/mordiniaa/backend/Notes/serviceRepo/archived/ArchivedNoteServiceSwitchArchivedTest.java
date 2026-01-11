@@ -100,4 +100,30 @@ public class ArchivedNoteServiceSwitchArchivedTest {
         assertNotNull(updatedNote);
         assertTrue(updatedNote.isArchived());
     }
+
+    @Test
+    @DisplayName("Set Archived False Test")
+    void setArchivedNoteFalse() {
+
+        regularNote.setArchived(true);
+        RegularNote note = notesRepository.save(regularNote);
+
+        ObjectId noteId = note.getId();
+
+        assertNotNull(noteId);
+        assertTrue(note.isArchived());
+
+        assertDoesNotThrow(() -> archivedNotesService.switchArchivedNoteForUser(ownerId, noteId.toHexString()));
+
+        Note updatedNote = mongoTemplate.findOne(
+                Query.query(
+                        Criteria.where("_id").is(noteId)
+                                .and("ownerId").is(ownerId)
+                ),
+                Note.class
+        );
+
+        assertNotNull(updatedNote);
+        assertFalse(updatedNote.isArchived());
+    }
 }
