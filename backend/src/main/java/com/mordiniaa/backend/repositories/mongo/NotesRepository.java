@@ -30,6 +30,6 @@ public interface NotesRepository extends MongoRepository<Note, ObjectId> {
     Page<Note> findAllByOwnerIdAndArchived(UUID ownerId, boolean archived, Pageable pageable);
 
     @Query("{'_id': ?1, 'ownerId': ?0}")
-    @Update("{$bit:  {archived: {$xor: 1}}}")
+    @Update("[{$set: {archived: {$not: '$archived'}}}]")
     long changeArchivedStatusForNote(UUID ownerId, ObjectId noteId);
 }
