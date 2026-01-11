@@ -30,8 +30,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
@@ -161,5 +160,19 @@ public class ArchivedNoteServiceGetAllUserNotesRepoTest {
         assertEquals(dtoIds.size(), noteIds.size());
 
         assertTrue(noteIds.containsAll(dtoIds));
+    }
+
+    @Test
+    @DisplayName("No Archived Notes For User")
+    void getAllArchivedNotesForUserNone() {
+
+        UUID randomUser = UUID.randomUUID();
+
+        PageResult<List<NoteDto>> pageResult =
+                archivedNotesService.fetchAllArchivedNotes(randomUser, 0, 10);
+
+        assertNotNull(pageResult);
+        assertNotNull(pageResult.getData());
+        assertTrue(pageResult.getData().isEmpty());
     }
 }
