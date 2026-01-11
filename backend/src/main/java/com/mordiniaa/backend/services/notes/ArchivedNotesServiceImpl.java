@@ -44,8 +44,8 @@ public class ArchivedNotesServiceImpl implements ArchivedNotesService {
         }
 
         ObjectId nId = new ObjectId(noteId);
-        UpdateResult result = notesRepository.changeArchivedStatusForNote(ownerId, nId);
-        if (result.getModifiedCount() != 1) {
+        long result = notesRepository.changeArchivedStatusForNote(ownerId, nId);
+        if (result != 1) {
             throw new RuntimeException(); // TODO: Change In Exceptions Section
         }
     }
