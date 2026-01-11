@@ -1,21 +1,27 @@
 package com.mordiniaa.backend.controllers.notesController;
 
+import com.mordiniaa.backend.config.NotesConstants;
 import com.mordiniaa.backend.dto.NoteDto;
 import com.mordiniaa.backend.payload.CollectionResponse;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/notes/archive")
 public class ArchivedNotesController {
 
     @GetMapping
-    public ResponseEntity<CollectionResponse<NoteDto>> getAllArchivedNotesForUser() {
+    public ResponseEntity<CollectionResponse<NoteDto>> getAllArchivedNotesForUser(
+            @RequestParam(name = "pn", required = false, defaultValue = NotesConstants.PAGE_NUMBER) @PositiveOrZero int pageNumber,
+            @RequestParam(name = "ps", required = false, defaultValue = NotesConstants.PAGE_SIZE) @Positive @Max(50) int pageSize
+    ) {
         return null;
     }
 

@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.TextCriteria;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -63,10 +62,9 @@ public class NotesServiceImpl implements NotesService {
                         ownerId,
                         pageable,
                         TextCriteria.forDefaultLanguage().caseSensitive(false).matching(keyword))
-                        : notesRepository.findAllByOwnerId(ownerId, pageable);
+                        : notesRepository.findAllByOwnerIdAndArchived(ownerId, false, pageable);
 
         PageResult<List<NoteDto>> result = new PageResult<>();
-
 
         result.setData(page.map(noteMapper::toDto).stream().toList());
         result.setUpPage(page);

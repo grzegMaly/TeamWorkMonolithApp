@@ -6,13 +6,18 @@ import com.mordiniaa.backend.payload.ApiResponse;
 import com.mordiniaa.backend.payload.CollectionResponse;
 import com.mordiniaa.backend.services.notes.NotesService;
 import com.mordiniaa.backend.utils.PageResult;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/notes")
 @RequiredArgsConstructor
@@ -32,8 +37,8 @@ public class NotesController {
 
     @GetMapping
     public ResponseEntity<CollectionResponse<NoteDto>> fetchAllNotesForUser(
-            @RequestParam(name = "pn", required = false, defaultValue = NotesConstants.PAGE_NUMBER) int pageNumber,
-            @RequestParam(name = "ps", required = false, defaultValue = NotesConstants.PAGE_SIZE) int pageSize,
+            @RequestParam(name = "pn", required = false, defaultValue = NotesConstants.PAGE_NUMBER) @PositiveOrZero int pageNumber,
+            @RequestParam(name = "ps", required = false, defaultValue = NotesConstants.PAGE_SIZE) @Positive @Max(0) int pageSize,
             @RequestParam(name = "pso", required = false, defaultValue = NotesConstants.SORT_ORDER) String sortOrder,
             @RequestParam(name = "psk", required = false, defaultValue = "updatedAt") String sortKey,
             @RequestParam(name = "key", required = false, defaultValue = "") String keyword
