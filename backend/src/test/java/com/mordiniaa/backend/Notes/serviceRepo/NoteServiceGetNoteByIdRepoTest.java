@@ -167,4 +167,16 @@ public class NoteServiceGetNoteByIdRepoTest {
         String noteId = "fawdcewrgerg";
         assertThrows(RuntimeException.class, () -> notesService.getNoteById(noteId, ownerOneId));
     }
+
+    @Test
+    @DisplayName("User Not Owner Test")
+    void userNotOwnerTest() {
+
+        Optional<NoteDto> noteDtoOpt = notesService.getNoteById(
+                ownerOneNotes.getFirst().getId(),
+                ownerTwoId
+        );
+
+        assertFalse(noteDtoOpt.isPresent());
+    }
 }
