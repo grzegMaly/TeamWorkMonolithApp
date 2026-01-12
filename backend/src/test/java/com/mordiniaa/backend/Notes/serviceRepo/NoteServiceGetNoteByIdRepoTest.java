@@ -159,4 +159,12 @@ public class NoteServiceGetNoteByIdRepoTest {
         Optional<NoteDto> noteDtoOpt = notesService.getNoteById(noteId.toHexString(), ownerOneId);
         assertFalse(noteDtoOpt.isPresent());
     }
+
+    @Test
+    @DisplayName("Get Note By Invalid Id Test")
+    void getNoteByInvalidIdTest() {
+
+        String noteId = "fawdcewrgerg";
+        assertThrows(RuntimeException.class, () -> notesService.getNoteById(noteId, ownerOneId));
+    }
 }
