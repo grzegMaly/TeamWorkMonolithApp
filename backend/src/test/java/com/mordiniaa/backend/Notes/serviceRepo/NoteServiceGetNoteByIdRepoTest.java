@@ -8,6 +8,8 @@ import com.mordiniaa.backend.mappers.notes.dtoMappers.DeadlineNoteDtoMapper;
 import com.mordiniaa.backend.mappers.notes.dtoMappers.RegularNoteDtoMapper;
 import com.mordiniaa.backend.mappers.notes.modelMappers.DeadlineNoteModelMapper;
 import com.mordiniaa.backend.mappers.notes.modelMappers.RegularNoteModelMapper;
+import com.mordiniaa.backend.models.notes.deadline.Priority;
+import com.mordiniaa.backend.models.notes.deadline.Status;
 import com.mordiniaa.backend.models.notes.regular.Category;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.deadline.CreateDeadlineNoteRequest;
@@ -24,6 +26,8 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +80,9 @@ public class NoteServiceGetNoteByIdRepoTest {
             CreateDeadlineNoteRequest createDeadlineNoteRequest = new CreateDeadlineNoteRequest();
             createDeadlineNoteRequest.setTitle("Title");
             createDeadlineNoteRequest.setContent("Content");
+            createDeadlineNoteRequest.setPriority(Priority.LOW);
+            createDeadlineNoteRequest.setStatus(Status.CANCELED);
+            createDeadlineNoteRequest.setDeadline(Instant.now().plus(4, ChronoUnit.DAYS));
             DeadlineNoteDto deadlineNoteDto = (DeadlineNoteDto) notesService.createNote(List.of(ownerOneId, ownerTwoId).get(i), createDeadlineNoteRequest);
             List.of(ownerOneNotes, ownerTwoNotes).get(i).add(deadlineNoteDto);
 
@@ -134,6 +141,10 @@ public class NoteServiceGetNoteByIdRepoTest {
             assertNotNull(deadlineNoteDto.getTitle());
             assertNotNull(deadlineNoteDto.getCreatedAt());
             assertNotNull(deadlineNoteDto.getUpdatedAt());
+
+            assertNotNull(deadlineNoteDto.getStatus());
+            assertNotNull(deadlineNoteDto.getPriority());
+            assertNotNull(deadlineNoteDto.getDeadline());
 
             assertEquals(dtos.getLast().getOwnerId(), deadlineNoteDto.getOwnerId());
         }
