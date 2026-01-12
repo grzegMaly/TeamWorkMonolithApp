@@ -115,4 +115,27 @@ public class NoteServiceGetNoteByIdRepoTest {
             assertEquals(dtos.getFirst().getOwnerId(), regularNoteDto.getOwnerId());
         }
     }
+
+    @Test
+    @DisplayName("Get Deadline Note By Id Test")
+    void getDeadlineNoteByIdTest() {
+
+        for (List<NoteDto> dtos : List.of(ownerOneNotes, ownerTwoNotes)) {
+            Optional<NoteDto> noteDtoOpt =  notesService.getNoteById(
+                    dtos.getLast().getId(),
+                    dtos.getLast().getOwnerId()
+            );
+
+            assertTrue(noteDtoOpt.isPresent(), "Dto should be present");
+
+            DeadlineNoteDto deadlineNoteDto = (DeadlineNoteDto) noteDtoOpt.get();
+            assertNotNull(deadlineNoteDto.getId());
+            assertNotNull(deadlineNoteDto.getOwnerId());
+            assertNotNull(deadlineNoteDto.getTitle());
+            assertNotNull(deadlineNoteDto.getCreatedAt());
+            assertNotNull(deadlineNoteDto.getUpdatedAt());
+
+            assertEquals(dtos.getLast().getOwnerId(), deadlineNoteDto.getOwnerId());
+        }
+    }
 }
