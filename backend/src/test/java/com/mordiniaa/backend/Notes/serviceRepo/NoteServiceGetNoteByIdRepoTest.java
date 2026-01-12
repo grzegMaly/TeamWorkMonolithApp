@@ -15,6 +15,7 @@ import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.deadline.CreateDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.regular.CreateRegularNoteRequest;
 import com.mordiniaa.backend.services.notes.NotesServiceImpl;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -148,5 +149,14 @@ public class NoteServiceGetNoteByIdRepoTest {
 
             assertEquals(dtos.getLast().getOwnerId(), deadlineNoteDto.getOwnerId());
         }
+    }
+
+    @Test
+    @DisplayName("Get Note By Id Not Found Test")
+    void getNoteByIdNotFoundTest() {
+
+        ObjectId noteId = ObjectId.get();
+        Optional<NoteDto> noteDtoOpt = notesService.getNoteById(noteId.toHexString(), ownerOneId);
+        assertFalse(noteDtoOpt.isPresent());
     }
 }
