@@ -15,6 +15,7 @@ import com.mordiniaa.backend.request.note.regular.CreateRegularNoteRequest;
 import com.mordiniaa.backend.services.notes.NotesServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
@@ -89,5 +90,29 @@ public class NoteServiceGetNoteByIdRepoTest {
     @AfterEach
     void clear() {
         notesRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("Get Regular Note By Id Test")
+    void getRegularNoteByIdTest() {
+
+        for (List<NoteDto> dtos : List.of(ownerOneNotes, ownerTwoNotes)) {
+            Optional<NoteDto> noteDtoOpt =  notesService.getNoteById(
+                    dtos.getFirst().getId(),
+                    dtos.getFirst().getOwnerId()
+            );
+
+            assertTrue(noteDtoOpt.isPresent(), "Dto should be present");
+
+            RegularNoteDto regularNoteDto = (RegularNoteDto) noteDtoOpt.get();
+            assertNotNull(regularNoteDto.getId());
+            assertNotNull(regularNoteDto.getOwnerId());
+            assertNotNull(regularNoteDto.getTitle());
+            assertNotNull(regularNoteDto.getCategory());
+            assertNotNull(regularNoteDto.getCreatedAt());
+            assertNotNull(regularNoteDto.getUpdatedAt());
+
+            assertEquals(dtos.getFirst().getOwnerId(), regularNoteDto.getOwnerId());
+        }
     }
 }
