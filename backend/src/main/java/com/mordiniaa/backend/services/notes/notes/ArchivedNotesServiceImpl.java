@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.services.notes;
+package com.mordiniaa.backend.services.notes.notes;
 
 import com.mongodb.client.result.UpdateResult;
 import com.mordiniaa.backend.dto.NoteDto;

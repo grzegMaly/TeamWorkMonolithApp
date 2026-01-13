@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.services.notes;
+package com.mordiniaa.backend.services.notes.notes;
 
 import com.mordiniaa.backend.config.NotesConstants;
 import com.mordiniaa.backend.dto.NoteDto;
