@@ -1,9 +1,9 @@
-package com.mordiniaa.backend.models.taskWorkspaces;
+package com.mordiniaa.backend.models.board;
 
-import com.mordiniaa.backend.models.taskWorkspaces.permissions.CategoryPermissions;
-import com.mordiniaa.backend.models.taskWorkspaces.permissions.CommentPermission;
-import com.mordiniaa.backend.models.taskWorkspaces.permissions.TaskPermission;
-import com.mordiniaa.backend.models.taskWorkspaces.permissions.WorkspacePermission;
+import com.mordiniaa.backend.models.board.permissions.CategoryPermissions;
+import com.mordiniaa.backend.models.board.permissions.CommentPermission;
+import com.mordiniaa.backend.models.board.permissions.TaskPermission;
+import com.mordiniaa.backend.models.board.permissions.WorkspacePermission;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

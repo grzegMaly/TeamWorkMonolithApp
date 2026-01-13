@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.models.taskWorkspaces.permissions;
+package com.mordiniaa.backend.models.board.permissions;
 
 
 public enum WorkspacePermission {

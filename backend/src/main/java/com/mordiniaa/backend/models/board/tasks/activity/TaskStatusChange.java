@@ -1,6 +1,6 @@
-package com.mordiniaa.backend.models.taskWorkspaces.tasks.activity;
+package com.mordiniaa.backend.models.board.tasks.activity;
 
-import com.mordiniaa.backend.models.taskWorkspaces.tasks.TaskStatus;
+import com.mordiniaa.backend.models.board.tasks.TaskStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
