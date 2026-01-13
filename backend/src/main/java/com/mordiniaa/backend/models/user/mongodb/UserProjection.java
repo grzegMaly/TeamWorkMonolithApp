@@ -15,7 +15,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Document("users")
-public class SimpleUserProjection {
+public class UserProjection {
 
     @Id
     private ObjectId id;
