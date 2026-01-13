@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.models.notes.regular;
+package com.mordiniaa.backend.models.note.regular;
 
 public enum Category {
     SHOPPING, MEETING, DIARY, RECEIPT

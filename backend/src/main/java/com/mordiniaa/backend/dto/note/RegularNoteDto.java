@@ -1,6 +1,6 @@
-package com.mordiniaa.backend.dto;
+package com.mordiniaa.backend.dto.note;
 
-import com.mordiniaa.backend.models.notes.regular.Category;
+import com.mordiniaa.backend.models.note.regular.Category;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

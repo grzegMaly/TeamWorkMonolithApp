@@ -1,7 +1,7 @@
-package com.mordiniaa.backend.mappers.notes.dtoMappers;
+package com.mordiniaa.backend.mappers.note.dtoMappers;
 
-import com.mordiniaa.backend.dto.RegularNoteDto;
-import com.mordiniaa.backend.models.notes.regular.RegularNote;
+import com.mordiniaa.backend.dto.note.RegularNoteDto;
+import com.mordiniaa.backend.models.note.regular.RegularNote;
 import org.springframework.stereotype.Component;
 
 @Component

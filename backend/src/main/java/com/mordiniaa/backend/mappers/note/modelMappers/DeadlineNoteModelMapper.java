@@ -1,6 +1,6 @@
-package com.mordiniaa.backend.mappers.notes.modelMappers;
+package com.mordiniaa.backend.mappers.note.modelMappers;
 
-import com.mordiniaa.backend.models.notes.deadline.DeadlineNote;
+import com.mordiniaa.backend.models.note.deadline.DeadlineNote;
 import com.mordiniaa.backend.request.note.deadline.CreateDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.deadline.DeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.NoteRequest;

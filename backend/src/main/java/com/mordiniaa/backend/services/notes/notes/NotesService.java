@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.services.notes.notes;
 
-import com.mordiniaa.backend.dto.NoteDto;
+import com.mordiniaa.backend.dto.note.NoteDto;
 import com.mordiniaa.backend.request.note.CreateNoteRequest;
 import com.mordiniaa.backend.request.note.PatchNoteRequest;
 import com.mordiniaa.backend.utils.PageResult;

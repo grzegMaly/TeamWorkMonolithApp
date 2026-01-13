@@ -1,7 +1,7 @@
 package com.mordiniaa.backend.controllers.notesController;
 
 import com.mordiniaa.backend.config.NotesConstants;
-import com.mordiniaa.backend.dto.NoteDto;
+import com.mordiniaa.backend.dto.note.NoteDto;
 import com.mordiniaa.backend.payload.CollectionResponse;
 import com.mordiniaa.backend.services.notes.notes.ArchivedNotesService;
 import jakarta.validation.constraints.Max;

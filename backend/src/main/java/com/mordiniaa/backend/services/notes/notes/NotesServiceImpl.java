@@ -1,9 +1,9 @@
 package com.mordiniaa.backend.services.notes.notes;
 
 import com.mordiniaa.backend.config.NotesConstants;
-import com.mordiniaa.backend.dto.NoteDto;
-import com.mordiniaa.backend.mappers.notes.NoteMapper;
-import com.mordiniaa.backend.models.notes.Note;
+import com.mordiniaa.backend.dto.note.NoteDto;
+import com.mordiniaa.backend.mappers.note.NoteMapper;
+import com.mordiniaa.backend.models.note.Note;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.CreateNoteRequest;
 import com.mordiniaa.backend.request.note.PatchNoteRequest;

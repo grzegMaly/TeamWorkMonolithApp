@@ -1,7 +1,7 @@
 package com.mordiniaa.backend.request.note.deadline;
 
-import com.mordiniaa.backend.models.notes.deadline.Priority;
-import com.mordiniaa.backend.models.notes.deadline.Status;
+import com.mordiniaa.backend.models.note.deadline.Priority;
+import com.mordiniaa.backend.models.note.deadline.Status;
 import com.mordiniaa.backend.request.note.NoteRequest;
 
 import java.time.Instant;

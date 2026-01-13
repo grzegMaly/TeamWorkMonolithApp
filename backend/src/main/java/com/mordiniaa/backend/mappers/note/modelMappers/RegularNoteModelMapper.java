@@ -1,6 +1,6 @@
-package com.mordiniaa.backend.mappers.notes.modelMappers;
+package com.mordiniaa.backend.mappers.note.modelMappers;
 
-import com.mordiniaa.backend.models.notes.regular.RegularNote;
+import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.request.note.regular.CreateRegularNoteRequest;
 import com.mordiniaa.backend.request.note.NoteRequest;
 import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;

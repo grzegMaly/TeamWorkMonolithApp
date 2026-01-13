@@ -1,7 +1,7 @@
-package com.mordiniaa.backend.dto;
+package com.mordiniaa.backend.dto.note;
 
-import com.mordiniaa.backend.models.notes.deadline.Priority;
-import com.mordiniaa.backend.models.notes.deadline.Status;
+import com.mordiniaa.backend.models.note.deadline.Priority;
+import com.mordiniaa.backend.models.note.deadline.Status;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

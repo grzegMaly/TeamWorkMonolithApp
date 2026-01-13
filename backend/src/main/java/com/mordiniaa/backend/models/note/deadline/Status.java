@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.models.notes.deadline;
+package com.mordiniaa.backend.models.note.deadline;
 
 public enum Status {
 

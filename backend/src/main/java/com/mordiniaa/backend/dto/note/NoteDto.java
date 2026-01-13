@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.dto;
+package com.mordiniaa.backend.dto.note;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;

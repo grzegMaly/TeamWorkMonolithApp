@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.models.notes;
+package com.mordiniaa.backend.models.note;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

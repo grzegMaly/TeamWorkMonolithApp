@@ -1,6 +1,6 @@
-package com.mordiniaa.backend.mappers.notes.modelMappers;
+package com.mordiniaa.backend.mappers.note.modelMappers;
 
-import com.mordiniaa.backend.models.notes.Note;
+import com.mordiniaa.backend.models.note.Note;
 import com.mordiniaa.backend.request.note.NoteRequest;
 
 import java.util.Set;
