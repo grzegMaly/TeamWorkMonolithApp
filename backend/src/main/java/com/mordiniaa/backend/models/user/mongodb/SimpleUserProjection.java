@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.models.user.mongoDB;
+package com.mordiniaa.backend.models.user.mongodb;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
