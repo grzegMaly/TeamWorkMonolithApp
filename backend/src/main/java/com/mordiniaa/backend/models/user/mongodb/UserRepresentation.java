@@ -29,4 +29,7 @@ public class UserRepresentation {
 
     @Field("imageUrl")
     private String imageUrl;
+
+    @Field("deleted")
+    private boolean deleted = false;
 }
