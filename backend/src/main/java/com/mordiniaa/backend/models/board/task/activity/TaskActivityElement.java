@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.models.board.task.activity;
 
+import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TaskActivityElement {
 
-    private UUID userId;
+    private UserRepresentation user;
     private Instant createdAt;
 }
