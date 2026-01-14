@@ -6,5 +6,4 @@ public interface BoardProjection {
     String getId();
 
     String getBoardName();
-
 }
