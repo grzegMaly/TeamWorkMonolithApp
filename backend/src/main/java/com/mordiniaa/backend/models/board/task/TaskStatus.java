@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.models.board.tasks;
+package com.mordiniaa.backend.models.board.task;
 
 public enum TaskStatus {
     COMPLETED, UNCOMPLETED

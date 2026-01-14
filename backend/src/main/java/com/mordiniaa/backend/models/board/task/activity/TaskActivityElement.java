@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.models.board.tasks.activity;
+package com.mordiniaa.backend.models.board.task.activity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

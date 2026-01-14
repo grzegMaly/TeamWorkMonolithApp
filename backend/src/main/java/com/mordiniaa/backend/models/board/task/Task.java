@@ -1,6 +1,6 @@
-package com.mordiniaa.backend.models.board.tasks;
+package com.mordiniaa.backend.models.board.task;
 
-import com.mordiniaa.backend.models.board.tasks.activity.TaskActivityElement;
+import com.mordiniaa.backend.models.board.task.activity.TaskActivityElement;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +22,8 @@ public class Task {
 
     @Id
     private ObjectId id;
+
+    private int positionInCategory;
 
     private String title;
     private String description;
