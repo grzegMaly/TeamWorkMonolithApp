@@ -7,6 +7,7 @@ import org.bson.types.ObjectId;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,7 +18,7 @@ public class TaskCategory {
 
     private String categoryName;
 
-    private List<ObjectId> tasks;
+    private Set<ObjectId> tasks;
 
     private Instant createdAt;
 }
