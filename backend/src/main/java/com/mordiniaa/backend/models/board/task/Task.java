@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,8 +29,8 @@ public class Task {
     private String title;
     private String description;
 
-    private TaskStatus taskStatus;
-    private List<TaskActivityElement> activityElements;
+    private TaskStatus taskStatus = TaskStatus.UNCOMPLETED;
+    private List<TaskActivityElement> activityElements = new ArrayList<>();
 
     private UUID createdBy;
     private List<UUID> assignedTo;
