@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.models.board.permissions;
 
 
-public enum WorkspacePermission {
+public enum BoardPermission {
     VIEW_BOARD, EDIT_BOARD_SETTINGS, DELETE_BOARD, MANAGE_MEMBERS, MANAGE_ROLES
 }
