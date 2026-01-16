@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -33,7 +34,7 @@ public class Task {
     private List<TaskActivityElement> activityElements = new ArrayList<>();
 
     private UUID createdBy;
-    private List<UUID> assignedTo;
+    private Set<UUID> assignedTo;
 
     private Instant createdAt;
     private Instant updatedAt;
