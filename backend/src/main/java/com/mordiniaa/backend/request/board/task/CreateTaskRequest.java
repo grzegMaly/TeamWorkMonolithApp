@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -24,7 +24,7 @@ public class CreateTaskRequest {
     @Size(min = 3, max = 512)
     private String description;
 
-    private List<UUID> assignedTo; //Optional
+    private Set<UUID> assignedTo; //Optional
 
     @NotNull
     private Instant deadline;
