@@ -1,15 +1,15 @@
 package com.mordiniaa.backend.note.serviceRepo.archived;
 
-import com.mordiniaa.backend.dto.NoteDto;
-import com.mordiniaa.backend.mappers.notes.NoteMapper;
-import com.mordiniaa.backend.mappers.notes.dtoMappers.DeadlineNoteDtoMapper;
-import com.mordiniaa.backend.mappers.notes.dtoMappers.RegularNoteDtoMapper;
-import com.mordiniaa.backend.models.notes.Note;
-import com.mordiniaa.backend.models.notes.deadline.DeadlineNote;
-import com.mordiniaa.backend.models.notes.regular.Category;
-import com.mordiniaa.backend.models.notes.regular.RegularNote;
+import com.mordiniaa.backend.dto.note.NoteDto;
+import com.mordiniaa.backend.mappers.note.NoteMapper;
+import com.mordiniaa.backend.mappers.note.dtoMappers.DeadlineNoteDtoMapper;
+import com.mordiniaa.backend.mappers.note.dtoMappers.RegularNoteDtoMapper;
+import com.mordiniaa.backend.models.note.Note;
+import com.mordiniaa.backend.models.note.deadline.DeadlineNote;
+import com.mordiniaa.backend.models.note.regular.Category;
+import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
-import com.mordiniaa.backend.services.notes.ArchivedNotesServiceImpl;
+import com.mordiniaa.backend.services.notes.notes.ArchivedNotesServiceImpl;
 import com.mordiniaa.backend.utils.PageResult;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;

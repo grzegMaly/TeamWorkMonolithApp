@@ -1,16 +1,17 @@
 package com.mordiniaa.backend.note.serviceMock;
 
-import com.mordiniaa.backend.dto.DeadlineNoteDto;
-import com.mordiniaa.backend.dto.NoteDto;
-import com.mordiniaa.backend.dto.RegularNoteDto;
-import com.mordiniaa.backend.mappers.notes.NoteMapper;
-import com.mordiniaa.backend.models.notes.deadline.DeadlineNote;
-import com.mordiniaa.backend.models.notes.deadline.Priority;
-import com.mordiniaa.backend.models.notes.deadline.Status;
-import com.mordiniaa.backend.models.notes.regular.Category;
-import com.mordiniaa.backend.models.notes.regular.RegularNote;
+import com.mordiniaa.backend.dto.note.DeadlineNoteDto;
+import com.mordiniaa.backend.dto.note.NoteDto;
+import com.mordiniaa.backend.dto.note.RegularNoteDto;
+import com.mordiniaa.backend.mappers.note.NoteMapper;
+import com.mordiniaa.backend.models.note.Note;
+import com.mordiniaa.backend.models.note.deadline.DeadlineNote;
+import com.mordiniaa.backend.models.note.deadline.Priority;
+import com.mordiniaa.backend.models.note.deadline.Status;
+import com.mordiniaa.backend.models.note.regular.Category;
+import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
-import com.mordiniaa.backend.services.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.notes.NotesServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -40,6 +44,9 @@ public class NotesServiceGetNoteByIdMockTest {
 
     @Mock
     private NoteMapper noteMapper;
+
+    @Mock
+    private MongoTemplate mongoTemplate;
 
     private static final ObjectId id = ObjectId.get();
     private static final UUID ownerId = UUID.randomUUID();
@@ -108,7 +115,7 @@ public class NotesServiceGetNoteByIdMockTest {
     @DisplayName(value = "Get regular note by id valid")
     void getRegNoteByIdValid() {
 
-        when(notesRepository.findNoteByIdAndOwnerId(id, ownerId)).thenReturn(Optional.of(regularNote));
+        when(mongoTemplate.findOne(any(Query.class), eq(Note.class))).thenReturn(regularNote);
         when(noteMapper.toDto(regularNote)).thenReturn(regularNoteDto);
 
         assertDoesNotThrow(() -> notesService.getNoteById(id.toHexString(), ownerId),
@@ -120,7 +127,7 @@ public class NotesServiceGetNoteByIdMockTest {
         assertEquals(regularNoteDto.getTitle(), receivedNoteDto.getTitle());
         assertEquals(regularNoteDto.getId(), receivedNoteDto.getId());
 
-        verify(notesRepository, times(2)).findNoteByIdAndOwnerId(id, ownerId);
+        verify(mongoTemplate, times(2)).findOne(any(Query.class), eq(Note.class));
     }
 
     @Test
@@ -128,14 +135,14 @@ public class NotesServiceGetNoteByIdMockTest {
     void getRegNoteByWrongId() {
 
         ObjectId nextId = ObjectId.get();
-        when(notesRepository.findNoteByIdAndOwnerId(nextId, ownerId))
-                .thenReturn(Optional.empty());
+        when(mongoTemplate.findOne(any(Query.class), eq(Note.class)))
+                .thenReturn(null);
 
         assertDoesNotThrow(() -> notesService.getNoteById(nextId.toHexString(), ownerId),
                 "Should not throw any exception");
         Optional<NoteDto> noteDtoOpt = notesService.getNoteById(nextId.toHexString(), ownerId);
         assertTrue(noteDtoOpt.isEmpty());
-        verify(notesRepository, times(2)).findNoteByIdAndOwnerId(nextId, ownerId);
+        verify(mongoTemplate, times(2)).findOne(any(Query.class), eq(Note.class));
     }
 
     @Test
@@ -154,9 +161,10 @@ public class NotesServiceGetNoteByIdMockTest {
     @Test
     @DisplayName("Get regular note wrong owner")
     void getRegNoteInvalidOwner() {
+
         UUID oId = UUID.randomUUID();
-        when(notesRepository.findNoteByIdAndOwnerId(id, oId))
-                .thenReturn(Optional.empty());
+        when(mongoTemplate.findOne(any(Query.class), eq(Note.class)))
+                .thenReturn(null);
 
         Optional<NoteDto> noteDtoOpt = notesService.getNoteById(id.toHexString(), oId);
         assertTrue(noteDtoOpt.isEmpty());
@@ -166,8 +174,8 @@ public class NotesServiceGetNoteByIdMockTest {
     @DisplayName("Get deadline note by id valid")
     void getDeadNoteByIdValid() {
 
-        when(notesRepository.findNoteByIdAndOwnerId(id, ownerId))
-                .thenReturn(Optional.of(deadlineNote));
+        when(mongoTemplate.findOne(any(Query.class), eq(Note.class)))
+                .thenReturn(deadlineNote);
         when(noteMapper.toDto(deadlineNote))
                 .thenReturn(deadlineNoteDto);
 
@@ -179,7 +187,7 @@ public class NotesServiceGetNoteByIdMockTest {
         DeadlineNoteDto receivedNoteDto = (DeadlineNoteDto) noteDtoOpt.get();
         assertEquals(deadlineNoteDto.getTitle(), receivedNoteDto.getTitle());
         assertEquals(deadlineNoteDto.getId(), receivedNoteDto.getId());
-        verify(notesRepository, times(2)).findNoteByIdAndOwnerId(id, ownerId);
+        verify(mongoTemplate, times(2)).findOne(any(Query.class), eq(Note.class));
     }
 
     @Test
@@ -187,15 +195,15 @@ public class NotesServiceGetNoteByIdMockTest {
     void getDeadNoteByWrongId() {
 
         ObjectId nextId = ObjectId.get();
-        when(notesRepository.findNoteByIdAndOwnerId(nextId, ownerId))
-                .thenReturn(Optional.empty());
+        when(mongoTemplate.findOne(any(Query.class), any()))
+                .thenReturn(null);
 
-        assertDoesNotThrow(() -> notesService.getNoteById(nextId.toString(), ownerId),
+        assertDoesNotThrow(() -> notesService.getNoteById(nextId.toHexString(), ownerId),
                 "Should not throw any exception");
 
-        Optional<NoteDto> noteDtoOpt = notesService.getNoteById(nextId.toString(), ownerId);
+        Optional<NoteDto> noteDtoOpt = notesService.getNoteById(nextId.toHexString(), ownerId);
         assertTrue(noteDtoOpt.isEmpty());
-        verify(notesRepository, times(2)).findNoteByIdAndOwnerId(nextId, ownerId);
+        verify(mongoTemplate, times(2)).findOne(any(Query.class), any());
     }
 
     @Test
@@ -217,8 +225,8 @@ public class NotesServiceGetNoteByIdMockTest {
     void getDeadNoteWrongOwner() {
 
         UUID oId = UUID.randomUUID();
-        when(notesRepository.findNoteByIdAndOwnerId(id, oId))
-                .thenReturn(Optional.empty());
+        when(mongoTemplate.findOne(any(Query.class), eq(Note.class)))
+                .thenReturn(null);
 
         Optional<NoteDto> noteDtoOpt = notesService.getNoteById(id.toHexString(), oId);
         assertTrue(noteDtoOpt.isEmpty());

@@ -1,16 +1,16 @@
 package com.mordiniaa.backend.note.serviceRepo;
 
 import com.mordiniaa.backend.BackendApplication;
-import com.mordiniaa.backend.dto.NoteDto;
-import com.mordiniaa.backend.models.notes.Note;
-import com.mordiniaa.backend.models.notes.deadline.DeadlineNote;
-import com.mordiniaa.backend.models.notes.deadline.Priority;
-import com.mordiniaa.backend.models.notes.deadline.Status;
-import com.mordiniaa.backend.models.notes.regular.Category;
-import com.mordiniaa.backend.models.notes.regular.RegularNote;
+import com.mordiniaa.backend.dto.note.NoteDto;
+import com.mordiniaa.backend.models.note.Note;
+import com.mordiniaa.backend.models.note.deadline.DeadlineNote;
+import com.mordiniaa.backend.models.note.deadline.Priority;
+import com.mordiniaa.backend.models.note.deadline.Status;
+import com.mordiniaa.backend.models.note.regular.Category;
+import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.payload.PageMeta;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
-import com.mordiniaa.backend.services.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.notes.NotesServiceImpl;
 import com.mordiniaa.backend.utils.PageResult;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

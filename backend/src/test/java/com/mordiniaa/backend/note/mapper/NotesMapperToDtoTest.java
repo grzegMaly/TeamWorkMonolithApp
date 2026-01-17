@@ -1,15 +1,15 @@
 package com.mordiniaa.backend.note.mapper;
 
-import com.mordiniaa.backend.dto.DeadlineNoteDto;
-import com.mordiniaa.backend.dto.RegularNoteDto;
-import com.mordiniaa.backend.mappers.notes.NoteMapper;
-import com.mordiniaa.backend.mappers.notes.dtoMappers.DeadlineNoteDtoMapper;
-import com.mordiniaa.backend.mappers.notes.dtoMappers.RegularNoteDtoMapper;
-import com.mordiniaa.backend.models.notes.deadline.DeadlineNote;
-import com.mordiniaa.backend.models.notes.deadline.Priority;
-import com.mordiniaa.backend.models.notes.deadline.Status;
-import com.mordiniaa.backend.models.notes.regular.Category;
-import com.mordiniaa.backend.models.notes.regular.RegularNote;
+import com.mordiniaa.backend.dto.note.DeadlineNoteDto;
+import com.mordiniaa.backend.dto.note.RegularNoteDto;
+import com.mordiniaa.backend.mappers.note.NoteMapper;
+import com.mordiniaa.backend.mappers.note.dtoMappers.DeadlineNoteDtoMapper;
+import com.mordiniaa.backend.mappers.note.dtoMappers.RegularNoteDtoMapper;
+import com.mordiniaa.backend.models.note.deadline.DeadlineNote;
+import com.mordiniaa.backend.models.note.deadline.Priority;
+import com.mordiniaa.backend.models.note.deadline.Status;
+import com.mordiniaa.backend.models.note.regular.Category;
+import com.mordiniaa.backend.models.note.regular.RegularNote;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ public class NotesMapperToDtoTest {
         ObjectId noteId = new ObjectId("66b23e3e5d2b8c6a9cfa3f12");
         Instant createdAt = Instant.now().minus(2, ChronoUnit.DAYS);
         Instant updatedAt = Instant.now().minus(1, ChronoUnit.DAYS);
-        Instant deadline = Instant.now().plus(4, ChronoUnit.DAYS);
+        Instant deadline = Instant.now().plus(4, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
         String content = "My Custom Testing Content";
 
         regularNote = new RegularNote();

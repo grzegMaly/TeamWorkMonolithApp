@@ -1,13 +1,13 @@
 package com.mordiniaa.backend.note.mapper;
 
-import com.mordiniaa.backend.mappers.notes.NoteMapper;
-import com.mordiniaa.backend.mappers.notes.modelMappers.DeadlineNoteModelMapper;
-import com.mordiniaa.backend.mappers.notes.modelMappers.RegularNoteModelMapper;
-import com.mordiniaa.backend.models.notes.deadline.DeadlineNote;
-import com.mordiniaa.backend.models.notes.deadline.Priority;
-import com.mordiniaa.backend.models.notes.deadline.Status;
-import com.mordiniaa.backend.models.notes.regular.Category;
-import com.mordiniaa.backend.models.notes.regular.RegularNote;
+import com.mordiniaa.backend.mappers.note.NoteMapper;
+import com.mordiniaa.backend.mappers.note.modelMappers.DeadlineNoteModelMapper;
+import com.mordiniaa.backend.mappers.note.modelMappers.RegularNoteModelMapper;
+import com.mordiniaa.backend.models.note.deadline.DeadlineNote;
+import com.mordiniaa.backend.models.note.deadline.Priority;
+import com.mordiniaa.backend.models.note.deadline.Status;
+import com.mordiniaa.backend.models.note.regular.Category;
+import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.request.note.deadline.CreateDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.regular.CreateRegularNoteRequest;
 import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;

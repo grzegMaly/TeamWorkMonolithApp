@@ -1,14 +1,14 @@
 package com.mordiniaa.backend.note.serviceMock;
 
-import com.mordiniaa.backend.dto.NoteDto;
-import com.mordiniaa.backend.dto.RegularNoteDto;
-import com.mordiniaa.backend.mappers.notes.NoteMapper;
-import com.mordiniaa.backend.models.notes.Note;
-import com.mordiniaa.backend.models.notes.regular.Category;
-import com.mordiniaa.backend.models.notes.regular.RegularNote;
+import com.mordiniaa.backend.dto.note.NoteDto;
+import com.mordiniaa.backend.dto.note.RegularNoteDto;
+import com.mordiniaa.backend.mappers.note.NoteMapper;
+import com.mordiniaa.backend.models.note.Note;
+import com.mordiniaa.backend.models.note.regular.Category;
+import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;
-import com.mordiniaa.backend.services.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.notes.NotesServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

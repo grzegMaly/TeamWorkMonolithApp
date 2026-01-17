@@ -1,16 +1,16 @@
 package com.mordiniaa.backend.note.serviceRepo;
 
 import com.mordiniaa.backend.BackendApplication;
-import com.mordiniaa.backend.dto.DeadlineNoteDto;
-import com.mordiniaa.backend.dto.RegularNoteDto;
-import com.mordiniaa.backend.mappers.notes.NoteMapper;
-import com.mordiniaa.backend.models.notes.deadline.Priority;
-import com.mordiniaa.backend.models.notes.deadline.Status;
-import com.mordiniaa.backend.models.notes.regular.Category;
+import com.mordiniaa.backend.dto.note.DeadlineNoteDto;
+import com.mordiniaa.backend.dto.note.RegularNoteDto;
+import com.mordiniaa.backend.mappers.note.NoteMapper;
+import com.mordiniaa.backend.models.note.deadline.Priority;
+import com.mordiniaa.backend.models.note.deadline.Status;
+import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.deadline.CreateDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.regular.CreateRegularNoteRequest;
-import com.mordiniaa.backend.services.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.notes.NotesServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

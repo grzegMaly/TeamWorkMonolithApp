@@ -1,13 +1,13 @@
 package com.mordiniaa.backend.note.mapper;
 
-import com.mordiniaa.backend.mappers.notes.NoteMapper;
-import com.mordiniaa.backend.mappers.notes.modelMappers.DeadlineNoteModelMapper;
-import com.mordiniaa.backend.mappers.notes.modelMappers.RegularNoteModelMapper;
-import com.mordiniaa.backend.models.notes.deadline.DeadlineNote;
-import com.mordiniaa.backend.models.notes.deadline.Priority;
-import com.mordiniaa.backend.models.notes.deadline.Status;
-import com.mordiniaa.backend.models.notes.regular.Category;
-import com.mordiniaa.backend.models.notes.regular.RegularNote;
+import com.mordiniaa.backend.mappers.note.NoteMapper;
+import com.mordiniaa.backend.mappers.note.modelMappers.DeadlineNoteModelMapper;
+import com.mordiniaa.backend.mappers.note.modelMappers.RegularNoteModelMapper;
+import com.mordiniaa.backend.models.note.deadline.DeadlineNote;
+import com.mordiniaa.backend.models.note.deadline.Priority;
+import com.mordiniaa.backend.models.note.deadline.Status;
+import com.mordiniaa.backend.models.note.regular.Category;
+import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.request.note.deadline.CreateDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.deadline.PatchDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;
@@ -47,8 +47,8 @@ public class NoteMapperUpdateModelTest {
     private final Priority updatedPriority = Priority.HIGH;
     private final Instant createdAt = Instant.now().minus(2, ChronoUnit.DAYS);
     private final Instant updatedAt = createdAt.plus(1, ChronoUnit.DAYS);
-    private final Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS);
-    private final Instant updatedDeadline = Instant.now().plus(5, ChronoUnit.DAYS);
+    private final Instant deadline = Instant.now().plus(3, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
+    private final Instant updatedDeadline = Instant.now().plus(5, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
 
     private RegularNote regularNote;
     private DeadlineNote deadlineNote;
