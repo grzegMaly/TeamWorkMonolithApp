@@ -3,6 +3,8 @@ package com.mordiniaa.backend.services.notes.task;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.result.UpdateResult;
+import com.mordiniaa.backend.dto.task.TaskCardDto;
+import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
@@ -33,13 +35,14 @@ public class TaskService {
     private final BoardRepository boardRepository;
     private final TaskRepository taskRepository;
     private final MongoTemplate mongoTemplate;
+    private final TaskMapper taskMapper;
 
     public void getTaskDetailsById(UUID userId, String taskId) {
 
     }
 
     @Transactional
-    public void createTask(UUID userId, String bId, String categoryName, CreateTaskRequest createTaskRequest) {
+    public TaskCardDto createTask(UUID userId, String bId, String categoryName, CreateTaskRequest createTaskRequest) {
 
         if (!ObjectId.isValid(bId)) {
             throw new RuntimeException(); //TODO: Change in Exceptions Section
@@ -82,20 +85,21 @@ public class TaskService {
         task.setPositionInCategory(0);
 
         Set<ObjectId> taskIds = board.getTaskCategories().getFirst().getTasks();
+        if (!taskIds.isEmpty()) {
+            Query query = new Query(
+                    Criteria.where("_id").in(taskIds)
+            );
 
-        Query query = new Query(
-                Criteria.where("_id").in(taskIds)
-        );
+            Update update = new Update()
+                    .inc("positionInCategory", 1);
 
-        Update update = new Update()
-                .inc("positionInCategory", 1);
-
-        UpdateResult updatePositionResult = mongoTemplate.updateMulti(query, update, Task.class);
+            mongoTemplate.updateMulti(query, update, Task.class);
+        }
 
         Task savedTask = taskRepository.save(task);
         board.getTaskCategories().getFirst().addTaskId(savedTask.getId());
         boardRepository.save(board);
-
+        return taskMapper.toShortenedDto(savedTask);
     }
 
     public void deleteTaskFromBoard(UUID userId, String taskId) {
