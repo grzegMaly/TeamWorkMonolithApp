@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.request.note.regular;
 
-import com.mordiniaa.backend.models.notes.regular.Category;
+import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.request.note.PatchNoteRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

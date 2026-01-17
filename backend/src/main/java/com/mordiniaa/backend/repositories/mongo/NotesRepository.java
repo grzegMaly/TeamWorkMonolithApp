@@ -1,7 +1,6 @@
 package com.mordiniaa.backend.repositories.mongo;
 
-import com.mongodb.client.result.UpdateResult;
-import com.mordiniaa.backend.models.notes.Note;
+import com.mordiniaa.backend.models.note.Note;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
