@@ -1,11 +1,10 @@
 package com.mordiniaa.backend.dto.board;
 
+import com.mordiniaa.backend.dto.task.TaskCardDto;
 import com.mordiniaa.backend.dto.user.mongodb.UserProjection;
-import com.mordiniaa.backend.models.board.task.TaskStatus;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 public class BoardDetailsDTO {
 
@@ -19,18 +18,7 @@ public class BoardDetailsDTO {
 
         private int position;
         private String categoryName;
-        private List<TaskCardDTO> tasks;
+        private List<TaskCardDto> tasks;
         private Instant createdAt;
-
-        private static class TaskCardDTO {
-
-            private String id;
-            private int positionInCategory;
-            private String title;
-            private String description;
-            private TaskStatus taskStatus;
-            private List<UUID> assignedTo;
-            private Instant deadline;
-        }
     }
 }
