@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.Notes.serviceRepo;
+package com.mordiniaa.backend.note.serviceRepo;
 
 import com.mordiniaa.backend.mappers.notes.NoteMapper;
 import com.mordiniaa.backend.models.notes.deadline.DeadlineNote;

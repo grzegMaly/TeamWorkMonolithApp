@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.Notes.serviceMock;
+package com.mordiniaa.backend.note.serviceMock;
 
 import com.mordiniaa.backend.dto.NoteDto;
 import com.mordiniaa.backend.dto.RegularNoteDto;
