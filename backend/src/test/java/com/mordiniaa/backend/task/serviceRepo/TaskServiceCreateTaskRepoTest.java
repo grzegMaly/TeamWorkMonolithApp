@@ -198,7 +198,8 @@ public class TaskServiceCreateTaskRepoTest {
     void createTaskInvalidBoardIdTest() {
         CreateTaskRequest createTaskRequest = new CreateTaskRequest();
         String invalidBoardId = "edcwegw345g3wedfw3rg3wr";
-        assertThrows(RuntimeException.class, () -> taskService.createTask(owner1Id, invalidBoardId, board1CategoryName, createTaskRequest));
+        assertThrows(RuntimeException.class,
+                () -> taskService.createTask(owner1Id, invalidBoardId, board1CategoryName, createTaskRequest));
     }
 
     @Test
@@ -206,13 +207,21 @@ public class TaskServiceCreateTaskRepoTest {
     void createTaskBoardNotFoundTest() {
 
         ObjectId boardId = ObjectId.get();
-        assertThrows(RuntimeException.class, () -> taskService.createTask(owner1Id, boardId.toHexString(), board1CategoryName, new CreateTaskRequest()));
+        assertThrows(RuntimeException.class,
+                () -> taskService.createTask(owner1Id, boardId.toHexString(), board1CategoryName, new CreateTaskRequest()));
     }
 
     @Test
     @DisplayName("Create Task Category Not Found Test")
     void createTaskCategoryNotFoundTest() {
+        assertThrows(RuntimeException.class,
+                () -> taskService.createTask(owner1Id, board1.getId().toHexString(), "X", new CreateTaskRequest()));
+    }
 
-        assertThrows(RuntimeException.class, () -> taskService.createTask(owner1Id, board1.getId().toHexString(), "X", new CreateTaskRequest()));
+    @Test
+    @DisplayName("Create Task User Not Found Test")
+    void createTaskUserNotFoundTest() {
+        assertThrows(RuntimeException.class,
+                () -> taskService.createTask(UUID.randomUUID(), board1.getId().toHexString(), board1CategoryName, new CreateTaskRequest()));
     }
 }
