@@ -19,6 +19,7 @@ public class TaskCardDto {
     private String title;
     private String description;
     private TaskStatus taskStatus;
+    private UUID createdBy;
     private Set<UUID> assignedTo;
     private Instant deadline;
 }
