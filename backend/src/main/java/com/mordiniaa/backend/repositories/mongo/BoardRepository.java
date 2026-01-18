@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface BoardRepository extends MongoRepository<Board, ObjectId> {
     @Aggregation(pipeline = {
             "{$match: {_id: ?0}}",
-            "{$match:  {$or: [{'owner.userId': ?2}, {'boardMembers.userId': ?2}]}}",
+            "{$match:  {$or: [{'owner.userId': ?2}, {'members.userId': ?2}]}}",
             """
                     {
                         $project: {
