@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,4 +27,20 @@ public class BoardMember {
             CommentPermission.DELETE_OWN_COMMENT,
             CommentPermission.EDIT_OWN_COMMENT
     ));
+
+    public boolean hasFullPermissions() {
+        return boardPermissions.containsAll(List.of(BoardPermission.values()))
+                && categoryPermissions.containsAll(List.of(CategoryPermissions.values()))
+                && taskPermissions.containsAll(List.of(TaskPermission.values()))
+                && commentPermissions.containsAll(List.of(CommentPermission.values()));
+    }
+
+    public boolean canCreateTask() {
+        return boardPermissions.contains(BoardPermission.VIEW_BOARD)
+                && taskPermissions.contains(TaskPermission.CREATE_TASK);
+    }
+
+    public boolean canAssignTask() {
+        return taskPermissions.contains(TaskPermission.ASSIGN_TASK);
+    }
 }
