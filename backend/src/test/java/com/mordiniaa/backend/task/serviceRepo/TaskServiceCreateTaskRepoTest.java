@@ -348,4 +348,13 @@ public class TaskServiceCreateTaskRepoTest {
         assertThrows(RuntimeException.class,
                 () -> taskService.createTask(owner3Id, ObjectId.get().toHexString(), board1CategoryName, createTaskRequest));
     }
+
+    @Test
+    @DisplayName("Member Cannot Assign Board Owner Test")
+    void cannotAssignBoardOwnerTest() {
+
+        createTaskRequest.setAssignedTo(Set.of(member11Id, owner1Id));
+        assertThrows(RuntimeException.class,
+                () -> taskService.createTask(member11Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest));
+    }
 }
