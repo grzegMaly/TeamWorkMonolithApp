@@ -72,10 +72,12 @@ public class TaskService {
 
             Set<UUID> assignedTo = createTaskRequest.getAssignedTo();
 
-            if (assignedTo.contains(currentMember.getUserId()))
+            if (assignedTo.contains(currentMember.getUserId())) {
                 task.addMember(currentMember.getUserId());
+                assignedTo.remove(currentMember.getUserId());
+            }
 
-            if (assignedTo.size() > 1) {
+            if (!assignedTo.isEmpty()) {
                 if (!currentMember.canAssignTask())
                     throw new RuntimeException(); //TODO: Change in Exceptions Section
 
