@@ -85,6 +85,11 @@ public class TaskServiceCreateTaskRepoTest {
     private Board board1;
     private Board board2;
 
+    private final String title = "Title";
+    private final String description = "Description";
+    private final Instant deadline = Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
+
+
     @BeforeEach
     void setEnv() {
 
@@ -115,13 +120,15 @@ public class TaskServiceCreateTaskRepoTest {
         boardMemberOwner2 = new BoardMember();
         boardMemberOwner2.setUserId(owner2Id);
         boardMemberOwner2.setBoardPermissions(boardPermissions);
-        boardMemberOwner2.setTaskPermissions(taskPermissions2);
+        boardMemberOwner2.setTaskPermissions(taskPermissions1);
 
         member11 = new BoardMember();
         member11.setUserId(member11Id);
 
         member12 = new BoardMember();
         member12.setUserId(member12Id);
+        member12.setBoardPermissions(boardPermissions);
+        member12.setTaskPermissions(taskPermissions2);
 
         member21 = new BoardMember();
         member21.setUserId(member21Id);
@@ -160,10 +167,6 @@ public class TaskServiceCreateTaskRepoTest {
     @DisplayName("Create Valid Task Test")
     void createValidTaksTest() {
 
-        String title = "Task1";
-        String description = "Task Task";
-        Instant deadline = Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
-
         CreateTaskRequest createTaskRequest = new CreateTaskRequest();
         createTaskRequest.setTitle(title);
         createTaskRequest.setDeadline(deadline);
@@ -188,10 +191,6 @@ public class TaskServiceCreateTaskRepoTest {
     @DisplayName("Create Valid Task Self Assigning Test")
     void createValidTaskSelfAssigningTest() {
 
-        String title = "Title";
-        String description = "Description";
-        Instant deadline = Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
-
         CreateTaskRequest createTaskRequest = new CreateTaskRequest();
         createTaskRequest.setTitle(title);
         createTaskRequest.setDescription(description);
@@ -214,6 +213,35 @@ public class TaskServiceCreateTaskRepoTest {
         assertFalse(taskDto.getAssignedTo().isEmpty());
         assertEquals(1, taskDto.getAssignedTo().size());
         assertEquals(owner1Id, taskDto.getAssignedTo().stream().findFirst().orElse(null));
+    }
+
+    @Test
+    @DisplayName("Can Create Task With Full Assignment Test")
+    void canCreateTaskWithFullAssignmentTest() {
+
+        CreateTaskRequest createTaskRequest = new CreateTaskRequest();
+        createTaskRequest.setTitle(title);
+        createTaskRequest.setDescription(description);
+        createTaskRequest.setDeadline(deadline);
+        createTaskRequest.setAssignedTo(Set.of(owner1Id, member11Id, member12Id));
+
+        TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+
+        assertNotNull(taskDto);
+        assertNotNull(taskDto.getTitle());
+        assertNotNull(taskDto.getDescription());
+        assertNotNull(taskDto.getTaskStatus());
+        assertNotNull(taskDto.getDeadline());
+        assertNotNull(taskDto.getAssignedTo());
+
+        assertEquals(title, taskDto.getTitle());
+        assertEquals(description, taskDto.getDescription());
+        assertEquals(deadline, taskDto.getDeadline());
+        assertEquals(TaskStatus.UNCOMPLETED, taskDto.getTaskStatus());
+
+        assertFalse(taskDto.getAssignedTo().isEmpty());
+        assertEquals(3, taskDto.getAssignedTo().size());
+        assertEquals(owner1Id, taskDto.getCreatedBy());
     }
 
     @Test
