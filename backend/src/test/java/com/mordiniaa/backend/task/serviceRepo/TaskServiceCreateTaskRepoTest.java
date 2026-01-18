@@ -224,4 +224,13 @@ public class TaskServiceCreateTaskRepoTest {
         assertThrows(RuntimeException.class,
                 () -> taskService.createTask(UUID.randomUUID(), board1.getId().toHexString(), board1CategoryName, new CreateTaskRequest()));
     }
+
+    @Test
+    @DisplayName("Create Task User Not Owner Or Member Test")
+    void createTaskUserNotOwnerOrMemberTest() {
+        assertThrows(RuntimeException.class,
+                () -> taskService.createTask(owner2Id, board1.getId().toHexString(), board1CategoryName, new CreateTaskRequest()));
+        assertThrows(RuntimeException.class,
+                () -> taskService.createTask(member21Id, board1.getId().toHexString(), board1CategoryName, new CreateTaskRequest()));
+    }
 }
