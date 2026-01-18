@@ -208,4 +208,11 @@ public class TaskServiceCreateTaskRepoTest {
         ObjectId boardId = ObjectId.get();
         assertThrows(RuntimeException.class, () -> taskService.createTask(owner1Id, boardId.toHexString(), board1CategoryName, new CreateTaskRequest()));
     }
+
+    @Test
+    @DisplayName("Create Task Category Not Found Test")
+    void createTaskCategoryNotFoundTest() {
+
+        assertThrows(RuntimeException.class, () -> taskService.createTask(owner1Id, board1.getId().toHexString(), "X", new CreateTaskRequest()));
+    }
 }
