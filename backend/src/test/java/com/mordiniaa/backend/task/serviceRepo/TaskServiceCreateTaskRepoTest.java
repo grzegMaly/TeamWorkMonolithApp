@@ -7,6 +7,7 @@ import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.board.permissions.TaskPermission;
+import com.mordiniaa.backend.models.board.task.TaskStatus;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
@@ -181,6 +182,38 @@ public class TaskServiceCreateTaskRepoTest {
         assertEquals(deadline, taskDto.getDeadline());
 
         assertEquals(member11Id, taskDto.getAssignedTo().stream().findFirst().orElse(null));
+    }
+
+    @Test
+    @DisplayName("Create Valid Task Self Assigning Test")
+    void createValidTaskSelfAssigningTest() {
+
+        String title = "Title";
+        String description = "Description";
+        Instant deadline = Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
+
+        CreateTaskRequest createTaskRequest = new CreateTaskRequest();
+        createTaskRequest.setTitle(title);
+        createTaskRequest.setDescription(description);
+        createTaskRequest.setDeadline(deadline);
+        createTaskRequest.setAssignedTo(Set.of(owner1Id));
+
+        TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+        assertNotNull(taskDto);
+        assertNotNull(taskDto.getTitle());
+        assertNotNull(taskDto.getDescription());
+        assertNotNull(taskDto.getTaskStatus());
+        assertNotNull(taskDto.getDeadline());
+        assertNotNull(taskDto.getAssignedTo());
+
+        assertEquals(title, taskDto.getTitle());
+        assertEquals(description, taskDto.getDescription());
+        assertEquals(deadline, taskDto.getDeadline());
+        assertEquals(TaskStatus.UNCOMPLETED, taskDto.getTaskStatus());
+
+        assertFalse(taskDto.getAssignedTo().isEmpty());
+        assertEquals(1, taskDto.getAssignedTo().size());
+        assertEquals(owner1Id, taskDto.getAssignedTo().stream().findFirst().orElse(null));
     }
 
     @Test
