@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
@@ -13,7 +14,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@NotNull
+@NoArgsConstructor
 public class CreateTaskRequest {
 
     @NotBlank
@@ -28,4 +29,10 @@ public class CreateTaskRequest {
 
     @NotNull
     private Instant deadline;
+
+    public CreateTaskRequest(String title, String description, Instant deadline) {
+        this.title = title;
+        this.description = description;
+        this.deadline = deadline;
+    }
 }
