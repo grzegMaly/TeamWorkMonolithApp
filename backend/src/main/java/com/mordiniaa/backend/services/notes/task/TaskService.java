@@ -4,8 +4,6 @@ import com.mordiniaa.backend.dto.task.TaskCardDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
-import com.mordiniaa.backend.models.board.permissions.BoardPermission;
-import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.models.board.task.Task;
 import com.mordiniaa.backend.repositories.mongo.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
@@ -66,21 +64,28 @@ public class TaskService {
             }
         }
 
-        if (!currentMember.getBoardPermissions().contains(BoardPermission.VIEW_BOARD) ||
-                !currentMember.getTaskPermissions().contains(TaskPermission.CREATE_TASK))
+        if (!currentMember.canCreateTask())
             throw new RuntimeException(); //TODO: Change in Exceptions Section
 
         Task task = new Task();
         if (createTaskRequest.getAssignedTo() != null) {
-            if (!currentMember.getTaskPermissions().contains(TaskPermission.ASSIGN_TASK))
-                throw new RuntimeException(); //TODO: Change in Exceptions Section
 
-            Set<UUID> membersIds = board.getMembers().stream().map(BoardMember::getUserId)
-                    .collect(Collectors.toSet());
-            if (!membersIds.containsAll(createTaskRequest.getAssignedTo())) {
-                throw new RuntimeException(); //TODO: Change in Exceptions Section
+            Set<UUID> assignedTo = createTaskRequest.getAssignedTo();
+
+            if (assignedTo.contains(currentMember.getUserId()))
+                task.addMember(currentMember.getUserId());
+
+            if (assignedTo.size() > 1) {
+                if (!currentMember.canAssignTask())
+                    throw new RuntimeException(); //TODO: Change in Exceptions Section
+
+                Set<UUID> membersIds = board.getMembers().stream().map(BoardMember::getUserId)
+                        .collect(Collectors.toSet());
+                if (!membersIds.containsAll(assignedTo)) {
+                    throw new RuntimeException(); //TODO: Change in Exceptions Section
+                }
+                task.addMembers(createTaskRequest.getAssignedTo());
             }
-            task.setAssignedTo(createTaskRequest.getAssignedTo());
         }
 
         task.setCreatedBy(currentMember.getUserId());
