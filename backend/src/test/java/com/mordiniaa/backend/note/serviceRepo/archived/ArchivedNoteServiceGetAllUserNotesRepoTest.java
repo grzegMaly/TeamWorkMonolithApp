@@ -6,6 +6,8 @@ import com.mordiniaa.backend.mappers.note.dtoMappers.DeadlineNoteDtoMapper;
 import com.mordiniaa.backend.mappers.note.dtoMappers.RegularNoteDtoMapper;
 import com.mordiniaa.backend.models.note.Note;
 import com.mordiniaa.backend.models.note.deadline.DeadlineNote;
+import com.mordiniaa.backend.models.note.deadline.Priority;
+import com.mordiniaa.backend.models.note.deadline.Status;
 import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
@@ -26,6 +28,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -99,8 +103,11 @@ public class ArchivedNoteServiceGetAllUserNotesRepoTest {
     private DeadlineNote getDeadlineNote(boolean archived) {
         DeadlineNote deadlineNote = new DeadlineNote();
         deadlineNote.setArchived(archived);
+        deadlineNote.setStatus(Status.CANCELED);
+        deadlineNote.setPriority(Priority.LOW);
         deadlineNote.setTitle("Title");
         deadlineNote.setContent("Content");
+        deadlineNote.setDeadline(Instant.now().plus(2, ChronoUnit.DAYS));
 
         return deadlineNote;
     }

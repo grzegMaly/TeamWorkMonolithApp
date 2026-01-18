@@ -109,7 +109,7 @@ public class NoteServiceUpdateNoteRepoTest {
     @DisplayName("Regular Note Update Title Test")
     void regularNoteUpdateTitleTest() {
 
-        String updatedTitle = "X";
+        String updatedTitle = "XXXX";
         PatchRegularNoteRequest patchRegularNoteRequest = new PatchRegularNoteRequest();
         patchRegularNoteRequest.setTitle(updatedTitle);
 
