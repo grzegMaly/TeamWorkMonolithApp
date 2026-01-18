@@ -17,6 +17,7 @@ public class TaskMapper {
         taskCardDto.setAssignedTo(task.getAssignedTo());
         taskCardDto.setPositionInCategory(task.getPositionInCategory());
         taskCardDto.setDeadline(task.getDeadline());
+        taskCardDto.setCreatedBy(task.getCreatedBy());
         return taskCardDto;
     }
 }
