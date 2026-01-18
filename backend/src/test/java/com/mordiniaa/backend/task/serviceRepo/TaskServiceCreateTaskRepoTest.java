@@ -233,4 +233,11 @@ public class TaskServiceCreateTaskRepoTest {
         assertThrows(RuntimeException.class,
                 () -> taskService.createTask(member21Id, board1.getId().toHexString(), board1CategoryName, new CreateTaskRequest()));
     }
+
+    @Test
+    @DisplayName("Create Task Board Owner Deleted Test")
+    void createTaskBoardOwnerDeletedTest() {
+        assertThrows(RuntimeException.class,
+                () -> taskService.createTask(owner3Id, ObjectId.get().toHexString(), board1CategoryName, new CreateTaskRequest()));
+    }
 }
