@@ -12,7 +12,7 @@ public interface BoardRepository extends MongoRepository<Board, ObjectId> {
 
     @Aggregation(pipeline = {
             "{$match: {_id: ?0}}",
-            "{$match:  {'members.userId': ?2}}",
+            "{$match:  {$or: [{'owner.userId': ?2}, {'boardMembers.userId': ?2}]}}",
             """
                     {
                         $project: {
@@ -36,5 +36,5 @@ public interface BoardRepository extends MongoRepository<Board, ObjectId> {
                     }
                     """
     })
-    Optional<Board> getBoardByIdWithCategoryAndBoardMember(ObjectId objectId, String categoryName, UUID userId);
+    Optional<Board> getBoardByIdWithCategoryAndBoardMemberOrOwner(ObjectId objectId, String categoryName, UUID userId);
 }
