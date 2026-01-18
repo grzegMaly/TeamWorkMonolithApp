@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -70,7 +71,7 @@ public class TaskService {
         Task task = new Task();
         if (createTaskRequest.getAssignedTo() != null) {
 
-            Set<UUID> assignedTo = createTaskRequest.getAssignedTo();
+            Set<UUID> assignedTo = new HashSet<>(createTaskRequest.getAssignedTo());
 
             if (assignedTo.contains(currentMember.getUserId())) {
                 task.addMember(currentMember.getUserId());
@@ -86,7 +87,7 @@ public class TaskService {
                 if (!membersIds.containsAll(assignedTo)) {
                     throw new RuntimeException(); //TODO: Change in Exceptions Section
                 }
-                task.addMembers(createTaskRequest.getAssignedTo());
+                task.addMembers(assignedTo);
             }
         }
 
