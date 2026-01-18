@@ -12,10 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -45,4 +42,16 @@ public class Task {
     private Instant updatedAt;
 
     private Instant deadline;
+
+    public void addMember(UUID boardMember) {
+        if (assignedTo == null)
+            assignedTo = new HashSet<>();
+        this.assignedTo.add(boardMember);
+    }
+
+    public void addMembers(Collection<UUID> boardMembers) {
+        if (assignedTo == null)
+            assignedTo = new HashSet<>();
+        this.assignedTo.addAll(boardMembers);
+    }
 }
