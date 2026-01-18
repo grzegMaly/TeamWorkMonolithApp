@@ -79,21 +79,7 @@ public class TaskServiceCreateTaskRepoTest {
 
     private final String board1CategoryName = "Testing";
 
-    private UserRepresentation boardOwner1;
-    private UserRepresentation boardOwner2;
-    private UserRepresentation deletedBoardOwner3;
-    private BoardMember boardMemberOwner1;
-    private BoardMember boardMemberOwner2;
-    private BoardMember member11;
-    private BoardMember member12;
-
-    private UserRepresentation user11;
-    private UserRepresentation user12;
-
-    private BoardMember member21;
-    private BoardMember member22;
     private Board board1;
-    private Board board2;
 
     private final String title = "Title";
     private final String description = "Description";
@@ -107,56 +93,56 @@ public class TaskServiceCreateTaskRepoTest {
 
         createTaskRequest = new CreateTaskRequest(title, description, deadline);
 
-        boardOwner1 = new UserRepresentation();
+        UserRepresentation boardOwner1 = new UserRepresentation();
         boardOwner1.setUserId(owner1Id);
         boardOwner1.setUsername("Owner 1");
         boardOwner1.setImageUrl("https://random1.pl");
 
-        boardOwner2 = new UserRepresentation();
+        UserRepresentation boardOwner2 = new UserRepresentation();
         boardOwner2.setUserId(owner2Id);
         boardOwner2.setUsername("Owner 2");
         boardOwner2.setImageUrl("https://random2.pl");
 
-        deletedBoardOwner3 = new UserRepresentation();
+        UserRepresentation deletedBoardOwner3 = new UserRepresentation();
         deletedBoardOwner3.setUserId(owner3Id);
         deletedBoardOwner3.setUsername("Owner 3");
         deletedBoardOwner3.setImageUrl("https://random3.pl");
         deletedBoardOwner3.setDeleted(true);
 
-        user11 = new UserRepresentation();
+        UserRepresentation user11 = new UserRepresentation();
         user11.setUserId(member11Id);
         user11.setUsername("X");
 
-        user12 = new UserRepresentation();
+        UserRepresentation user12 = new UserRepresentation();
         user12.setUserId(member12Id);
         user12.setUsername("X");
 
         userRepresentationRepository.saveAll(List.of(boardOwner1, boardOwner2, deletedBoardOwner3, user11, user12));
 
-        boardMemberOwner1 = new BoardMember();
+        BoardMember boardMemberOwner1 = new BoardMember();
         boardMemberOwner1.setUserId(owner1Id);
         boardMemberOwner1.setBoardPermissions(boardPermissions);
         boardMemberOwner1.setTaskPermissions(taskPermissions1);
 
-        boardMemberOwner2 = new BoardMember();
+        BoardMember boardMemberOwner2 = new BoardMember();
         boardMemberOwner2.setUserId(owner2Id);
         boardMemberOwner2.setBoardPermissions(boardPermissions);
         boardMemberOwner2.setTaskPermissions(taskPermissions1);
 
-        member11 = new BoardMember();
+        BoardMember member11 = new BoardMember();
         member11.setUserId(member11Id);
         member11.setBoardPermissions(boardPermissions);
         member11.setTaskPermissions(taskPermissions1);
 
-        member12 = new BoardMember();
+        BoardMember member12 = new BoardMember();
         member12.setUserId(member12Id);
         member12.setBoardPermissions(boardPermissions);
         member12.setTaskPermissions(taskPermissions2);
 
-        member21 = new BoardMember();
+        BoardMember member21 = new BoardMember();
         member21.setUserId(member21Id);
 
-        member22 = new BoardMember();
+        BoardMember member22 = new BoardMember();
         member22.setUserId(member22Id);
 
         TaskCategory board1Category = new TaskCategory();
@@ -170,7 +156,7 @@ public class TaskServiceCreateTaskRepoTest {
         TaskCategory board2Category = new TaskCategory();
         String board2CategoryName = "Developing";
         board2Category.setCategoryName(board2CategoryName);
-        board2 = new Board();
+        Board board2 = new Board();
         board2.setBoardName("Test 2");
         board2.setOwner(boardMemberOwner2);
         board2.setMembers(List.of(member21, member22));
