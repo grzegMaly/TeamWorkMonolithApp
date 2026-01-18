@@ -270,6 +270,26 @@ public class TaskServiceCreateTaskRepoTest {
     }
 
     @Test
+    @DisplayName("Create Task By Member With Permissions With Members Test")
+    void createTaskByMemberWithPermissionsWithMembersTest() {
+
+        createTaskRequest.setAssignedTo(Set.of(member11Id, member12Id));
+
+        TaskCardDto taskDto = taskService.createTask(member11Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+
+        assertNotNull(taskDto);
+        assertNotNull(taskDto.getTaskStatus());
+        assertNotNull(taskDto.getAssignedTo());
+        assertEquals(2, taskDto.getAssignedTo().size());
+
+        assertEquals(title, taskDto.getTitle());
+        assertEquals(description, taskDto.getDescription());
+        assertEquals(deadline, taskDto.getDeadline());
+
+        assertEquals(member11Id, taskDto.getCreatedBy());
+    }
+
+    @Test
     @DisplayName("Create Task Member Not In Board Test")
     void createTaskMemberNotInBoardTest() {
 
