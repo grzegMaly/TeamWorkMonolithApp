@@ -71,7 +71,6 @@ public class TaskServiceCreateTaskRepoTest {
     private final UUID member22Id = UUID.randomUUID();
 
     private final String board1CategoryName = "Testing";
-    private final String board2CategoryName = "Developing";
 
     private UserRepresentation boardOwner1;
     private UserRepresentation boardOwner2;
@@ -80,6 +79,10 @@ public class TaskServiceCreateTaskRepoTest {
     private BoardMember boardMemberOwner2;
     private BoardMember member11;
     private BoardMember member12;
+
+    private UserRepresentation user11;
+    private UserRepresentation user12;
+
     private BoardMember member21;
     private BoardMember member22;
     private Board board1;
@@ -89,28 +92,39 @@ public class TaskServiceCreateTaskRepoTest {
     private final String description = "Description";
     private final Instant deadline = Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
 
+    private CreateTaskRequest createTaskRequest;
+
 
     @BeforeEach
     void setEnv() {
+
+        createTaskRequest = new CreateTaskRequest(title, description, deadline);
 
         boardOwner1 = new UserRepresentation();
         boardOwner1.setUserId(owner1Id);
         boardOwner1.setUsername("Owner 1");
         boardOwner1.setImageUrl("https://random1.pl");
-        boardOwner1 = userRepresentationRepository.save(boardOwner1);
 
         boardOwner2 = new UserRepresentation();
         boardOwner2.setUserId(owner2Id);
         boardOwner2.setUsername("Owner 2");
         boardOwner2.setImageUrl("https://random2.pl");
-        boardOwner2 = userRepresentationRepository.save(boardOwner2);
 
         deletedBoardOwner3 = new UserRepresentation();
         deletedBoardOwner3.setUserId(owner3Id);
         deletedBoardOwner3.setUsername("Owner 3");
         deletedBoardOwner3.setImageUrl("https://random3.pl");
         deletedBoardOwner3.setDeleted(true);
-        deletedBoardOwner3 = userRepresentationRepository.save(deletedBoardOwner3);
+
+        user11 = new UserRepresentation();
+        user11.setUserId(member11Id);
+        user11.setUsername("X");
+
+        user12 = new UserRepresentation();
+        user12.setUserId(member12Id);
+        user12.setUsername("X");
+
+        userRepresentationRepository.saveAll(List.of(boardOwner1, boardOwner2, deletedBoardOwner3, user11, user12));
 
         boardMemberOwner1 = new BoardMember();
         boardMemberOwner1.setUserId(owner1Id);
@@ -124,6 +138,8 @@ public class TaskServiceCreateTaskRepoTest {
 
         member11 = new BoardMember();
         member11.setUserId(member11Id);
+        member11.setBoardPermissions(boardPermissions);
+        member11.setTaskPermissions(taskPermissions1);
 
         member12 = new BoardMember();
         member12.setUserId(member12Id);
@@ -145,6 +161,7 @@ public class TaskServiceCreateTaskRepoTest {
         board1.setTaskCategories(List.of(board1Category));
 
         TaskCategory board2Category = new TaskCategory();
+        String board2CategoryName = "Developing";
         board2Category.setCategoryName(board2CategoryName);
         board2 = new Board();
         board2.setBoardName("Test 2");
@@ -167,10 +184,6 @@ public class TaskServiceCreateTaskRepoTest {
     @DisplayName("Create Valid Task Test")
     void createValidTaksTest() {
 
-        CreateTaskRequest createTaskRequest = new CreateTaskRequest();
-        createTaskRequest.setTitle(title);
-        createTaskRequest.setDeadline(deadline);
-        createTaskRequest.setDescription(description);
         createTaskRequest.setAssignedTo(Set.of(member11Id));
 
         TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
@@ -191,10 +204,6 @@ public class TaskServiceCreateTaskRepoTest {
     @DisplayName("Create Valid Task Self Assigning Test")
     void createValidTaskSelfAssigningTest() {
 
-        CreateTaskRequest createTaskRequest = new CreateTaskRequest();
-        createTaskRequest.setTitle(title);
-        createTaskRequest.setDescription(description);
-        createTaskRequest.setDeadline(deadline);
         createTaskRequest.setAssignedTo(Set.of(owner1Id));
 
         TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
@@ -219,10 +228,6 @@ public class TaskServiceCreateTaskRepoTest {
     @DisplayName("Can Create Task With Full Assignment Test")
     void canCreateTaskWithFullAssignmentTest() {
 
-        CreateTaskRequest createTaskRequest = new CreateTaskRequest();
-        createTaskRequest.setTitle(title);
-        createTaskRequest.setDescription(description);
-        createTaskRequest.setDeadline(deadline);
         createTaskRequest.setAssignedTo(Set.of(owner1Id, member11Id, member12Id));
 
         TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
@@ -242,6 +247,26 @@ public class TaskServiceCreateTaskRepoTest {
         assertFalse(taskDto.getAssignedTo().isEmpty());
         assertEquals(3, taskDto.getAssignedTo().size());
         assertEquals(owner1Id, taskDto.getCreatedBy());
+    }
+
+    @Test
+    @DisplayName("Create Task By Member With Permissions Test")
+    void createTaskByMemberWithPermissionsTest() {
+
+        createTaskRequest.setAssignedTo(Set.of(member11Id));
+
+        TaskCardDto taskDto = taskService.createTask(member11Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+
+        assertNotNull(taskDto);
+        assertNotNull(taskDto.getTaskStatus());
+        assertNotNull(taskDto.getAssignedTo());
+        assertEquals(1, taskDto.getAssignedTo().size());
+
+        assertEquals(title, taskDto.getTitle());
+        assertEquals(description, taskDto.getDescription());
+        assertEquals(deadline, taskDto.getDeadline());
+
+        assertEquals(member11Id, taskDto.getAssignedTo().stream().findFirst().orElse(null));
     }
 
     @Test
@@ -271,36 +296,36 @@ public class TaskServiceCreateTaskRepoTest {
 
         ObjectId boardId = ObjectId.get();
         assertThrows(RuntimeException.class,
-                () -> taskService.createTask(owner1Id, boardId.toHexString(), board1CategoryName, new CreateTaskRequest()));
+                () -> taskService.createTask(owner1Id, boardId.toHexString(), board1CategoryName, createTaskRequest));
     }
 
     @Test
     @DisplayName("Create Task Category Not Found Test")
     void createTaskCategoryNotFoundTest() {
         assertThrows(RuntimeException.class,
-                () -> taskService.createTask(owner1Id, board1.getId().toHexString(), "X", new CreateTaskRequest()));
+                () -> taskService.createTask(owner1Id, board1.getId().toHexString(), "X", createTaskRequest));
     }
 
     @Test
     @DisplayName("Create Task User Not Found Test")
     void createTaskUserNotFoundTest() {
         assertThrows(RuntimeException.class,
-                () -> taskService.createTask(UUID.randomUUID(), board1.getId().toHexString(), board1CategoryName, new CreateTaskRequest()));
+                () -> taskService.createTask(UUID.randomUUID(), board1.getId().toHexString(), board1CategoryName, createTaskRequest));
     }
 
     @Test
     @DisplayName("Create Task User Not Owner Or Member Test")
     void createTaskUserNotOwnerOrMemberTest() {
         assertThrows(RuntimeException.class,
-                () -> taskService.createTask(owner2Id, board1.getId().toHexString(), board1CategoryName, new CreateTaskRequest()));
+                () -> taskService.createTask(owner2Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest));
         assertThrows(RuntimeException.class,
-                () -> taskService.createTask(member21Id, board1.getId().toHexString(), board1CategoryName, new CreateTaskRequest()));
+                () -> taskService.createTask(member21Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest));
     }
 
     @Test
     @DisplayName("Create Task Board Owner Deleted Test")
     void createTaskBoardOwnerDeletedTest() {
         assertThrows(RuntimeException.class,
-                () -> taskService.createTask(owner3Id, ObjectId.get().toHexString(), board1CategoryName, new CreateTaskRequest()));
+                () -> taskService.createTask(owner3Id, ObjectId.get().toHexString(), board1CategoryName, createTaskRequest));
     }
 }
