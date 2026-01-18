@@ -13,6 +13,7 @@ import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
 import com.mordiniaa.backend.request.board.task.CreateTaskRequest;
 import com.mordiniaa.backend.services.notes.task.TaskService;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -198,5 +199,13 @@ public class TaskServiceCreateTaskRepoTest {
         CreateTaskRequest createTaskRequest = new CreateTaskRequest();
         String invalidBoardId = "edcwegw345g3wedfw3rg3wr";
         assertThrows(RuntimeException.class, () -> taskService.createTask(owner1Id, invalidBoardId, board1CategoryName, createTaskRequest));
+    }
+
+    @Test
+    @DisplayName("Create Task Board Not Found Test")
+    void createTaskBoardNotFoundTest() {
+
+        ObjectId boardId = ObjectId.get();
+        assertThrows(RuntimeException.class, () -> taskService.createTask(owner1Id, boardId.toHexString(), board1CategoryName, new CreateTaskRequest()));
     }
 }
