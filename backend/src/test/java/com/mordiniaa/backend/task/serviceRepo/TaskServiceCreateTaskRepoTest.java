@@ -366,4 +366,13 @@ public class TaskServiceCreateTaskRepoTest {
         assertThrows(RuntimeException.class,
                 () -> taskService.createTask(member11Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest));
     }
+
+    @Test
+    @DisplayName("Member Without Permissions Cannot Assign Test")
+    void memberWithoutPermissionsCannotAssignTest() {
+
+        createTaskRequest.setAssignedTo(Set.of(member11Id));
+        assertThrows(RuntimeException.class,
+                () -> taskService.createTask(member12Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest));
+    }
 }
