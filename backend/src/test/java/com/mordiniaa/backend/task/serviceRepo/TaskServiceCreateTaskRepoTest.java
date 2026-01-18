@@ -15,6 +15,7 @@ import com.mordiniaa.backend.request.board.task.CreateTaskRequest;
 import com.mordiniaa.backend.services.notes.task.TaskService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -30,8 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @DataMongoTest
@@ -171,5 +171,17 @@ public class TaskServiceCreateTaskRepoTest {
         assertEquals(1, taskDto.getAssignedTo().size());
 
         assertEquals(member11Id, taskDto.getAssignedTo().stream().findFirst().orElse(null));
+    }
+
+    @Test
+    @DisplayName("Create Task Member Not In Board Test")
+    void createTaskMemberNotInBoardTest() {
+
+        CreateTaskRequest createTaskRequest = new CreateTaskRequest();
+        createTaskRequest.setTitle("Task");
+        createTaskRequest.setDeadline(Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS));
+        createTaskRequest.setAssignedTo(Set.of(member21Id));
+
+        assertThrows(RuntimeException.class, () -> taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest));
     }
 }
