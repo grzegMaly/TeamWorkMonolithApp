@@ -1,8 +1,5 @@
 package com.mordiniaa.backend.services.notes.task;
 
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.result.UpdateResult;
 import com.mordiniaa.backend.dto.task.TaskCardDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
@@ -55,19 +52,27 @@ public class TaskService {
             throw new RuntimeException(); //TODO: Change in Exceptions Section
         }
 
-        Board board = boardRepository.getBoardByIdWithCategoryAndBoardMember(boardId, categoryName, userId)
+        Board board = boardRepository.getBoardByIdWithCategoryAndBoardMemberOrOwner(boardId, categoryName, userId)
                 .orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
 
-        BoardMember member = board.getMembers().stream().filter(bm -> bm.getUserId().equals(userId))
-                .findAny().orElseThrow(RuntimeException::new);  //TODO: Change in Exceptions Section
+        BoardMember currentMember;
+        if (board.getOwner().getUserId().equals(userId)) {
+            currentMember = board.getOwner();
+        } else {
+            currentMember = board.getMembers().stream().filter(bm -> bm.getUserId().equals(userId))
+                    .findFirst().orElseThrow(RuntimeException::new);
+            if (createTaskRequest.getAssignedTo().contains(board.getOwner().getUserId())) {
+                throw new RuntimeException(); //TODO: Change in Exceptions Section
+            }
+        }
 
-        if (!member.getBoardPermissions().contains(BoardPermission.VIEW_BOARD) ||
-                !member.getTaskPermissions().contains(TaskPermission.CREATE_TASK))
+        if (!currentMember.getBoardPermissions().contains(BoardPermission.VIEW_BOARD) ||
+                !currentMember.getTaskPermissions().contains(TaskPermission.CREATE_TASK))
             throw new RuntimeException(); //TODO: Change in Exceptions Section
 
         Task task = new Task();
         if (createTaskRequest.getAssignedTo() != null) {
-            if (!member.getTaskPermissions().contains(TaskPermission.ASSIGN_TASK))
+            if (!currentMember.getTaskPermissions().contains(TaskPermission.ASSIGN_TASK))
                 throw new RuntimeException(); //TODO: Change in Exceptions Section
 
             Set<UUID> membersIds = board.getMembers().stream().map(BoardMember::getUserId)
@@ -78,7 +83,7 @@ public class TaskService {
             task.setAssignedTo(createTaskRequest.getAssignedTo());
         }
 
-        task.setCreatedBy(member.getUserId());
+        task.setCreatedBy(currentMember.getUserId());
         task.setTitle(createTaskRequest.getTitle());
         task.setDescription(createTaskRequest.getDescription());
         task.setDeadline(createTaskRequest.getDeadline());
