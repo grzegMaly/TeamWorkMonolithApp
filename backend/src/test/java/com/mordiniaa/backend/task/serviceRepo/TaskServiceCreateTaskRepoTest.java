@@ -157,10 +157,14 @@ public class TaskServiceCreateTaskRepoTest {
     @Test
     void createValidTaksTest() {
 
+        String title = "Task1";
+        String description = "Task Task";
+        Instant deadline = Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
+
         CreateTaskRequest createTaskRequest = new CreateTaskRequest();
-        createTaskRequest.setTitle("Task1");
-        createTaskRequest.setDeadline(Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS));
-        createTaskRequest.setDescription("Test Task");
+        createTaskRequest.setTitle(title);
+        createTaskRequest.setDeadline(deadline);
+        createTaskRequest.setDescription(description);
         createTaskRequest.setAssignedTo(Set.of(member11Id));
 
         TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
@@ -169,6 +173,10 @@ public class TaskServiceCreateTaskRepoTest {
         assertNotNull(taskDto.getTaskStatus());
         assertNotNull(taskDto.getAssignedTo());
         assertEquals(1, taskDto.getAssignedTo().size());
+        
+        assertEquals(title, taskDto.getTitle());
+        assertEquals(description, taskDto.getDescription());
+        assertEquals(deadline, taskDto.getDeadline());
 
         assertEquals(member11Id, taskDto.getAssignedTo().stream().findFirst().orElse(null));
     }
