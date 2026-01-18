@@ -57,7 +57,8 @@ public class TaskServiceCreateTaskRepoTest {
     private TaskService taskService;
 
     private final Set<BoardPermission> boardPermissions = Set.of(BoardPermission.VIEW_BOARD);
-    private final Set<TaskPermission> taskPermissions = Set.of(TaskPermission.CREATE_TASK, TaskPermission.ASSIGN_TASK);
+    private final Set<TaskPermission> taskPermissions1 = Set.of(TaskPermission.CREATE_TASK, TaskPermission.ASSIGN_TASK);
+    private final Set<TaskPermission> taskPermissions2 = Set.of(TaskPermission.CREATE_TASK);
 
     private final UUID owner1Id = UUID.randomUUID();
     private final UUID owner2Id = UUID.randomUUID();
@@ -108,12 +109,12 @@ public class TaskServiceCreateTaskRepoTest {
         boardMemberOwner1 = new BoardMember();
         boardMemberOwner1.setUserId(owner1Id);
         boardMemberOwner1.setBoardPermissions(boardPermissions);
-        boardMemberOwner1.setTaskPermissions(taskPermissions);
+        boardMemberOwner1.setTaskPermissions(taskPermissions1);
 
         boardMemberOwner2 = new BoardMember();
         boardMemberOwner2.setUserId(owner2Id);
         boardMemberOwner2.setBoardPermissions(boardPermissions);
-        boardMemberOwner2.setTaskPermissions(taskPermissions);
+        boardMemberOwner2.setTaskPermissions(taskPermissions2);
 
         member11 = new BoardMember();
         member11.setUserId(member11Id);
@@ -155,6 +156,7 @@ public class TaskServiceCreateTaskRepoTest {
     }
 
     @Test
+    @DisplayName("Create Valid Task Test")
     void createValidTaksTest() {
 
         String title = "Task1";
