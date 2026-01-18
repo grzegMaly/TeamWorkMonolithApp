@@ -7,6 +7,7 @@ import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.board.permissions.TaskPermission;
+import com.mordiniaa.backend.models.board.task.Task;
 import com.mordiniaa.backend.models.board.task.TaskStatus;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.BoardRepository;
@@ -23,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -44,6 +48,9 @@ public class TaskServiceCreateTaskRepoTest {
 
     @MockitoBean("mongoAuditor")
     private AuditorAware<String> auditorAware;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Autowired
     private TaskRepository taskRepository;
@@ -287,6 +294,25 @@ public class TaskServiceCreateTaskRepoTest {
         assertEquals(deadline, taskDto.getDeadline());
 
         assertEquals(member11Id, taskDto.getCreatedBy());
+    }
+
+    @Test
+    @DisplayName("Check Position In Category Increment Test")
+    void checkPositionInCategoryIncrementTest() {
+
+        createTaskRequest.setAssignedTo(Set.of(owner1Id));
+        TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+
+        assertEquals(0, taskDto.getPositionInCategory());
+
+        taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+
+        Query query = new Query(
+                Criteria.where("_id").is(new ObjectId(taskDto.getId()))
+        );
+        Task prevTask = mongoTemplate.findOne(query, Task.class, "tasks");
+        assertNotNull(prevTask);
+        assertEquals(1, prevTask.getPositionInCategory());
     }
 
     @Test
