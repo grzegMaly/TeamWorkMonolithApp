@@ -26,7 +26,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -173,7 +172,7 @@ public class TaskServiceCreateTaskRepoTest {
         assertNotNull(taskDto.getTaskStatus());
         assertNotNull(taskDto.getAssignedTo());
         assertEquals(1, taskDto.getAssignedTo().size());
-        
+
         assertEquals(title, taskDto.getTitle());
         assertEquals(description, taskDto.getDescription());
         assertEquals(deadline, taskDto.getDeadline());
@@ -191,5 +190,13 @@ public class TaskServiceCreateTaskRepoTest {
         createTaskRequest.setAssignedTo(Set.of(member21Id));
 
         assertThrows(RuntimeException.class, () -> taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest));
+    }
+
+    @Test
+    @DisplayName("Create Task Invalid Board Id Test")
+    void createTaskInvalidBoardIdTest() {
+        CreateTaskRequest createTaskRequest = new CreateTaskRequest();
+        String invalidBoardId = "edcwegw345g3wedfw3rg3wr";
+        assertThrows(RuntimeException.class, () -> taskService.createTask(owner1Id, invalidBoardId, board1CategoryName, createTaskRequest));
     }
 }
