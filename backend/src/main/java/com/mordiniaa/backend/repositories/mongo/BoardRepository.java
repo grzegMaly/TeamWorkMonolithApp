@@ -40,7 +40,8 @@ public interface BoardRepository extends MongoRepository<Board, ObjectId> {
 
     @Aggregation(pipeline = {
             "{$match: {_id: ?0}}",
-            "{$match: {$or: [{owner.userId: ?2}, {members.userId: ?2}]}}",
+            "{$match: {$or: [{owner.userId: ?1}, {members.userId: ?1}]}}",
+            "{$match: {taskCategories: {$elemMatch: {tasks: ?2}}}}",
             """
                 {
                     $project: {
@@ -50,5 +51,5 @@ public interface BoardRepository extends MongoRepository<Board, ObjectId> {
                 }
             """
     })
-    Optional<Board> getBoardWithMembersByBoardIdAndMemberIdOrOwnerId(ObjectId boardId, UUID userId);
+    Optional<Board> getBoardWithMembersByBoardIdAndMemberIdOrOwnerIdAndTaskId(ObjectId boardId, UUID userId, ObjectId taskId);
 }
