@@ -1,6 +1,6 @@
-package com.mordiniaa.backend.models.board.task;
+package com.mordiniaa.backend.models.task;
 
-import com.mordiniaa.backend.models.board.task.activity.TaskActivityElement;
+import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

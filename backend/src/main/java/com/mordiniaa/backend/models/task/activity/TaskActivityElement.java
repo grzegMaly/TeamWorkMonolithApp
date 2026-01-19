@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.models.board.task.activity;
+package com.mordiniaa.backend.models.task.activity;
 
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import lombok.Getter;

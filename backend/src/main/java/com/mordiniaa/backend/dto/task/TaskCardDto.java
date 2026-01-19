@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.dto.task;
 
-import com.mordiniaa.backend.models.board.task.TaskStatus;
+import com.mordiniaa.backend.models.task.TaskStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
