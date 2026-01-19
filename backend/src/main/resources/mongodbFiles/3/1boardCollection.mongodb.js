@@ -15,6 +15,13 @@ db.runCommand({
             required: ["owner", "boardName"],
             additionalProperties: false,
             properties: {
+                _id: {
+                    bsonType: "objectId"
+                },
+                _class: {
+                    bsonType: "string",
+                    enum: ["board"]
+                },
                 owner: {
                     bsonType: "object",
                     title: "Owner Specification",
