@@ -7,5 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TaskCategoryChangeDTO extends TaskActivityElementDTO {
+public class TaskCategoryChangeDto extends TaskActivityElementDto {
+
+    private String prevTaskCategoryName;
+    private String nextTaskCategoryName;
 }
