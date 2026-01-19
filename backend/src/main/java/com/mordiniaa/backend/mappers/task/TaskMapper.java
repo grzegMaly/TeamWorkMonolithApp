@@ -1,23 +1,23 @@
 package com.mordiniaa.backend.mappers.task;
 
-import com.mordiniaa.backend.dto.task.TaskCardDto;
+import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.models.task.Task;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TaskMapper {
 
-    public TaskCardDto toShortenedDto(Task task) {
+    public TaskShortDto toShortenedDto(Task task) {
 
-        TaskCardDto taskCardDto = new TaskCardDto();
-        taskCardDto.setId(task.getId().toHexString());
-        taskCardDto.setTitle(task.getTitle());
-        taskCardDto.setDescription(task.getDescription());
-        taskCardDto.setTaskStatus(task.getTaskStatus());
-        taskCardDto.setAssignedTo(task.getAssignedTo());
-        taskCardDto.setPositionInCategory(task.getPositionInCategory());
-        taskCardDto.setDeadline(task.getDeadline());
-        taskCardDto.setCreatedBy(task.getCreatedBy());
-        return taskCardDto;
+        TaskShortDto taskShortDto = new TaskShortDto();
+        taskShortDto.setId(task.getId().toHexString());
+        taskShortDto.setTitle(task.getTitle());
+        taskShortDto.setDescription(task.getDescription());
+        taskShortDto.setTaskStatus(task.getTaskStatus());
+        taskShortDto.setAssignedTo(task.getAssignedTo());
+        taskShortDto.setPositionInCategory(task.getPositionInCategory());
+        taskShortDto.setDeadline(task.getDeadline());
+        taskShortDto.setCreatedBy(task.getCreatedBy());
+        return taskShortDto;
     }
 }

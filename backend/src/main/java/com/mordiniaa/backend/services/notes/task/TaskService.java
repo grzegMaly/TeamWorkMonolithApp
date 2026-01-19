@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.services.notes.task;
 
-import com.mordiniaa.backend.dto.task.TaskCardDto;
+import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
@@ -38,7 +38,7 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskCardDto createTask(UUID userId, String bId, String categoryName, CreateTaskRequest createTaskRequest) {
+    public TaskShortDto createTask(UUID userId, String bId, String categoryName, CreateTaskRequest createTaskRequest) {
 
         if (!ObjectId.isValid(bId)) {
             throw new RuntimeException(); //TODO: Change in Exceptions Section
