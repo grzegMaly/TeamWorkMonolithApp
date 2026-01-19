@@ -20,6 +20,13 @@ db.runCommand({
                 "assignedTo"
             ],
             properties: {
+                _id: {
+                    bsonType: "objectId"
+                },
+                _class: {
+                    bsonType: "string",
+                    enum: ["task"]
+                },
                 positionInCategory: {
                     bsonType: "int",
                     title: "Task Position In Category",
