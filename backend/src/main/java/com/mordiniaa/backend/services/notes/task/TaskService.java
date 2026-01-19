@@ -8,7 +8,7 @@ import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.repositories.mongo.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
-import com.mordiniaa.backend.request.board.task.CreateTaskRequest;
+import com.mordiniaa.backend.request.task.CreateTaskRequest;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
