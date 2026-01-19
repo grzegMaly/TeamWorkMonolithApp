@@ -33,7 +33,7 @@ public class Task {
     private List<TaskActivityElement> activityElements = new ArrayList<>();
 
     private UUID createdBy;
-    private Set<UUID> assignedTo;
+    private Set<UUID> assignedTo = new HashSet<>();
 
     @CreatedDate
     private Instant createdAt;
