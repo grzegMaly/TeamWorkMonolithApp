@@ -77,12 +77,12 @@ db.runCommand({
                                 description: "Creation Date Is Required"
                             },
                             prevCategory: {
-                                bsonType: "objectId",
+                                bsonType: "string",
                                 title: "Previous Category",
                                 description: "Previous Category Id Is Required"
                             },
                             nextCategory: {
-                                bsonType: "objectId",
+                                bsonType: "string",
                                 title: "Next Category",
                                 description: "Next Category Id Is Required"
                             },
