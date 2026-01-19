@@ -12,7 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TaskCardDto {
+public class TaskShortDto {
 
     private String id;
     private int positionInCategory;

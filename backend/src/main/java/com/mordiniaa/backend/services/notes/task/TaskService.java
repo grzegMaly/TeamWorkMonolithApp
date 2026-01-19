@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.services.notes.task;
 
-import com.mordiniaa.backend.dto.task.TaskCardDto;
+import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
@@ -33,36 +33,34 @@ public class TaskService {
     private final MongoTemplate mongoTemplate;
     private final TaskMapper taskMapper;
 
-    public void getTaskDetailsById(UUID userId, String taskId) {
+    public void getTaskDetailsById(UUID userId, String bId, String taskId) {
 
+        validateBoardIdAndUserAvailability(userId, bId);
+
+        ObjectId boardId = new ObjectId();
+        Board board = boardRepository.getBoardWithMembersByBoardIdAndMemberIdOrOwnerId(boardId, userId)
+                .orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
+
+        Set<BoardMember> allMembers = new HashSet<>(board.getMembers());
+        allMembers.add(board.getOwner());
+
+        BoardMember currentMember = allMembers.stream().filter(mb -> mb.getUserId().equals(userId))
+                .findFirst().orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
     }
 
     @Transactional
-    public TaskCardDto createTask(UUID userId, String bId, String categoryName, CreateTaskRequest createTaskRequest) {
+    public TaskShortDto createTask(UUID userId, String bId, String categoryName, CreateTaskRequest createTaskRequest) {
 
-        if (!ObjectId.isValid(bId)) {
-            throw new RuntimeException(); //TODO: Change in Exceptions Section
-        }
+        validateBoardIdAndUserAvailability(userId, bId);
 
         ObjectId boardId = new ObjectId(bId);
-
-        boolean result = userRepresentationRepository.existsUserRepresentationByUserIdAndDeletedFalse(userId);
-        if (!result) {
-            throw new RuntimeException(); //TODO: Change in Exceptions Section
-        }
-
         Board board = boardRepository.getBoardByIdWithCategoryAndBoardMemberOrOwner(boardId, categoryName, userId)
                 .orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
 
-        BoardMember currentMember;
-        if (board.getOwner().getUserId().equals(userId)) {
-            currentMember = board.getOwner();
-        } else {
-            currentMember = board.getMembers().stream().filter(bm -> bm.getUserId().equals(userId))
-                    .findFirst().orElseThrow(RuntimeException::new);
-            if (createTaskRequest.getAssignedTo().contains(board.getOwner().getUserId())) {
-                throw new RuntimeException(); //TODO: Change in Exceptions Section
-            }
+        BoardMember currentMember = getBoardMember(board, userId);
+        if (!board.getOwner().getUserId().equals(userId)
+                && createTaskRequest.getAssignedTo().contains(board.getOwner().getUserId())) {
+            throw new RuntimeException(); //TODO: Change in Exceptions Section
         }
 
         if (!currentMember.canCreateTask())
@@ -122,5 +120,25 @@ public class TaskService {
 
     public void deleteTaskFromBoard(UUID userId, String taskId) {
 
+    }
+
+    private void validateBoardIdAndUserAvailability(UUID userId, String boardId) {
+        if (!ObjectId.isValid(boardId)) {
+            throw new RuntimeException(); // TODO: Change in Exceptions Section
+        }
+
+        boolean result = userRepresentationRepository.existsUserRepresentationByUserIdAndDeletedFalse(userId);
+        if (!result) {
+            throw new RuntimeException(); //TODO: Change in Exceptions Section
+        }
+    }
+
+    private BoardMember getBoardMember(Board board, UUID userId) {
+        if (board.getOwner().getUserId().equals(userId)) {
+            return board.getOwner();
+        } else {
+            return board.getMembers().stream().filter(bm -> bm.getUserId().equals(userId))
+                    .findFirst().orElseThrow(RuntimeException::new);
+        }
     }
 }

@@ -38,4 +38,17 @@ public interface BoardRepository extends MongoRepository<Board, ObjectId> {
     })
     Optional<Board> getBoardByIdWithCategoryAndBoardMemberOrOwner(ObjectId objectId, String categoryName, UUID userId);
 
+    @Aggregation(pipeline = {
+            "{$match: {_id: ?0}}",
+            "{$match: {$or: [{owner.userId: ?2}, {members.userId: ?2}]}}",
+            """
+                {
+                    $project: {
+                        owner: 1,
+                        members: 1
+                    }
+                }
+            """
+    })
+    Optional<Board> getBoardWithMembersByBoardIdAndMemberIdOrOwnerId(ObjectId boardId, UUID userId);
 }
