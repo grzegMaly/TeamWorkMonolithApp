@@ -2,6 +2,10 @@ use team-work-test
 
 db.auth("team-work-tester", "password")
 
+use team-work-test
+
+db.auth("team-work-tester", "password")
+
 db.runCommand({
     create: "boards",
     validator: {
@@ -147,6 +151,9 @@ db.runCommand({
                             }
                         }
                     }
+                },
+                createdAt: {
+                    bsonType: "date"
                 }
             }
         }
