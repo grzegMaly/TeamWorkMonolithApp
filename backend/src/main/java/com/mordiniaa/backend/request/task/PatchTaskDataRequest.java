@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.request.board.task;
+package com.mordiniaa.backend.request.task;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

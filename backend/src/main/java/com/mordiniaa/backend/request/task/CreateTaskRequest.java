@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.request.board.task;
+package com.mordiniaa.backend.request.task;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,7 +22,7 @@ public class CreateTaskRequest {
     private String title;
 
     @NotBlank
-    @Size(min = 3, max = 512)
+    @Size(min = 3, max = 1024)
     private String description;
 
     private Set<UUID> assignedTo; //Optional
