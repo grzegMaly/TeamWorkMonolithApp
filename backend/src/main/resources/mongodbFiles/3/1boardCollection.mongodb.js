@@ -84,9 +84,13 @@ db.runCommand({
                                 description: "Category Name Is Required"
                             },
                             tasks: {
-                                bsonType: "objectId",
+                                bsonType: "array",
                                 title: "Tasks Ids",
-                                description: "Ids for referenced tasks"
+                                description: "Ids for referenced tasks",
+                                items: {
+                                    bsonType: "objectId",
+                                    description: "Referenced Tasks"
+                                }
                             }
                         }
                     }
