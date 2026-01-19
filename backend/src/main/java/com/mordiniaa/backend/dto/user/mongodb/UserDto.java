@@ -1,12 +1,17 @@
 package com.mordiniaa.backend.dto.user.mongodb;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.UUID;
 
-public interface UserProjection {
+@Getter
+@Setter
+@NoArgsConstructor
+public class UserDto {
 
-    UUID getUserId();
-
-    String getUsername();
-
-    String getImageUrl();
+    private UUID userId;
+    private String username;
+    private String imageUrl;
 }
