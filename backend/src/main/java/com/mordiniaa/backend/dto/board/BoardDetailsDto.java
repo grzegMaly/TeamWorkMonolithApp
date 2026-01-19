@@ -6,7 +6,7 @@ import com.mordiniaa.backend.dto.user.mongodb.UserDto;
 import java.time.Instant;
 import java.util.List;
 
-public class BoardDetailsDTO {
+public class BoardDetailsDto {
 
     private String boardId;
     private String boardName;
