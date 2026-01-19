@@ -12,6 +12,6 @@ import org.springframework.data.annotation.TypeAlias;
 @NoArgsConstructor
 public class TaskStatusChange extends TaskActivityElement {
 
-    private TaskStatus prevStaus;
+    private TaskStatus prevStatus;
     private TaskStatus nextStatus;
 }
