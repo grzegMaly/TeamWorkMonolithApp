@@ -111,11 +111,13 @@ public class TaskServiceCreateTaskRepoTest {
 
         UserRepresentation user11 = new UserRepresentation();
         user11.setUserId(member11Id);
-        user11.setUsername("X");
+        user11.setUsername("XXXX");
+        user11.setImageUrl("https://random1.pl");
 
         UserRepresentation user12 = new UserRepresentation();
         user12.setUserId(member12Id);
-        user12.setUsername("X");
+        user12.setUsername("XXXX");
+        user12.setImageUrl("https://random2.pl");
 
         userRepresentationRepository.saveAll(List.of(boardOwner1, boardOwner2, deletedBoardOwner3, user11, user12));
 
