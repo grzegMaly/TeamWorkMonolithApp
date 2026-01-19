@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.mappers.task.activityMappers;
+package com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers;
 
 import com.mordiniaa.backend.dto.task.activity.TaskActivityElementDto;
 import com.mordiniaa.backend.dto.user.mongodb.UserDto;
