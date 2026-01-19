@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.task.serviceRepo;
 
-import com.mordiniaa.backend.dto.task.TaskCardDto;
+import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
@@ -181,7 +181,7 @@ public class TaskServiceCreateTaskRepoTest {
 
         createTaskRequest.setAssignedTo(Set.of(member11Id));
 
-        TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+        TaskShortDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
 
         assertNotNull(taskDto);
         assertNotNull(taskDto.getTaskStatus());
@@ -201,7 +201,7 @@ public class TaskServiceCreateTaskRepoTest {
 
         createTaskRequest.setAssignedTo(Set.of(owner1Id));
 
-        TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+        TaskShortDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
         assertNotNull(taskDto);
         assertNotNull(taskDto.getTitle());
         assertNotNull(taskDto.getDescription());
@@ -225,7 +225,7 @@ public class TaskServiceCreateTaskRepoTest {
 
         createTaskRequest.setAssignedTo(Set.of(owner1Id, member11Id, member12Id));
 
-        TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+        TaskShortDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
 
         assertNotNull(taskDto);
         assertNotNull(taskDto.getTitle());
@@ -250,7 +250,7 @@ public class TaskServiceCreateTaskRepoTest {
 
         createTaskRequest.setAssignedTo(Set.of(member11Id));
 
-        TaskCardDto taskDto = taskService.createTask(member11Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+        TaskShortDto taskDto = taskService.createTask(member11Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
 
         assertNotNull(taskDto);
         assertNotNull(taskDto.getTaskStatus());
@@ -270,7 +270,7 @@ public class TaskServiceCreateTaskRepoTest {
 
         createTaskRequest.setAssignedTo(Set.of(member11Id, member12Id));
 
-        TaskCardDto taskDto = taskService.createTask(member11Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+        TaskShortDto taskDto = taskService.createTask(member11Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
 
         assertNotNull(taskDto);
         assertNotNull(taskDto.getTaskStatus());
@@ -289,7 +289,7 @@ public class TaskServiceCreateTaskRepoTest {
     void checkPositionInCategoryIncrementTest() {
 
         createTaskRequest.setAssignedTo(Set.of(owner1Id));
-        TaskCardDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
+        TaskShortDto taskDto = taskService.createTask(owner1Id, board1.getId().toHexString(), board1CategoryName, createTaskRequest);
 
         assertEquals(0, taskDto.getPositionInCategory());
 
