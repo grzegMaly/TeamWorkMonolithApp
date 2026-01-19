@@ -22,13 +22,6 @@ db.createUser({
     pwd: "password"
 })
 
-db.notes.createIndex(
-    {
-        "title": "text",
-        "content": "text"
-    }
-)
-
 use team-work-test
 
 db.createUser({
@@ -39,10 +32,3 @@ db.createUser({
     ],
     pwd: "password"
 })
-
-db.notes.createIndex(
-    {
-        "title": "text",
-        "content": "text"
-    }
-)

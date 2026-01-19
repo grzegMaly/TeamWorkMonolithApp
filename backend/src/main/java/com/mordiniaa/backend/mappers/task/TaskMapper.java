@@ -1,7 +1,7 @@
 package com.mordiniaa.backend.mappers.task;
 
 import com.mordiniaa.backend.dto.task.TaskCardDto;
-import com.mordiniaa.backend.models.board.task.Task;
+import com.mordiniaa.backend.models.task.Task;
 import org.springframework.stereotype.Component;
 
 @Component

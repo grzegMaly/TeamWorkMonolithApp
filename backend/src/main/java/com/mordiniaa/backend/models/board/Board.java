@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -23,9 +24,11 @@ public class Board {
     @Id
     private ObjectId id;
 
+    @Indexed
     @Field("owner")
     private BoardMember owner;
 
+    @Indexed
     @Field("boardName")
     private String boardName;
 
