@@ -35,8 +35,12 @@ public class BoardMember {
                 && commentPermissions.containsAll(List.of(CommentPermission.values()));
     }
 
+    public boolean canViewBoard() {
+        return boardPermissions.contains(BoardPermission.VIEW_BOARD);
+    }
+
     public boolean canCreateTask() {
-        return boardPermissions.contains(BoardPermission.VIEW_BOARD)
+        return canViewBoard()
                 && taskPermissions.contains(TaskPermission.CREATE_TASK);
     }
 
