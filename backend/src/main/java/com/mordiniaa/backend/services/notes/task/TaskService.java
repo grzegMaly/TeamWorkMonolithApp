@@ -111,7 +111,12 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
         board.getTaskCategories().getFirst().addTaskId(savedTask.getId());
-        boardRepository.save(board);
+        mongoTemplate.updateFirst(Query.query(
+                        Criteria.where("_id").is(board.getId())
+                                .and("taskCategories.categoryName").is(categoryName)
+                ),
+                new Update().push("taskCategories.$.tasks", savedTask.getId()),
+                Board.class);
         return taskMapper.toShortenedDto(savedTask);
     }
 

@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -19,6 +20,7 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @Document("boards")
+@TypeAlias("board")
 public class Board {
 
     @Id
@@ -42,3 +44,4 @@ public class Board {
     @Field("createdAt")
     private Instant createdAt;
 }
+
