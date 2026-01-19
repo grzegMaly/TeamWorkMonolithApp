@@ -13,7 +13,7 @@ import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
-import com.mordiniaa.backend.request.board.task.CreateTaskRequest;
+import com.mordiniaa.backend.request.task.CreateTaskRequest;
 import com.mordiniaa.backend.services.notes.task.TaskService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
