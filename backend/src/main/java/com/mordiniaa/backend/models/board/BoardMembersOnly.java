@@ -1,9 +1,16 @@
 package com.mordiniaa.backend.models.board;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.List;
 
-public interface BoardMembersOnly{
-    BoardMember getOwner();
+@Getter
+@Setter
+@NoArgsConstructor
+public class BoardMembersOnly{
 
-    List<BoardMember> getMembers();
+    private BoardMember owner;
+    private List<BoardMember> members;
 }
