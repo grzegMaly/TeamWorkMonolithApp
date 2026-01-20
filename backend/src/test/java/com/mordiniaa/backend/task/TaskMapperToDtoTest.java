@@ -15,7 +15,6 @@ import com.mordiniaa.backend.models.task.activity.TaskComment;
 import com.mordiniaa.backend.models.task.activity.TaskStatusChange;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -189,5 +188,12 @@ public class TaskMapperToDtoTest {
                 user2Id, userRepresentation2,
                 user3Id, userRepresentation3));
         assertNotNull(detailsDTO);
+        assertEquals(user1Id, detailsDTO.getCreatedBy());
+
+        assertNotNull(detailsDTO.getAssignedTo());
+        assertNotNull(detailsDTO.getTaskActivityElements());
+        assertFalse(detailsDTO.getTaskActivityElements().isEmpty());
+
+        assertEquals(activityDate6, detailsDTO.getTaskActivityElements().getFirst().getCreatedAt());
     }
 }
