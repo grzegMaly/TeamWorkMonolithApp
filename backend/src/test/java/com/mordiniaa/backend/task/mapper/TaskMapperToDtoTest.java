@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.task;
+package com.mordiniaa.backend.task.mapper;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import javax.swing.event.MouseInputListener;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
