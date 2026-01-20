@@ -28,6 +28,10 @@ public class BoardMember {
             CommentPermission.EDIT_OWN_COMMENT
     ));
 
+    public BoardMember(UUID userId) {
+        this.userId = userId;
+    }
+
     public boolean hasFullPermissions() {
         return boardPermissions.containsAll(List.of(BoardPermission.values()))
                 && categoryPermissions.containsAll(List.of(CategoryPermissions.values()))
