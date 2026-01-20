@@ -5,6 +5,7 @@ import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
+import com.mordiniaa.backend.models.board.BoardMembersOnly;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.BoardRepository;
@@ -44,11 +45,11 @@ public class TaskService {
 
         ObjectId boardId = getObjectId(bId);
         ObjectId taskId = getObjectId(tId);
-        Board board = boardRepository.getBoardWithMembersByBoardIdAndMemberIdOrOwnerIdAndTaskId(boardId, userId, taskId)
+        BoardMembersOnly board = boardRepository.getBoardWithMembersByBoardIdAndMemberIdOrOwnerIdAndTaskId(boardId, userId, taskId)
                 .orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
 
-        Set<BoardMember> allMembers = new HashSet<>(board.getMembers());
-        allMembers.add(board.getOwner());
+        Set<BoardMember> allMembers = new HashSet<>(board.members());
+        allMembers.add(board.owner());
 
         BoardMember currentMember = allMembers.stream().filter(mb -> mb.getUserId().equals(userId))
                 .findFirst().orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
