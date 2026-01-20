@@ -195,5 +195,13 @@ public class TaskMapperToDtoTest {
         assertFalse(detailsDTO.getTaskActivityElements().isEmpty());
 
         assertEquals(activityDate6, detailsDTO.getTaskActivityElements().getFirst().getCreatedAt());
+        assertNotNull(detailsDTO.getTaskActivityElements().getFirst().getUser());
+        assertEquals(user3Id, detailsDTO.getTaskActivityElements().getFirst().getUser().getUserId());
+        assertEquals(user3Name, detailsDTO.getTaskActivityElements().getFirst().getUser().getUsername());
+
+        assertEquals(taskName, detailsDTO.getTitle());
+        assertEquals(description, detailsDTO.getDescription());
+        assertEquals(taskStatus2, detailsDTO.getTaskStatus());
+        System.out.println(task);
     }
 }
