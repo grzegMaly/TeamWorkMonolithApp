@@ -1,7 +1,12 @@
 package com.mordiniaa.backend.task.serviceRepo;
 
 import com.mordiniaa.backend.dto.task.TaskShortDto;
+import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
+import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
+import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCategoryChangeDtoMapper;
+import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
+import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskStatusChangeDtoMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
@@ -42,7 +47,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataMongoTest
 @Import({
         TaskMapper.class,
-        TaskService.class
+        TaskService.class,
+        TaskActivityMapper.class,
+        TaskCommentDtoMapper.class,
+        TaskCategoryChangeDtoMapper.class,
+        TaskStatusChangeDtoMapper.class,
+        UserRepresentationMapper.class
 })
 public class TaskServiceCreateTaskRepoTest {
 
