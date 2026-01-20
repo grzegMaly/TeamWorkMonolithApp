@@ -201,6 +201,5 @@ public class TaskMapperToDtoTest {
         assertEquals(taskName, detailsDTO.getTitle());
         assertEquals(description, detailsDTO.getDescription());
         assertEquals(taskStatus2, detailsDTO.getTaskStatus());
-        System.out.println(task);
     }
 }
