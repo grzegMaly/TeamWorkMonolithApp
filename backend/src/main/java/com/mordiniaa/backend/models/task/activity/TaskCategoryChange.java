@@ -12,6 +12,6 @@ import org.springframework.data.annotation.TypeAlias;
 @NoArgsConstructor
 public class TaskCategoryChange extends TaskActivityElement {
 
-    private ObjectId prevCategory;
-    private ObjectId nextCategory;
+    private String prevCategory;
+    private String nextCategory;
 }

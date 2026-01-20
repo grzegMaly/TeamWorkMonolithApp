@@ -1,16 +1,16 @@
 package com.mordiniaa.backend.dto.task;
 
-import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
+import com.mordiniaa.backend.dto.task.activity.TaskActivityElementDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class TaskDetailsDTO extends TaskShortDto {
 
-    private Set<TaskActivityElement> taskActivityElements;
+    private List<TaskActivityElementDto> taskActivityElements;
 }
