@@ -48,8 +48,8 @@ public class TaskService {
         BoardMembersOnly board = boardRepository.getBoardWithMembersByBoardIdAndMemberIdOrOwnerIdAndTaskId(boardId, userId, taskId)
                 .orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
 
-        Set<BoardMember> allMembers = new HashSet<>(board.members());
-        allMembers.add(board.owner());
+        Set<BoardMember> allMembers = new HashSet<>(board.getMembers());
+        allMembers.add(board.getOwner());
 
         BoardMember currentMember = allMembers.stream().filter(mb -> mb.getUserId().equals(userId))
                 .findFirst().orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
