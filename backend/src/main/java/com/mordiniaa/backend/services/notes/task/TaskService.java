@@ -8,13 +8,13 @@ import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.BoardMembersOnly;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
-import com.mordiniaa.backend.repositories.mongo.BoardRepository;
+import com.mordiniaa.backend.repositories.mongo.board.BoardAggregationRepository;
+import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
-import org.hibernate.validator.cfg.defs.UUIDDef;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -35,6 +35,7 @@ public class TaskService {
 
     private final UserRepresentationRepository userRepresentationRepository;
     private final BoardRepository boardRepository;
+    private final BoardAggregationRepository boardAggregationRepository;
     private final TaskRepository taskRepository;
     private final MongoTemplate mongoTemplate;
     private final TaskMapper taskMapper;
@@ -45,7 +46,7 @@ public class TaskService {
 
         ObjectId boardId = getObjectId(bId);
         ObjectId taskId = getObjectId(tId);
-        BoardMembersOnly board = boardRepository.getBoardWithMembersByBoardIdAndMemberIdOrOwnerIdAndTaskId(boardId, userId, taskId)
+        BoardMembersOnly board = boardAggregationRepository.findBoardMembersForTask(boardId, userId, taskId)
                 .orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
 
         Set<BoardMember> allMembers = new HashSet<>(board.getMembers());

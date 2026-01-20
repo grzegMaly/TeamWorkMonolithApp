@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.repositories.mongo;
+package com.mordiniaa.backend.repositories.mongo.board;
 
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMembersOnly;
