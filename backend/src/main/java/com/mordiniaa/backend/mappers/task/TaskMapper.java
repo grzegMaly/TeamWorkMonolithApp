@@ -21,21 +21,11 @@ public class TaskMapper {
     private final TaskActivityMapper taskActivityMapper;
 
     public TaskShortDto toShortenedDto(Task task) {
-
-        TaskShortDto taskShortDto = new TaskShortDto();
-        taskShortDto.setId(task.getId().toHexString());
-        taskShortDto.setTitle(task.getTitle());
-        taskShortDto.setDescription(task.getDescription());
-        taskShortDto.setTaskStatus(task.getTaskStatus());
-        taskShortDto.setAssignedTo(task.getAssignedTo());
-        taskShortDto.setPositionInCategory(task.getPositionInCategory());
-        taskShortDto.setDeadline(task.getDeadline());
-        taskShortDto.setCreatedBy(task.getCreatedBy());
-        return taskShortDto;
+        return fillBase(task, new TaskShortDto());
     }
 
     public TaskDetailsDTO toDetailedDto(Task task, Map<UUID, UserRepresentation> users) {
-        TaskDetailsDTO dto = (TaskDetailsDTO) toShortenedDto(task);
+        TaskDetailsDTO dto = fillBase(task, new TaskDetailsDTO());
         List<TaskActivityElementDto> elements = task.getActivityElements()
                 .stream()
                 .map(tElement -> {
@@ -45,6 +35,18 @@ public class TaskMapper {
                 .sorted(Comparator.comparing(TaskActivityElementDto::getCreatedAt))
                 .toList();
         dto.setTaskActivityElements(elements);
+        return dto;
+    }
+
+    private <T extends TaskShortDto> T fillBase(Task task, T dto) {
+        dto.setId(task.getId().toHexString());
+        dto.setTitle(task.getTitle());
+        dto.setDescription(task.getDescription());
+        dto.setTaskStatus(task.getTaskStatus());
+        dto.setAssignedTo(task.getAssignedTo());
+        dto.setPositionInCategory(task.getPositionInCategory());
+        dto.setDeadline(task.getDeadline());
+        dto.setCreatedBy(task.getCreatedBy());
         return dto;
     }
 }
