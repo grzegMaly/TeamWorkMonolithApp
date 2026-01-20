@@ -33,7 +33,7 @@ public class TaskMapper {
                     return taskActivityMapper.toDto(tElement, user);
                 })
                 .sorted(Comparator.comparing(TaskActivityElementDto::getCreatedAt))
-                .toList();
+                .toList().reversed();
         dto.setTaskActivityElements(elements);
         return dto;
     }
