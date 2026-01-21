@@ -147,8 +147,8 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
         board = boardRepository.save(board);
 
         CreateTaskRequest createTaskRequest = new CreateTaskRequest(title, description, deadline);
-        createTaskRequest.setAssignedTo(Set.of(ownerId, member1Id, member2Id));
-        taskId = taskService.createTask(ownerId, board.getId().toHexString(), boardCategoryName, createTaskRequest).getId();
+        createTaskRequest.setAssignedTo(Set.of(member1Id, member2Id));
+        taskId = taskService.createTask(member1Id, board.getId().toHexString(), boardCategoryName, createTaskRequest).getId();
 
         Task task = taskRepository.findById(new ObjectId(taskId)).orElseThrow(RuntimeException::new);
         task.setActivityElements(List.of(taskComment1, taskCategoryChange1, taskComment2, taskStatusChange1, taskCategoryChange2, taskStatusChange2));
@@ -166,6 +166,12 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
     @DisplayName("Delete Task By Id Valid Test")
     void deleteTaskByIdValidTest() {
         assertDoesNotThrow(() -> taskService.deleteTaskFromBoard(ownerId, board.getId().toHexString(), taskId));
+    }
+
+    @Test
+    @DisplayName("Delete Task By Id Owned Task Test")
+    void deleteTaskByIdOwnedTaskTest() {
+        assertDoesNotThrow(() -> taskService.deleteTaskFromBoard(member1Id, board.getId().toHexString(), taskId));
     }
 
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
