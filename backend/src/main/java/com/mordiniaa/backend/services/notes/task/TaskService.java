@@ -5,13 +5,16 @@ import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
-import com.mordiniaa.backend.models.board.BoardMembersOnly;
+import com.mordiniaa.backend.models.board.BoardMembers;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
-import com.mordiniaa.backend.repositories.mongo.board.BoardAggregationRepository;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersTasksOnly;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.TaskCreatorProjection;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -64,7 +67,7 @@ public class TaskService {
 
         Set<UUID> userIds = allMembers.stream().map(BoardMember::getUserId)
                 .collect(Collectors.toSet());
-        Map<UUID, UserRepresentation> users =userRepresentationRepository.findAllByUserIdIn(userIds)
+        Map<UUID, UserRepresentation> users = userRepresentationRepository.findAllByUserIdIn(userIds)
                 .stream()
                 .collect(Collectors.toMap(
                         UserRepresentation::getUserId,
@@ -144,8 +147,41 @@ public class TaskService {
         return taskMapper.toShortenedDto(savedTask);
     }
 
-    public void deleteTaskFromBoard(UUID userId, String taskId) {
+    public void deleteTaskFromBoard(UUID userId, String bId, String tId) {
 
+        checkUserAvailability(userId);
+
+        ObjectId boardId = getObjectId(bId);
+        ObjectId taskId = getObjectId(tId);
+
+        BoardMembersTasksOnly board = boardAggregationRepository
+                .findBoardWithSpecifiedMemberOnly(boardId, userId, taskId)
+                .orElseThrow(RuntimeException::new);
+
+        BoardMember currentMember = getBoardMember(board, userId);
+        TaskCreatorProjection task = board.getTasks().getFirst();
+
+        UUID taskAuthor = task.getCreatedBy();
+        UUID boardOwner = board.getOwner().getUserId();
+
+        if (!taskAuthor.equals(userId)) {
+            if (taskAuthor.equals(boardOwner))
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+            if (!currentMember.canDeleteTask())
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+        deleteTask(boardId, taskId);
+    }
+
+    private void deleteTask(ObjectId boardId, ObjectId taskId) {
+        Query query = Query.query(Criteria
+                .where("_id").is(boardId)
+                .and("taskCategories.tasks").is(taskId));
+        Update update = new Update()
+                .pull("taskCategories.$[].tasks", taskId);
+        mongoTemplate.updateFirst(query, update, Board.class);
+        taskRepository.deleteById(taskId);
     }
 
     private ObjectId getObjectId(String id) {
@@ -162,7 +198,7 @@ public class TaskService {
         }
     }
 
-    private BoardMember getBoardMember(Board board, UUID userId) {
+    private BoardMember getBoardMember(BoardMembers board, UUID userId) {
         if (board.getOwner().getUserId().equals(userId)) {
             return board.getOwner();
         } else {
