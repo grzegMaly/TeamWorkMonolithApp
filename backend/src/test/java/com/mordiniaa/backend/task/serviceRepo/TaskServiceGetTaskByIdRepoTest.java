@@ -17,14 +17,12 @@ import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.task.TaskStatus;
-import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
 import com.mordiniaa.backend.models.task.activity.TaskCategoryChange;
 import com.mordiniaa.backend.models.task.activity.TaskComment;
 import com.mordiniaa.backend.models.task.activity.TaskStatusChange;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
-import com.mordiniaa.backend.repositories.mongo.board.BoardAggregationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
@@ -92,14 +90,6 @@ public class TaskServiceGetTaskByIdRepoTest {
     private final String description = "Description";
     private final Instant deadline = Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
 
-    private UserRepresentation boardOwner;
-    private UserRepresentation user1;
-    private UserRepresentation user2;
-
-    private BoardMember boardMemberOwner;
-    private BoardMember boardMember1;
-    private BoardMember boardMember2;
-
     private String taskId;
 
     private final Instant createdAt = Instant.now().minus(3, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
@@ -120,32 +110,32 @@ public class TaskServiceGetTaskByIdRepoTest {
     @BeforeEach
     void setUp() {
 
-        boardOwner = new UserRepresentation();
+        UserRepresentation boardOwner = new UserRepresentation();
         boardOwner.setUserId(ownerId);
         boardOwner.setUsername("Owner 1");
         boardOwner.setImageUrl("https://random1.pl");
 
-        user1 = new UserRepresentation();
+        UserRepresentation user1 = new UserRepresentation();
         user1.setUserId(member1Id);
         user1.setUsername("Mem 1");
         user1.setImageUrl("https://random1.pl");
 
-        user2 = new UserRepresentation();
+        UserRepresentation user2 = new UserRepresentation();
         user2.setUserId(member2Id);
         user2.setUsername("Mem 2");
         user2.setImageUrl("https://random2.pl");
         userRepresentationRepository.saveAll(List.of(boardOwner, user1, user2));
 
-        boardMemberOwner = new BoardMember();
+        BoardMember boardMemberOwner = new BoardMember();
         boardMemberOwner.setUserId(ownerId);
         boardMemberOwner.setBoardPermissions(boardPermissions);
         boardMemberOwner.setTaskPermissions(taskPermissions);
 
-        boardMember1 = new BoardMember();
+        BoardMember boardMember1 = new BoardMember();
         boardMember1.setUserId(member1Id);
         boardMember1.setBoardPermissions(boardPermissions);
 
-        boardMember2 = new BoardMember();
+        BoardMember boardMember2 = new BoardMember();
         boardMember2.setUserId(member2Id);
 
         TaskCategory boardCategory = new TaskCategory();
@@ -153,7 +143,7 @@ public class TaskServiceGetTaskByIdRepoTest {
         boardCategory.setCategoryName(boardCategoryName);
         board = new Board();
         board.setBoardName("Test 1");
-        board.setOwner(this.boardMemberOwner);
+        board.setOwner(boardMemberOwner);
         board.setMembers(List.of(boardMember1, boardMember2));
         board.setTaskCategories(List.of(boardCategory));
 
