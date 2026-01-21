@@ -18,6 +18,7 @@ import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
 import com.mordiniaa.backend.services.notes.task.TaskService;
 import org.bson.types.ObjectId;
@@ -52,7 +53,8 @@ import static org.junit.jupiter.api.Assertions.*;
         TaskCommentDtoMapper.class,
         TaskCategoryChangeDtoMapper.class,
         TaskStatusChangeDtoMapper.class,
-        UserRepresentationMapper.class
+        UserRepresentationMapper.class,
+        BoardAggregationRepositoryImpl.class
 })
 public class TaskServiceCreateTaskRepoTest {
 
