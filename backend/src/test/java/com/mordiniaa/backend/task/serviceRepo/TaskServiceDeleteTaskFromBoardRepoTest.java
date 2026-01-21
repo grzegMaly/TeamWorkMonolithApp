@@ -162,6 +162,12 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
         taskRepository.deleteAll();
     }
 
+    @Test
+    @DisplayName("Delete Task By Id Valid Test")
+    void deleteTaskByIdValidTest() {
+        assertDoesNotThrow(() -> taskService.deleteTaskFromBoard(ownerId, board.getId().toHexString(), taskId));
+    }
+
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
         TaskComment taskComment = new TaskComment();
         taskComment.setCreatedAt(time);
