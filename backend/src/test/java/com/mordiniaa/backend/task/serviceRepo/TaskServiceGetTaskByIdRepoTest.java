@@ -259,6 +259,20 @@ public class TaskServiceGetTaskByIdRepoTest {
                 () -> taskService.getTaskDetailsById(ownerId, board.getId().toHexString(), ObjectId.get().toHexString()));
     }
 
+    @Test
+    @DisplayName("Get Task By Id Invalid Object Ids Test")
+    void getTaskByIdInvalidObjectIdsTest() {
+
+        assertThrows(RuntimeException.class,
+                () -> taskService.getTaskDetailsById(ownerId, "vewrgvswedvcwerg", ObjectId.get().toHexString()));
+
+        assertThrows(RuntimeException.class,
+                () -> taskService.getTaskDetailsById(ownerId, board.getId().toHexString(), "awedvcesgfrvsefdvewrgerg"));
+
+        assertThrows(RuntimeException.class,
+                () -> taskService.getTaskDetailsById(ownerId, "vewrgvswedvcwerg", "vcevfefdvawedvcwrger"));
+    }
+
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
         TaskComment taskComment = new TaskComment();
         taskComment.setCreatedAt(time);
