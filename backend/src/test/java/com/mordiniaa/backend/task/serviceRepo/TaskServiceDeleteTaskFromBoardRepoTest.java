@@ -178,7 +178,15 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
     @Test
     @DisplayName("Delete Task Not Permitted Test")
     void deleteTaskNotPermittedTest() {
-        assertThrows(RuntimeException.class, () -> taskService.deleteTaskFromBoard(member2Id, board.getId().toHexString(), taskId));
+        assertThrows(RuntimeException.class,
+                () -> taskService.deleteTaskFromBoard(member2Id, board.getId().toHexString(), taskId));
+    }
+
+    @Test
+    @DisplayName("Delete Task Not Found Test")
+    void deleteTaskNotFoundTest() {
+        assertThrows(RuntimeException.class,
+                () -> taskService.deleteTaskFromBoard(ownerId, board.getId().toHexString(), ObjectId.get().toHexString()));
     }
 
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
