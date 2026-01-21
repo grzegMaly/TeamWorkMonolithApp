@@ -227,6 +227,14 @@ public class TaskServiceGetTaskByIdRepoTest {
         assertEquals(6, taskDetailsDTO.getTaskActivityElements().size());
     }
 
+    @Test
+    @DisplayName("Get Task By Id And Member Without Permission Invalid Test")
+    void getTaskByIdAndMemberWithoutPermissionInvalidTest() {
+
+        assertThrows(RuntimeException.class,
+                () -> taskService.getTaskDetailsById(member2Id, board.getId().toHexString(), taskId));
+    }
+
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
         TaskComment taskComment = new TaskComment();
         taskComment.setCreatedAt(time);
