@@ -147,7 +147,6 @@ public class TaskServiceGetTaskByIdRepoTest {
 
         boardMember2 = new BoardMember();
         boardMember2.setUserId(member2Id);
-        boardMember2.setBoardPermissions(boardPermissions);
 
         TaskCategory boardCategory = new TaskCategory();
         String boardCategoryName = "Testing";
@@ -211,6 +210,21 @@ public class TaskServiceGetTaskByIdRepoTest {
         TaskCommentDto oldestCastedElement = (TaskCommentDto) oldestElement;
         assertEquals(taskComment1.getComment(), oldestCastedElement.getComment());
         assertEquals(taskComment1.isUpdated(), oldestCastedElement.isUpdated());
+    }
+
+    @Test
+    @DisplayName("Get Task By Id And Member Id Valid Test")
+    void getTaskByIdAndMemberIdValidTest() {
+
+        TaskDetailsDTO taskDetailsDTO = taskService.getTaskDetailsById(member1Id, board.getId().toHexString(), taskId);
+        assertNotNull(taskDetailsDTO);
+        assertEquals(title, taskDetailsDTO.getTitle());
+        assertEquals(description, taskDetailsDTO.getDescription());
+        assertEquals(TaskStatus.UNCOMPLETED, taskDetailsDTO.getTaskStatus());
+
+        assertNotNull(taskDetailsDTO.getTaskStatus());
+        assertFalse(taskDetailsDTO.getTaskActivityElements().isEmpty());
+        assertEquals(6, taskDetailsDTO.getTaskActivityElements().size());
     }
 
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
