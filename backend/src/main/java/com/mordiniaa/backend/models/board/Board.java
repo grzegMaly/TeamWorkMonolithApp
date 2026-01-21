@@ -21,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @Document("boards")
 @TypeAlias("board")
-public class Board {
+public class Board implements BoardMembers {
 
     @Id
     private ObjectId id;
