@@ -235,6 +235,14 @@ public class TaskServiceGetTaskByIdRepoTest {
                 () -> taskService.getTaskDetailsById(member2Id, board.getId().toHexString(), taskId));
     }
 
+    @Test
+    @DisplayName("Get Task By Id User Not Found Test")
+    void getTaskByIdUserNotFoundTest() {
+
+        assertThrows(RuntimeException.class,
+                () -> taskService.getTaskDetailsById(UUID.randomUUID(), board.getId().toHexString(), taskId));
+    }
+
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
         TaskComment taskComment = new TaskComment();
         taskComment.setCreatedAt(time);
