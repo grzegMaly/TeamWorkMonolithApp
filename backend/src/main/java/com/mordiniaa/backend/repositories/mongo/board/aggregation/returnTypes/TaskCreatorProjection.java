@@ -1,9 +1,16 @@
 package com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes;
 
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.UUID;
 
-public interface TaskCreatorProjection {
+@Getter
+@Setter
+@NoArgsConstructor
+public class TaskCreatorProjection {
 
-    UUID getCreatedBy();
+    private UUID getCreatedBy;
 }
