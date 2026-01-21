@@ -1,5 +1,6 @@
-package com.mordiniaa.backend.models.board;
+package com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes;
 
+import com.mordiniaa.backend.models.board.BoardMember;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
