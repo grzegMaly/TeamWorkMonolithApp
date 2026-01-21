@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataMongoTest
 @ActiveProfiles("test")
@@ -172,6 +173,12 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
     @DisplayName("Delete Task By Id Owned Task Test")
     void deleteTaskByIdOwnedTaskTest() {
         assertDoesNotThrow(() -> taskService.deleteTaskFromBoard(member1Id, board.getId().toHexString(), taskId));
+    }
+
+    @Test
+    @DisplayName("Delete Task Not Permitted Test")
+    void deleteTaskNotPermittedTest() {
+        assertThrows(RuntimeException.class, () -> taskService.deleteTaskFromBoard(member2Id, board.getId().toHexString(), taskId));
     }
 
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
