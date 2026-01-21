@@ -12,5 +12,5 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TaskCreatorProjection {
 
-    private UUID getCreatedBy;
+    private UUID createdBy;
 }
