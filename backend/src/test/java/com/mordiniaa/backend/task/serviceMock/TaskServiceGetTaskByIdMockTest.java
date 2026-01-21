@@ -9,6 +9,7 @@ import com.mordiniaa.backend.dto.user.mongodb.UserDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
+import com.mordiniaa.backend.models.board.BoardMembersOnly;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.board.permissions.CategoryPermissions;
 import com.mordiniaa.backend.models.board.permissions.CommentPermission;
@@ -20,9 +21,9 @@ import com.mordiniaa.backend.models.task.activity.TaskCategoryChange;
 import com.mordiniaa.backend.models.task.activity.TaskComment;
 import com.mordiniaa.backend.models.task.activity.TaskStatusChange;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
-import com.mordiniaa.backend.repositories.mongo.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
+import com.mordiniaa.backend.repositories.mongo.board.BoardAggregationRepository;
 import com.mordiniaa.backend.services.notes.task.TaskService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,7 +61,7 @@ public class TaskServiceGetTaskByIdMockTest {
     private TaskMapper taskMapper;
 
     @Mock
-    private BoardRepository boardRepository;
+    private BoardAggregationRepository boardAggregationRepository;
 
     private final UUID user1Id = UUID.randomUUID();
     private final UUID user2Id = UUID.randomUUID();
@@ -131,12 +134,17 @@ public class TaskServiceGetTaskByIdMockTest {
         when(userRepresentationRepository.existsUserRepresentationByUserIdAndDeletedFalse(user1Id))
                 .thenReturn(true);
 
-        when(boardRepository
-                .getBoardWithMembersByBoardIdAndMemberIdOrOwnerIdAndTaskId(
-                        board.getId(),
-                        user1Id,
-                        task.getId()))
-                .thenReturn(Optional.ofNullable(board));
+        BoardMembersOnly boardProjection = mock(BoardMembersOnly.class);
+
+        when(boardProjection.getOwner()).thenReturn(boardMember1);
+        when(boardProjection.getMembers()).thenReturn(List.of(boardMember2, boardMember3));
+
+        when(boardAggregationRepository
+                .findBoardMembersForTask(
+                        any(ObjectId.class),
+                        any(UUID.class),
+                        any(ObjectId.class)))
+                .thenReturn(Optional.of(boardProjection));
 
         when(taskRepository.findById(task.getId()))
                 .thenReturn(Optional.ofNullable(task));
@@ -152,7 +160,7 @@ public class TaskServiceGetTaskByIdMockTest {
         when(taskMapper.toDetailedDto(task, users))
                 .thenReturn(createDto(task, users));
 
-        TaskDetailsDTO taskDetailsDTO = taskService.getTaskDetailsById(user1Id, board.getId().toHexString(), task.getId().toHexString());
+        TaskDetailsDTO taskDetailsDTO = taskService.getTaskDetailsById(user1Id, ObjectId.get().toHexString(), task.getId().toHexString());
         assertNotNull(taskDetailsDTO);
     }
 
