@@ -51,4 +51,8 @@ public class BoardMember {
     public boolean canAssignTask() {
         return taskPermissions.contains(TaskPermission.ASSIGN_TASK);
     }
+
+    public boolean canDeleteTask() {
+        return taskPermissions.contains(TaskPermission.DELETE_TASK);
+    }
 }
