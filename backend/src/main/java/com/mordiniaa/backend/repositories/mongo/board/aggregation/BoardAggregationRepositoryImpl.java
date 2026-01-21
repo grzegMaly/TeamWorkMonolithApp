@@ -1,6 +1,6 @@
-package com.mordiniaa.backend.repositories.mongo.board;
+package com.mordiniaa.backend.repositories.mongo.board.aggregation;
 
-import com.mordiniaa.backend.models.board.BoardMembersOnly;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -38,5 +38,10 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                 .getMappedResults()
                 .stream()
                 .findFirst();
+    }
+
+    public Optional<BoardMembersOnly> findBoardWithSpecifiedMemberOnly(ObjectId boardId, UUID userId, ObjectId taskId) {
+
+        return Optional.empty();
     }
 }

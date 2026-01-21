@@ -1,7 +1,7 @@
 package com.mordiniaa.backend.repositories.mongo.board;
 
 import com.mordiniaa.backend.models.board.Board;
-import com.mordiniaa.backend.models.board.BoardMembersOnly;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;

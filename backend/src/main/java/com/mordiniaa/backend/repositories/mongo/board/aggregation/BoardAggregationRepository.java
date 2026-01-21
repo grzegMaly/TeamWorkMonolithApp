@@ -1,6 +1,6 @@
-package com.mordiniaa.backend.repositories.mongo.board;
+package com.mordiniaa.backend.repositories.mongo.board.aggregation;
 
-import com.mordiniaa.backend.models.board.BoardMembersOnly;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import org.bson.types.ObjectId;
 
 import java.util.Optional;
