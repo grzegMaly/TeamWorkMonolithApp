@@ -189,6 +189,13 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
                 () -> taskService.deleteTaskFromBoard(ownerId, board.getId().toHexString(), ObjectId.get().toHexString()));
     }
 
+    @Test
+    @DisplayName("Delete Task User Not Found Test")
+    void deleteTaskUserNotFoundTest() {
+        assertThrows(RuntimeException.class,
+                () -> taskService.deleteTaskFromBoard(UUID.randomUUID(), board.getId().toHexString(), taskId));
+    }
+
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
         TaskComment taskComment = new TaskComment();
         taskComment.setCreatedAt(time);
