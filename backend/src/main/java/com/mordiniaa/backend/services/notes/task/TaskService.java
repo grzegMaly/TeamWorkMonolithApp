@@ -16,6 +16,7 @@ import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersTasksOnly;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.TaskCreatorProjection;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
+import com.mordiniaa.backend.services.notes.user.MongoUserService;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -42,10 +43,11 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final MongoTemplate mongoTemplate;
     private final TaskMapper taskMapper;
+    private final MongoUserService mongoUserService;
 
     public TaskDetailsDTO getTaskDetailsById(UUID userId, String bId, String tId) {
 
-        checkUserAvailability(userId);
+        mongoUserService.checkUserAvailability(userId);
 
         ObjectId boardId = getObjectId(bId);
         ObjectId taskId = getObjectId(tId);
@@ -80,7 +82,7 @@ public class TaskService {
     @Transactional
     public TaskShortDto createTask(UUID userId, String bId, String categoryName, CreateTaskRequest createTaskRequest) {
 
-        checkUserAvailability(userId);
+        mongoUserService.checkUserAvailability(userId);
 
         ObjectId boardId = new ObjectId(bId);
         Board board = boardRepository.getBoardByIdWithCategoryAndBoardMemberOrOwner(boardId, categoryName, userId)
@@ -149,7 +151,7 @@ public class TaskService {
 
     public void deleteTaskFromBoard(UUID userId, String bId, String tId) {
 
-        checkUserAvailability(userId);
+        mongoUserService.checkUserAvailability(userId);
 
         ObjectId boardId = getObjectId(bId);
         ObjectId taskId = getObjectId(tId);
@@ -189,13 +191,6 @@ public class TaskService {
             throw new RuntimeException(); // TODO: Change in Exceptions Section
         }
         return new ObjectId(id);
-    }
-
-    private void checkUserAvailability(UUID userId) {
-        boolean result = userRepresentationRepository.existsUserRepresentationByUserIdAndDeletedFalse(userId);
-        if (!result) {
-            throw new RuntimeException(); //TODO: Change in Exceptions Section
-        }
     }
 
     private BoardMember getBoardMember(BoardMembers board, UUID userId) {
