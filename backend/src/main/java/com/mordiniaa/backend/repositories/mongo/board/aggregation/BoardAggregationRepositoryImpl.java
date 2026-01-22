@@ -44,45 +44,6 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
     }
 
     @Override
-    public Optional<BoardMembersTasksOnly> findBoardWithSpecifiedMemberOnly(ObjectId boardId, UUID userId, ObjectId taskId) {
-
-        LookupOperation lookupOperation = LookupOperation.newLookup()
-                .from("tasks")
-                .let(VariableOperators.Let.ExpressionVariable
-                        .newVariable("taskIds")
-                        .forField("$taskCategories.tasks"))
-                .pipeline(
-                        Aggregation.match(
-                                Criteria.expr(() ->
-                                        new Document("$in", List.of("$_id", "$$taskIds"))
-                                )
-                        ),
-                        Aggregation.project("createdBy")
-                )
-                .as("tasks");
-
-
-        Aggregation aggr = Aggregation.newAggregation(
-                match(Criteria.where("_id").is(boardId)),
-                match(new Criteria().orOperator(
-                        Criteria.where("owner.userId").is(userId),
-                        Criteria.where("members.userId").is(userId)
-                )),
-                unwind("taskCategories"),
-                match(Criteria.where("taskCategories.tasks").is(taskId)),
-                lookupOperation,
-                group("_id")
-                        .first("owner").as("owner")
-                        .first("members").as("members")
-                        .first("tasks").as("tasks")
-        );
-        return mongoTemplate.aggregate(aggr, "boards", BoardMembersTasksOnly.class)
-                .getMappedResults()
-                .stream()
-                .findFirst();
-    }
-
-    @Override
     public Optional<BoardMembersTasksOnly> findBoardForTaskWithCategory(ObjectId boardId, UUID userId, ObjectId taskId) {
 
         Aggregation aggr = Aggregation.newAggregation(
