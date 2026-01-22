@@ -5,13 +5,13 @@ import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
+import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import com.mordiniaa.backend.models.task.Task;
-import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
-import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
+import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersTasksOnly;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.TaskCreatorProjectionWithOptPosition;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
@@ -45,6 +45,11 @@ public class TaskService {
     private final MongoIdUtils mongoIdUtils;
     private final BoardUtils boardUtils;
 
+    protected Task findTaskById(ObjectId taskId) {
+        return taskRepository.findById(taskId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+    }
+
     public TaskDetailsDTO getTaskDetailsById(UUID userId, String bId, String tId) {
 
         mongoUserService.checkUserAvailability(userId);
@@ -69,14 +74,8 @@ public class TaskService {
 
         Set<UUID> userIds = allMembers.stream().map(BoardMember::getUserId)
                 .collect(Collectors.toSet());
-        Map<UUID, UserRepresentation> users = userRepresentationRepository.findAllByUserIdIn(userIds)
-                .stream()
-                .collect(Collectors.toMap(
-                        UserRepresentation::getUserId,
-                        Function.identity()
-                ));
 
-        return taskMapper.toDetailedDto(task, users);
+        return detailedTaskDto(task, userIds);
     }
 
     @Transactional
@@ -199,5 +198,17 @@ public class TaskService {
         Update decUpdate = new Update()
                 .inc("positionInCategory", -1);
         mongoTemplate.updateMulti(decQuery, decUpdate, Task.class);
+    }
+
+    protected TaskDetailsDTO detailedTaskDto(Task task, Set<UUID> userIds) {
+
+        Map<UUID, UserRepresentation> users = userRepresentationRepository.findAllByUserIdIn(userIds)
+                .stream()
+                .collect(Collectors.toMap(
+                        UserRepresentation::getUserId,
+                        Function.identity()
+                ));
+
+        return taskMapper.toDetailedDto(task, users);
     }
 }
