@@ -2,12 +2,14 @@ package com.mordiniaa.backend.repositories.mongo.board.aggregation;
 
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersTasksOnly;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardWithTaskCategories;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.CriteriaExtensionsKt;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -76,6 +78,25 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                         .first("tasks").as("tasks")
         );
         return mongoTemplate.aggregate(aggr, "boards", BoardMembersTasksOnly.class)
+                .getMappedResults()
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<BoardWithTaskCategories> findBoardForTaskWithCategories(ObjectId boardId, UUID userId, ObjectId taskId) {
+
+        Aggregation aggr = Aggregation.newAggregation(
+                match(Criteria.where("_id").is(boardId)),
+                match(new Criteria().orOperator(
+                        Criteria.where("owner.userId").is(userId),
+                        Criteria.where("members.userId").is(userId)
+                )),
+                match(Criteria.where("taskCategories.tasks").is(taskId)),
+                project("owner", "members", "taskCategories")
+        );
+
+        return mongoTemplate.aggregate(aggr, "boards", BoardWithTaskCategories.class)
                 .getMappedResults()
                 .stream()
                 .findFirst();
