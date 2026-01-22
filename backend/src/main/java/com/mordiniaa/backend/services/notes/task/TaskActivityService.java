@@ -3,19 +3,22 @@ package com.mordiniaa.backend.services.notes.task;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
+import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
-import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.task.Task;
+import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
 import com.mordiniaa.backend.models.task.activity.TaskCategoryChange;
+import com.mordiniaa.backend.models.task.activity.TaskComment;
+import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
-import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardWithTaskCategories;
 import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
+import com.mordiniaa.backend.request.task.UploadCommentRequest;
 import com.mordiniaa.backend.services.notes.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
@@ -29,22 +32,22 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TaskActivityService {
 
     private final MongoUserService mongoUserService;
-    private final BoardRepository boardRepository;
     private final BoardAggregationRepository boardAggregationRepository;
-    private final UserRepresentationRepository userRepresentationRepository;
     private final MongoIdUtils mongoIdUtils;
     private final BoardUtils boardUtils;
     private final TaskRepository taskRepository;
     private final MongoTemplate mongoTemplate;
     private final TaskMapper taskMapper;
+    private final UserRepresentationRepository userRepresentationRepository;
 
     @Transactional
     public TaskShortDto changeTaskPosition(UUID userId, String bId, String tId, UpdateTaskPositionRequest request) {
@@ -55,7 +58,7 @@ public class TaskActivityService {
         ObjectId taskId = mongoIdUtils.getObjectId(tId);
 
         BoardWithTaskCategories board = boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
-                        .orElseThrow(RuntimeException::new); // TODO: Change in Exceptions Section
+                .orElseThrow(RuntimeException::new); // TODO: Change in Exceptions Section
 
         BoardMember currentMember = boardUtils.getBoardMember(board, userId);
         if (!currentMember.canMoveTaskBetweenCategories()) {
@@ -121,8 +124,44 @@ public class TaskActivityService {
         return taskMapper.toShortenedDto(task);
     }
 
-    public void writeComment() {
+    public TaskDetailsDTO writeComment(UUID userId, String bId, String tId, UploadCommentRequest uploadCommentRequest) {
 
+        mongoUserService.checkUserAvailability(userId);
+
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+        ObjectId taskId = mongoIdUtils.getObjectId(tId);
+
+        BoardWithTaskCategories board = boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
+        if (!currentMember.canCommentTask())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        if (!task.getAssignedTo().contains(currentMember.getUserId())) {
+            if (!currentMember.getUserId().equals(board.getOwner().getUserId())) {
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+            }
+        }
+
+        TaskComment taskComment = new TaskComment(userId);
+        taskComment.setComment(uploadCommentRequest.getComment());
+        task.addTaskActivityElement(taskComment);
+        Task savedTask = taskRepository.save(task);
+
+        Set<UUID> usersIds = savedTask.getActivityElements()
+                .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
+        Map<UUID, UserRepresentation> users = userRepresentationRepository.findAllByUserIdIn(usersIds)
+                .stream()
+                .collect(Collectors.toMap(
+                        UserRepresentation::getUserId,
+                        Function.identity()
+                ));
+
+        return taskMapper.toDetailedDto(savedTask, users);
     }
 
     public void updateComment() {
