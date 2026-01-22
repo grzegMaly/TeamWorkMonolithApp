@@ -9,7 +9,6 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.CriteriaExtensionsKt;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -77,6 +76,46 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                         .first("members").as("members")
                         .first("tasks").as("tasks")
         );
+        return mongoTemplate.aggregate(aggr, "boards", BoardMembersTasksOnly.class)
+                .getMappedResults()
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<BoardMembersTasksOnly> findBoardForTaskWithCategory(ObjectId boardId, UUID userId, ObjectId taskId) {
+
+        Aggregation aggr = Aggregation.newAggregation(
+                match(Criteria.where("_id").is(boardId)),
+                match(new Criteria().orOperator(
+                        Criteria.where("owner.userId").is(userId),
+                        Criteria.where("members.userId").is(userId)
+                )),
+                unwind("taskCategories"),
+                LookupOperation.newLookup()
+                        .from("tasks")
+                        .let(VariableOperators.Let.ExpressionVariable
+                                .newVariable("taskIds")
+                                .forField("$taskCategories.tasks"))
+                        .pipeline(Aggregation.match(
+                                        Criteria.expr(() -> new Document("$in", List.of("$_id", "$$taskIds")))
+                                ),
+                                Aggregation.project()
+                                        .and("_id").as("id")
+                                        .and("createdBy").as("createdBy")
+                                        .and(
+                                                ConditionalOperators.when(
+                                                                ComparisonOperators.Eq.valueOf("_id").equalToValue(taskId)
+                                                        )
+                                                        .thenValueOf("positionInCategory")
+                                                        .otherwise((Integer) null)
+                                        ).as("taskPosition")
+                        )
+                        .as("tasks"),
+                match(Criteria.where("taskCategories.tasks").is(taskId)),
+                project("owner", "members", "tasks")
+        );
+
         return mongoTemplate.aggregate(aggr, "boards", BoardMembersTasksOnly.class)
                 .getMappedResults()
                 .stream()
