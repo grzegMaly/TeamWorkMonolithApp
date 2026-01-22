@@ -85,4 +85,9 @@ public class BoardMember {
         return canViewBoard()
                 && taskPermissions.contains(TaskPermission.EDIT_TASK);
     }
+
+    public boolean canUnassignTask() {
+        return canViewBoard()
+                && taskPermissions.contains(TaskPermission.UNASSIGN_TASK);
+    }
 }
