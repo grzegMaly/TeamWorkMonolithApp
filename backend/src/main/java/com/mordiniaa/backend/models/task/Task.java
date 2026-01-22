@@ -56,4 +56,8 @@ public class Task {
             assignedTo = new HashSet<>();
         this.assignedTo.addAll(boardMembers);
     }
+
+    public void addTaskActivityElement(TaskActivityElement taskActivityElement) {
+        this.activityElements.add(taskActivityElement);
+    }
 }
