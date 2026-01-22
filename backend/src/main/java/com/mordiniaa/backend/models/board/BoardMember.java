@@ -55,4 +55,9 @@ public class BoardMember {
     public boolean canDeleteTask() {
         return taskPermissions.contains(TaskPermission.DELETE_TASK);
     }
+
+    public boolean canMoveTaskBetweenCategories() {
+        return canViewBoard()
+                && categoryPermissions.contains(CategoryPermissions.MOVE_TASK_BETWEEN_CATEGORIES);
+    }
 }
