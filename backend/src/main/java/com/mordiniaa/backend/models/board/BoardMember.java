@@ -65,4 +65,9 @@ public class BoardMember {
         return canViewBoard()
                 && commentPermissions.contains(CommentPermission.COMMENT_TASK);
     }
+
+    public boolean canUpdateOwnComment() {
+        return canViewBoard()
+                && commentPermissions.contains(CommentPermission.EDIT_OWN_COMMENT);
+    }
 }
