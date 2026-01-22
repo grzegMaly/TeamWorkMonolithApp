@@ -164,8 +164,61 @@ public class TaskActivityService {
         return taskMapper.toDetailedDto(savedTask, users);
     }
 
-    public void updateComment() {
+    public TaskDetailsDTO updateComment(UUID userId, String bId, String tId, UploadCommentRequest uploadCommentRequest) {
 
+        if (uploadCommentRequest.getCommentId() == null) {
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        mongoUserService.checkUserAvailability(userId);
+
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+        ObjectId taskId = mongoIdUtils.getObjectId(tId);
+
+        BoardWithTaskCategories board = boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
+        if (!currentMember.canViewBoard()) {
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        TaskComment taskComment = task.getActivityElements()
+                .stream()
+                .filter(taskActivityElement -> taskActivityElement instanceof TaskComment)
+                .map(element -> (TaskComment) element)
+                .filter(tC -> tC.getCommentId().equals(uploadCommentRequest.getCommentId()))
+                .findFirst().orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        if (taskComment.isUpdated())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        if (!taskComment.getUser().equals(userId)) {
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        if (!currentMember.canUpdateOwnComment()) {
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        taskComment.setComment(uploadCommentRequest.getComment());
+        taskComment.setUpdated(true);
+
+        Task savedTask = taskRepository.save(task);
+
+        Set<UUID> usersIds = savedTask.getActivityElements()
+                .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
+        Map<UUID, UserRepresentation> users = userRepresentationRepository.findAllByUserIdIn(usersIds)
+                .stream()
+                .collect(Collectors.toMap(
+                        UserRepresentation::getUserId,
+                        Function.identity()
+                ));
+
+        return taskMapper.toDetailedDto(savedTask, users);
     }
 
     public void deleteOwnComment() {
