@@ -6,7 +6,7 @@ import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
-import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprAggrRepository;
 import com.mordiniaa.backend.request.task.AssignUsersRequest;
@@ -16,6 +16,7 @@ import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -30,11 +31,10 @@ public class TaskManagementService {
 
     private final MongoUserService mongoUserService;
     private final MongoIdUtils mongoIdUtils;
-    private final BoardAggregationRepositoryImpl boardAggregationRepositoryImpl;
+    private final BoardAggregationRepository boardAggregationRepository;
     private final BoardUtils boardUtils;
     private final TaskRepository taskRepository;
     private final TaskService taskService;
-    private final TaskMapper taskMapper;
     private final UserReprAggrRepository userReprAggrRepository;
 
     public TaskDetailsDTO updateTask(UUID userId, String bId, String tId, PatchTaskDataRequest patchRequest) {
@@ -44,7 +44,7 @@ public class TaskManagementService {
         ObjectId boardId = mongoIdUtils.getObjectId(bId);
         ObjectId taskId = mongoIdUtils.getObjectId(tId);
 
-        BoardMembersOnly board = boardAggregationRepositoryImpl
+        BoardMembersOnly board = boardAggregationRepository
                 .findBoardMembersForTask(boardId, userId, taskId)
                 .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
@@ -92,7 +92,7 @@ public class TaskManagementService {
         ObjectId boardId = mongoIdUtils.getObjectId(bId);
         ObjectId taskId = mongoIdUtils.getObjectId(tId);
 
-        BoardMembersOnly board = boardAggregationRepositoryImpl
+        BoardMembersOnly board = boardAggregationRepository
                 .findBoardMembersForTask(boardId, assigningId, taskId)
                 .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
@@ -128,6 +128,36 @@ public class TaskManagementService {
 
     public void removeUserFromTask(UUID userId, UUID toDeleteId, String bId, String tId) {
 
-        
+        mongoUserService.checkUserAvailability(userId);
+
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+        ObjectId taskId = mongoIdUtils.getObjectId(tId);
+
+        BoardMembersOnly board = boardAggregationRepository
+                .findBoardMembersForTask(boardId, userId, taskId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
+        if (!currentMember.canUnassignTask())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        UUID boardOwner = board.getOwner().getUserId();
+        if (toDeleteId.equals(boardOwner)) {
+            if (!userId.equals(boardOwner))
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        Set<UUID> membersIds = board.getMembers().stream()
+                .map(BoardMember::getUserId)
+                .collect(Collectors.toSet());
+        membersIds.add(boardOwner);
+
+        Task task = taskService.findTaskById(taskId);
+        if (!task.getAssignedTo().contains(toDeleteId))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        task.removeMember(toDeleteId);
+
+        taskRepository.save(task);
     }
 }
