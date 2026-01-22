@@ -13,7 +13,7 @@ import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersTasksOnly;
-import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.TaskCreatorProjection;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.TaskCreatorProjectionWithOptPosition;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
 import com.mordiniaa.backend.services.notes.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
@@ -27,10 +27,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -160,11 +157,21 @@ public class TaskService {
         ObjectId taskId = mongoIdUtils.getObjectId(tId);
 
         BoardMembersTasksOnly board = boardAggregationRepository
-                .findBoardWithSpecifiedMemberOnly(boardId, userId, taskId)
+                .findBoardForTaskWithCategory(boardId, userId, taskId)
                 .orElseThrow(RuntimeException::new);
 
         BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-        TaskCreatorProjection task = board.getTasks().getFirst();
+
+        List<TaskCreatorProjectionWithOptPosition> tasks = board.getTasks();
+        TaskCreatorProjectionWithOptPosition task = tasks
+                .stream()
+                .filter(t -> t.getId().equals(taskId))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        if (task.getTaskPosition() == null) {
+            throw new IllegalStateException("Task position not resolved");
+        }
 
         UUID taskAuthor = task.getCreatedBy();
         UUID boardOwner = board.getOwner().getUserId();
@@ -176,16 +183,21 @@ public class TaskService {
             if (!currentMember.canDeleteTask())
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
         }
-        deleteTask(boardId, taskId);
-    }
 
-    private void deleteTask(ObjectId boardId, ObjectId taskId) {
-        Query query = Query.query(Criteria
+        Query pullQuery = Query.query(Criteria
                 .where("_id").is(boardId)
                 .and("taskCategories.tasks").is(taskId));
-        Update update = new Update()
+        Update pullUpdate = new Update()
                 .pull("taskCategories.$[].tasks", taskId);
-        mongoTemplate.updateFirst(query, update, Board.class);
+        mongoTemplate.updateFirst(pullQuery, pullUpdate, Board.class);
         taskRepository.deleteById(taskId);
+
+        Query decQuery = Query.query(Criteria
+                .where("_id").in(tasks.stream().map(TaskCreatorProjectionWithOptPosition::getId).collect(Collectors.toSet()))
+                .and("positionInCategory").gt(task.getTaskPosition())
+        );
+        Update decUpdate = new Update()
+                .inc("positionInCategory", -1);
+        mongoTemplate.updateMulti(decQuery, decUpdate, Task.class);
     }
 }
