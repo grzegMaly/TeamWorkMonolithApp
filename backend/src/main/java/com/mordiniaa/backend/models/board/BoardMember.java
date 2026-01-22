@@ -60,4 +60,9 @@ public class BoardMember {
         return canViewBoard()
                 && categoryPermissions.contains(CategoryPermissions.MOVE_TASK_BETWEEN_CATEGORIES);
     }
+
+    public boolean canCommentTask() {
+        return canViewBoard()
+                && commentPermissions.contains(CommentPermission.COMMENT_TASK);
+    }
 }
