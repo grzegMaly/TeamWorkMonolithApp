@@ -12,9 +12,8 @@ import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
 import com.mordiniaa.backend.models.task.activity.TaskCategoryChange;
 import com.mordiniaa.backend.models.task.activity.TaskComment;
-import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
-import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
+import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardWithTaskCategories;
 import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
@@ -33,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +46,7 @@ public class TaskActivityService {
     private final MongoTemplate mongoTemplate;
     private final TaskMapper taskMapper;
     private final UserRepresentationRepository userRepresentationRepository;
+    private final TaskService taskService;
 
     @Transactional
     public TaskShortDto changeTaskPosition(UUID userId, String bId, String tId, UpdateTaskPositionRequest request) {
@@ -69,7 +68,7 @@ public class TaskActivityService {
                 .filter(tC -> tC.getTasks().contains(taskId))
                 .findFirst().orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
-        Task task = findTaskById(taskId);
+        Task task = taskService.findTaskById(taskId);
 
         UUID boardOwner = board.getOwner().getUserId();
         if (task.getCreatedBy().equals(boardOwner) && !userId.equals(boardOwner))
@@ -135,7 +134,7 @@ public class TaskActivityService {
         if (!currentMember.canCommentTask())
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        Task task = findTaskById(taskId);
+        Task task = taskService.findTaskById(taskId);
 
         if (!task.getAssignedTo().contains(currentMember.getUserId()))
             if (!currentMember.getUserId().equals(board.getOwner().getUserId()))
@@ -148,14 +147,7 @@ public class TaskActivityService {
 
         Set<UUID> usersIds = savedTask.getActivityElements()
                 .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
-        Map<UUID, UserRepresentation> users = userRepresentationRepository.findAllByUserIdIn(usersIds)
-                .stream()
-                .collect(Collectors.toMap(
-                        UserRepresentation::getUserId,
-                        Function.identity()
-                ));
-
-        return taskMapper.toDetailedDto(savedTask, users);
+        return taskService.detailedTaskDto(task, usersIds);
     }
 
     public TaskDetailsDTO updateComment(UUID userId, String bId, String tId, UploadCommentRequest uploadCommentRequest) {
@@ -175,7 +167,7 @@ public class TaskActivityService {
         if (!currentMember.canViewBoard())
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        Task task = findTaskById(taskId);
+        Task task = taskService.findTaskById(taskId);
         TaskComment taskComment = getTaskComment(task, uploadCommentRequest.getCommentId());
 
         if (taskComment.isUpdated())
@@ -194,14 +186,7 @@ public class TaskActivityService {
 
         Set<UUID> usersIds = savedTask.getActivityElements()
                 .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
-        Map<UUID, UserRepresentation> users = userRepresentationRepository.findAllByUserIdIn(usersIds)
-                .stream()
-                .collect(Collectors.toMap(
-                        UserRepresentation::getUserId,
-                        Function.identity()
-                ));
-
-        return taskMapper.toDetailedDto(savedTask, users);
+        return taskService.detailedTaskDto(task, usersIds);
     }
 
     public TaskDetailsDTO deleteComment(UUID userId, String bId, String tId, UUID commentId) {
@@ -218,7 +203,7 @@ public class TaskActivityService {
         if (!currentMember.canViewBoard())
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        Task task = findTaskById(taskId);
+        Task task = taskService.findTaskById(taskId);
         TaskComment taskComment = getTaskComment(task, commentId);
 
         UUID boardOwner = board.getOwner().getUserId();
@@ -249,19 +234,7 @@ public class TaskActivityService {
 
         Set<UUID> usersIds = savedTask.getActivityElements()
                 .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
-        Map<UUID, UserRepresentation> users = userRepresentationRepository.findAllByUserIdIn(usersIds)
-                .stream()
-                .collect(Collectors.toMap(
-                        UserRepresentation::getUserId,
-                        Function.identity()
-                ));
-
-        return taskMapper.toDetailedDto(savedTask, users);
-    }
-
-    private Task findTaskById(ObjectId taskId) {
-        return taskRepository.findById(taskId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        return taskService.detailedTaskDto(task, usersIds);
     }
 
     private TaskComment getTaskComment(Task task, UUID commentId) {
