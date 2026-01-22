@@ -17,6 +17,8 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.Bo
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.TaskCreatorProjection;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
 import com.mordiniaa.backend.services.notes.user.MongoUserService;
+import com.mordiniaa.backend.utils.BoardUtils;
+import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -44,13 +46,15 @@ public class TaskService {
     private final MongoTemplate mongoTemplate;
     private final TaskMapper taskMapper;
     private final MongoUserService mongoUserService;
+    private final MongoIdUtils mongoIdUtils;
+    private final BoardUtils boardUtils;
 
     public TaskDetailsDTO getTaskDetailsById(UUID userId, String bId, String tId) {
 
         mongoUserService.checkUserAvailability(userId);
 
-        ObjectId boardId = getObjectId(bId);
-        ObjectId taskId = getObjectId(tId);
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+        ObjectId taskId = mongoIdUtils.getObjectId(tId);
         BoardMembersOnly board = boardAggregationRepository.findBoardMembersForTask(boardId, userId, taskId)
                 .orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
 
@@ -88,7 +92,7 @@ public class TaskService {
         Board board = boardRepository.getBoardByIdWithCategoryAndBoardMemberOrOwner(boardId, categoryName, userId)
                 .orElseThrow(RuntimeException::new); //TODO: Change in Exceptions Section
 
-        BoardMember currentMember = getBoardMember(board, userId);
+        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
         if (!board.getOwner().getUserId().equals(userId)
                 && createTaskRequest.getAssignedTo().contains(board.getOwner().getUserId())) {
             throw new RuntimeException(); //TODO: Change in Exceptions Section
@@ -153,14 +157,14 @@ public class TaskService {
 
         mongoUserService.checkUserAvailability(userId);
 
-        ObjectId boardId = getObjectId(bId);
-        ObjectId taskId = getObjectId(tId);
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+        ObjectId taskId = mongoIdUtils.getObjectId(tId);
 
         BoardMembersTasksOnly board = boardAggregationRepository
                 .findBoardWithSpecifiedMemberOnly(boardId, userId, taskId)
                 .orElseThrow(RuntimeException::new);
 
-        BoardMember currentMember = getBoardMember(board, userId);
+        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
         TaskCreatorProjection task = board.getTasks().getFirst();
 
         UUID taskAuthor = task.getCreatedBy();
@@ -184,21 +188,5 @@ public class TaskService {
                 .pull("taskCategories.$[].tasks", taskId);
         mongoTemplate.updateFirst(query, update, Board.class);
         taskRepository.deleteById(taskId);
-    }
-
-    private ObjectId getObjectId(String id) {
-        if (!ObjectId.isValid(id)) {
-            throw new RuntimeException(); // TODO: Change in Exceptions Section
-        }
-        return new ObjectId(id);
-    }
-
-    private BoardMember getBoardMember(BoardMembers board, UUID userId) {
-        if (board.getOwner().getUserId().equals(userId)) {
-            return board.getOwner();
-        } else {
-            return board.getMembers().stream().filter(bm -> bm.getUserId().equals(userId))
-                    .findFirst().orElseThrow(RuntimeException::new);
-        }
     }
 }
