@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.services.notes.user;
 
-import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
+import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
