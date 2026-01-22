@@ -80,4 +80,9 @@ public class BoardMember {
         return canViewBoard()
                 && commentPermissions.contains(CommentPermission.DELETE_ANY_COMMENT);
     }
+
+    public boolean canUpdateTask() {
+        return canViewBoard()
+                && taskPermissions.contains(TaskPermission.EDIT_TASK);
+    }
 }
