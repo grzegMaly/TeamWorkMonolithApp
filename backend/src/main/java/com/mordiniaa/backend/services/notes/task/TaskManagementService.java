@@ -126,7 +126,8 @@ public class TaskManagementService {
         return taskService.detailedTaskDto(task, usersIds);
     }
 
-    public void removeUserFromTask() {
+    public void removeUserFromTask(UUID userId, UUID toDeleteId, String bId, String tId) {
 
+        
     }
 }
