@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.repositories.mongo;
+package com.mordiniaa.backend.repositories.mongo.user;
 
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import org.bson.types.ObjectId;
