@@ -11,5 +11,5 @@ import java.util.List;
 @NoArgsConstructor
 public class BoardMembersTasksOnly extends BoardMembersOnly {
 
-    private List<TaskCreatorProjection> tasks;
+    private List<TaskCreatorProjectionWithOptPosition> tasks;
 }
