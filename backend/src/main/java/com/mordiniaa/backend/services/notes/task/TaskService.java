@@ -5,7 +5,6 @@ import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
-import com.mordiniaa.backend.models.board.BoardMembers;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
