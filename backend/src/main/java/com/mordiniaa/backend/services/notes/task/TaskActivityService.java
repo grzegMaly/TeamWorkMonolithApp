@@ -61,22 +61,19 @@ public class TaskActivityService {
                 .orElseThrow(RuntimeException::new); // TODO: Change in Exceptions Section
 
         BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-        if (!currentMember.canMoveTaskBetweenCategories()) {
+        if (!currentMember.canMoveTaskBetweenCategories())
             throw new RuntimeException();
-        }
 
         TaskCategory taskCategory = board.getTaskCategories()
                 .stream()
                 .filter(tC -> tC.getTasks().contains(taskId))
                 .findFirst().orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        Task task = findTaskById(taskId);
 
         UUID boardOwner = board.getOwner().getUserId();
-        if (task.getCreatedBy().equals(boardOwner) && !userId.equals(boardOwner)) {
+        if (task.getCreatedBy().equals(boardOwner) && !userId.equals(boardOwner))
             throw new RuntimeException(); // TODO: Change In Exceptions Section
-        }
 
         if (request.getNewTaskCategory() != null) {
             String newCategory = request.getNewTaskCategory();
@@ -138,14 +135,11 @@ public class TaskActivityService {
         if (!currentMember.canCommentTask())
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        Task task = findTaskById(taskId);
 
-        if (!task.getAssignedTo().contains(currentMember.getUserId())) {
-            if (!currentMember.getUserId().equals(board.getOwner().getUserId())) {
+        if (!task.getAssignedTo().contains(currentMember.getUserId()))
+            if (!currentMember.getUserId().equals(board.getOwner().getUserId()))
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
-            }
-        }
 
         TaskComment taskComment = new TaskComment(userId);
         taskComment.setComment(uploadCommentRequest.getComment());
@@ -166,9 +160,8 @@ public class TaskActivityService {
 
     public TaskDetailsDTO updateComment(UUID userId, String bId, String tId, UploadCommentRequest uploadCommentRequest) {
 
-        if (uploadCommentRequest.getCommentId() == null) {
+        if (uploadCommentRequest.getCommentId() == null)
             throw new RuntimeException(); // TODO: Change In Exceptions Section
-        }
 
         mongoUserService.checkUserAvailability(userId);
 
@@ -179,30 +172,20 @@ public class TaskActivityService {
                 .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
         BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-        if (!currentMember.canViewBoard()) {
+        if (!currentMember.canViewBoard())
             throw new RuntimeException(); // TODO: Change In Exceptions Section
-        }
 
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
-
-        TaskComment taskComment = task.getActivityElements()
-                .stream()
-                .filter(taskActivityElement -> taskActivityElement instanceof TaskComment)
-                .map(element -> (TaskComment) element)
-                .filter(tC -> tC.getCommentId().equals(uploadCommentRequest.getCommentId()))
-                .findFirst().orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        Task task = findTaskById(taskId);
+        TaskComment taskComment = getTaskComment(task, uploadCommentRequest.getCommentId());
 
         if (taskComment.isUpdated())
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        if (!taskComment.getUser().equals(userId)) {
+        if (!taskComment.getUser().equals(userId))
             throw new RuntimeException(); // TODO: Change In Exceptions Section
-        }
 
-        if (!currentMember.canUpdateOwnComment()) {
+        if (!currentMember.canUpdateOwnComment())
             throw new RuntimeException(); // TODO: Change In Exceptions Section
-        }
 
         taskComment.setComment(uploadCommentRequest.getComment());
         taskComment.setUpdated(true);
@@ -221,11 +204,72 @@ public class TaskActivityService {
         return taskMapper.toDetailedDto(savedTask, users);
     }
 
-    public void deleteOwnComment() {
+    public TaskDetailsDTO deleteComment(UUID userId, String bId, String tId, UUID commentId) {
 
+        mongoUserService.checkUserAvailability(userId);
+
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+        ObjectId taskId = mongoIdUtils.getObjectId(tId);
+
+        BoardWithTaskCategories board = boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
+        if (!currentMember.canViewBoard())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        Task task = findTaskById(taskId);
+        TaskComment taskComment = getTaskComment(task, commentId);
+
+        UUID boardOwner = board.getOwner().getUserId();
+        if (taskComment.getUser().equals(boardOwner) && !userId.equals(boardOwner))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        if (!task.getAssignedTo().contains(userId)) {
+            if (!userId.equals(board.getOwner().getUserId()) || !currentMember.canDeleteAnyComment()) {
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+            }
+        } else {
+            if (taskComment.getUser().equals(userId)) {
+                if (!currentMember.canDeleteOwnComment())
+                    throw new RuntimeException(); // TODO: Change In Exceptions Section
+            } else {
+                if (!currentMember.canDeleteAnyComment())
+                    throw new RuntimeException(); // TODO: Change In Exceptions Section
+            }
+        }
+
+        boolean result = task.getActivityElements()
+                .removeIf(element -> element instanceof TaskComment tc && tc.getCommentId().equals(commentId));
+
+        if (!result)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        Task savedTask = taskRepository.save(task);
+
+        Set<UUID> usersIds = savedTask.getActivityElements()
+                .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
+        Map<UUID, UserRepresentation> users = userRepresentationRepository.findAllByUserIdIn(usersIds)
+                .stream()
+                .collect(Collectors.toMap(
+                        UserRepresentation::getUserId,
+                        Function.identity()
+                ));
+
+        return taskMapper.toDetailedDto(savedTask, users);
     }
 
-    public void deleteAnyComment() {
+    private Task findTaskById(ObjectId taskId) {
+        return taskRepository.findById(taskId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+    }
 
+    private TaskComment getTaskComment(Task task, UUID commentId) {
+        return task.getActivityElements()
+                .stream()
+                .filter(taskActivityElement -> taskActivityElement instanceof TaskComment)
+                .map(element -> (TaskComment) element)
+                .filter(tC -> tC.getCommentId().equals(commentId))
+                .findFirst().orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
     }
 }
