@@ -57,6 +57,11 @@ public class Task {
         this.assignedTo.addAll(boardMembers);
     }
 
+    public void removeMember(UUID boardMember) {
+        if (assignedTo != null)
+            assignedTo.remove(boardMember);
+    }
+
     public void addTaskActivityElement(TaskActivityElement taskActivityElement) {
         this.activityElements.add(taskActivityElement);
     }
