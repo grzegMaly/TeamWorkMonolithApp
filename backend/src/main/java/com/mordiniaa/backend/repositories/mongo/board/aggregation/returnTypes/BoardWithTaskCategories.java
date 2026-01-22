@@ -1,4 +1,16 @@
 package com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes;
 
-public class BoardWithTaskCategories {
+import com.mordiniaa.backend.models.board.TaskCategory;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class BoardWithTaskCategories extends BoardMembersOnly {
+
+    private List<TaskCategory> taskCategories;
 }
