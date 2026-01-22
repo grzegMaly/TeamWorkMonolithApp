@@ -11,8 +11,10 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TaskCreatorProjection {
+public class TaskCreatorProjectionWithOptPosition {
 
     private ObjectId id;
     private UUID createdBy;
+
+    private Integer taskPosition;
 }
