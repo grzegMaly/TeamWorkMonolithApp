@@ -11,7 +11,7 @@ import com.mordiniaa.backend.models.note.deadline.Status;
 import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
-import com.mordiniaa.backend.services.notes.notes.ArchivedNotesServiceImpl;
+import com.mordiniaa.backend.services.notes.ArchivedNotesServiceImpl;
 import com.mordiniaa.backend.utils.PageResult;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;

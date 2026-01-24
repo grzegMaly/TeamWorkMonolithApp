@@ -23,8 +23,8 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregati
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
-import com.mordiniaa.backend.services.notes.task.TaskService;
-import com.mordiniaa.backend.services.notes.user.MongoUserService;
+import com.mordiniaa.backend.services.task.TaskService;
+import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;

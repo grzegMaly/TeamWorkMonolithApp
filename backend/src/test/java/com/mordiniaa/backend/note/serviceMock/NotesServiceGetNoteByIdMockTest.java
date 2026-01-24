@@ -11,7 +11,7 @@ import com.mordiniaa.backend.models.note.deadline.Status;
 import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
-import com.mordiniaa.backend.services.notes.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.NotesServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

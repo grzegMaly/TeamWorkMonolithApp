@@ -10,7 +10,7 @@ import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.payload.PageMeta;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
-import com.mordiniaa.backend.services.notes.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.NotesServiceImpl;
 import com.mordiniaa.backend.utils.PageResult;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;

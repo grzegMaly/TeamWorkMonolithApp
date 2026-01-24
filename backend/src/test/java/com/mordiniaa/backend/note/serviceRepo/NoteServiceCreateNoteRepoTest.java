@@ -10,7 +10,7 @@ import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.deadline.CreateDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.regular.CreateRegularNoteRequest;
-import com.mordiniaa.backend.services.notes.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.NotesServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
