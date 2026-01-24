@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.services.notes.notes;
+package com.mordiniaa.backend.services.notes;
 
 import com.mordiniaa.backend.dto.note.NoteDto;
 import com.mordiniaa.backend.request.note.CreateNoteRequest;

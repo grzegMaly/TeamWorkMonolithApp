@@ -4,7 +4,7 @@ import com.mordiniaa.backend.config.NotesConstants;
 import com.mordiniaa.backend.dto.note.NoteDto;
 import com.mordiniaa.backend.payload.ApiResponse;
 import com.mordiniaa.backend.payload.CollectionResponse;
-import com.mordiniaa.backend.services.notes.notes.NotesService;
+import com.mordiniaa.backend.services.notes.NotesService;
 import com.mordiniaa.backend.utils.PageResult;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Positive;
