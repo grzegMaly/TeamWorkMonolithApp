@@ -55,4 +55,39 @@ public class BoardMember {
     public boolean canDeleteTask() {
         return taskPermissions.contains(TaskPermission.DELETE_TASK);
     }
+
+    public boolean canMoveTaskBetweenCategories() {
+        return canViewBoard()
+                && categoryPermissions.contains(CategoryPermissions.MOVE_TASK_BETWEEN_CATEGORIES);
+    }
+
+    public boolean canCommentTask() {
+        return canViewBoard()
+                && commentPermissions.contains(CommentPermission.COMMENT_TASK);
+    }
+
+    public boolean canUpdateOwnComment() {
+        return canViewBoard()
+                && commentPermissions.contains(CommentPermission.EDIT_OWN_COMMENT);
+    }
+
+    public boolean canDeleteOwnComment() {
+        return canViewBoard()
+                && commentPermissions.contains(CommentPermission.DELETE_OWN_COMMENT);
+    }
+
+    public boolean canDeleteAnyComment() {
+        return canViewBoard()
+                && commentPermissions.contains(CommentPermission.DELETE_ANY_COMMENT);
+    }
+
+    public boolean canUpdateTask() {
+        return canViewBoard()
+                && taskPermissions.contains(TaskPermission.EDIT_TASK);
+    }
+
+    public boolean canUnassignTask() {
+        return canViewBoard()
+                && taskPermissions.contains(TaskPermission.UNASSIGN_TASK);
+    }
 }

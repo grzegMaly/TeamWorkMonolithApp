@@ -2,6 +2,7 @@ package com.mordiniaa.backend.repositories.mongo.board.aggregation;
 
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersTasksOnly;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardWithTaskCategories;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -43,23 +44,7 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
     }
 
     @Override
-    public Optional<BoardMembersTasksOnly> findBoardWithSpecifiedMemberOnly(ObjectId boardId, UUID userId, ObjectId taskId) {
-
-        LookupOperation lookupOperation = LookupOperation.newLookup()
-                .from("tasks")
-                .let(VariableOperators.Let.ExpressionVariable
-                        .newVariable("taskIds")
-                        .forField("$taskCategories.tasks"))
-                .pipeline(
-                        Aggregation.match(
-                                Criteria.expr(() ->
-                                        new Document("$in", List.of("$_id", "$$taskIds"))
-                                )
-                        ),
-                        Aggregation.project("createdBy")
-                )
-                .as("tasks");
-
+    public Optional<BoardMembersTasksOnly> findBoardForTaskWithCategory(ObjectId boardId, UUID userId, ObjectId taskId) {
 
         Aggregation aggr = Aggregation.newAggregation(
                 match(Criteria.where("_id").is(boardId)),
@@ -68,14 +53,50 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                         Criteria.where("members.userId").is(userId)
                 )),
                 unwind("taskCategories"),
+                LookupOperation.newLookup()
+                        .from("tasks")
+                        .let(VariableOperators.Let.ExpressionVariable
+                                .newVariable("taskIds")
+                                .forField("$taskCategories.tasks"))
+                        .pipeline(Aggregation.match(
+                                        Criteria.expr(() -> new Document("$in", List.of("$_id", "$$taskIds")))
+                                ),
+                                Aggregation.project()
+                                        .and("_id").as("id")
+                                        .and("createdBy").as("createdBy")
+                                        .and(
+                                                ConditionalOperators.when(
+                                                                ComparisonOperators.Eq.valueOf("_id").equalToValue(taskId)
+                                                        )
+                                                        .thenValueOf("positionInCategory")
+                                                        .otherwise((Integer) null)
+                                        ).as("taskPosition")
+                        )
+                        .as("tasks"),
                 match(Criteria.where("taskCategories.tasks").is(taskId)),
-                lookupOperation,
-                group("_id")
-                        .first("owner").as("owner")
-                        .first("members").as("members")
-                        .first("tasks").as("tasks")
+                project("id", "owner", "members", "tasks")
         );
+
         return mongoTemplate.aggregate(aggr, "boards", BoardMembersTasksOnly.class)
+                .getMappedResults()
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<BoardWithTaskCategories> findBoardForTaskWithCategories(ObjectId boardId, UUID userId, ObjectId taskId) {
+
+        Aggregation aggr = Aggregation.newAggregation(
+                match(Criteria.where("_id").is(boardId)),
+                match(new Criteria().orOperator(
+                        Criteria.where("owner.userId").is(userId),
+                        Criteria.where("members.userId").is(userId)
+                )),
+                match(Criteria.where("taskCategories.tasks").is(taskId)),
+                project("owner", "members", "taskCategories")
+        );
+
+        return mongoTemplate.aggregate(aggr, "boards", BoardWithTaskCategories.class)
                 .getMappedResults()
                 .stream()
                 .findFirst();
