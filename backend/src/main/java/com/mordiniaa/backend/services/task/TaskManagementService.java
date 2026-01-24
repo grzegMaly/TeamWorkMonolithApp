@@ -71,7 +71,7 @@ public class TaskManagementService {
 
             Set<UUID> usersIds = savedTask.getActivityElements()
                     .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
-            return taskService.detailedTaskDto(task, usersIds);
+            return taskService.detailedTaskDto(savedTask, usersIds);
         };
 
         return taskService.executeTaskOperation(userId, bId, tId, boardFunction, taskFunction);
