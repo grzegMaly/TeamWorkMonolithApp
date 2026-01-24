@@ -13,7 +13,6 @@ import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
 import com.mordiniaa.backend.models.task.activity.TaskCategoryChange;
 import com.mordiniaa.backend.models.task.activity.TaskComment;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
-import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardWithTaskCategories;
 import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
@@ -32,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,109 +45,108 @@ public class TaskActivityService {
     private final TaskRepository taskRepository;
     private final MongoTemplate mongoTemplate;
     private final TaskMapper taskMapper;
-    private final UserRepresentationRepository userRepresentationRepository;
     private final TaskService taskService;
 
     @Transactional
     public TaskShortDto changeTaskPosition(UUID userId, String bId, String tId, UpdateTaskPositionRequest request) {
 
-        mongoUserService.checkUserAvailability(userId);
+        BiFunction<ObjectId, ObjectId, BoardWithTaskCategories> boardFunction = (boardId, taskId) -> {
+            return boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
+                    .orElseThrow(RuntimeException::new); // TODO: Change in Exceptions Section
+        };
 
-        ObjectId boardId = mongoIdUtils.getObjectId(bId);
-        ObjectId taskId = mongoIdUtils.getObjectId(tId);
+        BiFunction<BoardWithTaskCategories, ObjectId, TaskShortDto> taskFunction = (board, taskId) -> {
+            BoardMember currentMember = boardUtils.getBoardMember(board, userId);
+            if (!currentMember.canMoveTaskBetweenCategories())
+                throw new RuntimeException();
 
-        BoardWithTaskCategories board = boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
-                .orElseThrow(RuntimeException::new); // TODO: Change in Exceptions Section
-
-        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-        if (!currentMember.canMoveTaskBetweenCategories())
-            throw new RuntimeException();
-
-        TaskCategory taskCategory = board.getTaskCategories()
-                .stream()
-                .filter(tC -> tC.getTasks().contains(taskId))
-                .findFirst().orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
-
-        Task task = taskService.findTaskById(taskId);
-
-        UUID boardOwner = board.getOwner().getUserId();
-        if (task.getCreatedBy().equals(boardOwner) && !userId.equals(boardOwner))
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        if (request.getNewTaskCategory() != null) {
-            String newCategory = request.getNewTaskCategory();
-            TaskCategory newTaskCategory = board.getTaskCategories()
+            TaskCategory taskCategory = board.getTaskCategories()
                     .stream()
-                    .filter(tC -> tC.getCategoryName().equals(newCategory))
-                    .findFirst()
-                    .orElseThrow(RuntimeException::new); // TODO: Change In Category Section
+                    .filter(tC -> tC.getTasks().contains(taskId))
+                    .findFirst().orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
-            Update pollPushUpdate = new Update()
-                    .pull("taskCategories.$[from].tasks", taskId)
-                    .push("taskCategories.$[to].tasks", taskId);
+            Task task = taskService.findTaskById(taskId);
 
-            UpdateOptions options = new UpdateOptions().arrayFilters(List.of(
-                    Filters.eq("from.categoryName", taskCategory.getCategoryName()),
-                    Filters.eq("to.categoryName", newCategory)
-            ));
+            UUID boardOwner = board.getOwner().getUserId();
+            if (task.getCreatedBy().equals(boardOwner) && !userId.equals(boardOwner))
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-            MongoCollection<Document> boardCollection = mongoTemplate.getCollection("boards");
-            boardCollection.updateOne(
-                    Filters.eq("_id", boardId),
-                    pollPushUpdate.getUpdateObject(),
-                    options
+            if (request.getNewTaskCategory() != null) {
+                String newCategory = request.getNewTaskCategory();
+                TaskCategory newTaskCategory = board.getTaskCategories()
+                        .stream()
+                        .filter(tC -> tC.getCategoryName().equals(newCategory))
+                        .findFirst()
+                        .orElseThrow(RuntimeException::new); // TODO: Change In Category Section
+
+                Update pollPushUpdate = new Update()
+                        .pull("taskCategories.$[from].tasks", taskId)
+                        .push("taskCategories.$[to].tasks", taskId);
+
+                UpdateOptions options = new UpdateOptions().arrayFilters(List.of(
+                        Filters.eq("from.categoryName", taskCategory.getCategoryName()),
+                        Filters.eq("to.categoryName", newCategory)
+                ));
+
+                MongoCollection<Document> boardCollection = mongoTemplate.getCollection("boards");
+                boardCollection.updateOne(
+                        Filters.eq("_id", board.getId()),
+                        pollPushUpdate.getUpdateObject(),
+                        options
+                );
+
+                TaskCategoryChange taskCategoryChange = new TaskCategoryChange(userId);
+                taskCategoryChange.setPrevCategory(taskCategory.getCategoryName());
+                taskCategoryChange.setNextCategory(newCategory);
+                task.addTaskActivityElement(taskCategoryChange);
+
+                taskCategory = newTaskCategory;
+            }
+
+            Query incPositionsQuery = Query.query(
+                    Criteria.where("_id").in(taskCategory.getTasks())
+                            .and("positionInCategory").gte(request.getNewPosition())
             );
+            Update inPositionsUpdate = new Update()
+                    .inc("positionInCategory", 1);
+            mongoTemplate.updateMulti(incPositionsQuery, inPositionsUpdate, Task.class);
 
-            TaskCategoryChange taskCategoryChange = new TaskCategoryChange(userId);
-            taskCategoryChange.setPrevCategory(taskCategory.getCategoryName());
-            taskCategoryChange.setNextCategory(newCategory);
-            task.addTaskActivityElement(taskCategoryChange);
+            task.setPositionInCategory(request.getNewPosition());
+            task = taskRepository.save(task);
 
-            taskCategory = newTaskCategory;
-        }
-
-        Query incPositionsQuery = Query.query(
-                Criteria.where("_id").in(taskCategory.getTasks())
-                        .and("positionInCategory").gte(request.getNewPosition())
-        );
-        Update inPositionsUpdate = new Update()
-                .inc("positionInCategory", 1);
-        mongoTemplate.updateMulti(incPositionsQuery, inPositionsUpdate, Task.class);
-
-        task.setPositionInCategory(request.getNewPosition());
-        task = taskRepository.save(task);
-
-        return taskMapper.toShortenedDto(task);
+            return taskMapper.toShortenedDto(task);
+        };
+        return taskService.executeTaskOperation(userId, bId, tId, boardFunction, taskFunction);
     }
 
     public TaskDetailsDTO writeComment(UUID userId, String bId, String tId, UploadCommentRequest uploadCommentRequest) {
 
-        mongoUserService.checkUserAvailability(userId);
+        BiFunction<ObjectId, ObjectId, BoardWithTaskCategories> boardFunction = (boardId, taskId) -> {
+            return boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
+                    .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        };
 
-        ObjectId boardId = mongoIdUtils.getObjectId(bId);
-        ObjectId taskId = mongoIdUtils.getObjectId(tId);
-
-        BoardWithTaskCategories board = boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
-
-        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-        if (!currentMember.canCommentTask())
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        Task task = taskService.findTaskById(taskId);
-
-        if (!task.getAssignedTo().contains(currentMember.getUserId()))
-            if (!currentMember.getUserId().equals(board.getOwner().getUserId()))
+        BiFunction<BoardWithTaskCategories, ObjectId, TaskDetailsDTO> taskFunction = (board, taskId) -> {
+            BoardMember currentMember = boardUtils.getBoardMember(board, userId);
+            if (!currentMember.canCommentTask())
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        TaskComment taskComment = new TaskComment(userId);
-        taskComment.setComment(uploadCommentRequest.getComment());
-        task.addTaskActivityElement(taskComment);
-        Task savedTask = taskRepository.save(task);
+            Task task = taskService.findTaskById(taskId);
 
-        Set<UUID> usersIds = savedTask.getActivityElements()
-                .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
-        return taskService.detailedTaskDto(task, usersIds);
+            if (!task.getAssignedTo().contains(currentMember.getUserId()))
+                if (!currentMember.getUserId().equals(board.getOwner().getUserId()))
+                    throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+            TaskComment taskComment = new TaskComment(userId);
+            taskComment.setComment(uploadCommentRequest.getComment());
+            task.addTaskActivityElement(taskComment);
+            Task savedTask = taskRepository.save(task);
+
+            Set<UUID> usersIds = savedTask.getActivityElements()
+                    .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
+            return taskService.detailedTaskDto(task, usersIds);
+        };
+        return taskService.executeTaskOperation(userId, bId, tId, boardFunction, taskFunction);
     }
 
     public TaskDetailsDTO updateComment(UUID userId, String bId, String tId, UploadCommentRequest uploadCommentRequest) {
@@ -155,86 +154,86 @@ public class TaskActivityService {
         if (uploadCommentRequest.getCommentId() == null)
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        mongoUserService.checkUserAvailability(userId);
+        BiFunction<ObjectId, ObjectId, BoardWithTaskCategories> boardFunction = (boardId, taskId) -> {
+            return boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
+                    .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        };
 
-        ObjectId boardId = mongoIdUtils.getObjectId(bId);
-        ObjectId taskId = mongoIdUtils.getObjectId(tId);
+        BiFunction<BoardWithTaskCategories, ObjectId, TaskDetailsDTO> taskFunction = (board, taskId) -> {
+            BoardMember currentMember = boardUtils.getBoardMember(board, userId);
+            if (!currentMember.canViewBoard())
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        BoardWithTaskCategories board = boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+            Task task = taskService.findTaskById(taskId);
+            TaskComment taskComment = getTaskComment(task, uploadCommentRequest.getCommentId());
 
-        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-        if (!currentMember.canViewBoard())
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
+            if (taskComment.isUpdated())
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        Task task = taskService.findTaskById(taskId);
-        TaskComment taskComment = getTaskComment(task, uploadCommentRequest.getCommentId());
+            if (!taskComment.getUser().equals(userId))
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        if (taskComment.isUpdated())
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
+            if (!currentMember.canUpdateOwnComment())
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        if (!taskComment.getUser().equals(userId))
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
+            taskComment.setComment(uploadCommentRequest.getComment());
+            taskComment.setUpdated(true);
 
-        if (!currentMember.canUpdateOwnComment())
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
+            Task savedTask = taskRepository.save(task);
 
-        taskComment.setComment(uploadCommentRequest.getComment());
-        taskComment.setUpdated(true);
-
-        Task savedTask = taskRepository.save(task);
-
-        Set<UUID> usersIds = savedTask.getActivityElements()
-                .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
-        return taskService.detailedTaskDto(task, usersIds);
+            Set<UUID> usersIds = savedTask.getActivityElements()
+                    .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
+            return taskService.detailedTaskDto(task, usersIds);
+        };
+        return taskService.executeTaskOperation(userId, bId, tId, boardFunction, taskFunction);
     }
 
     public TaskDetailsDTO deleteComment(UUID userId, String bId, String tId, UUID commentId) {
 
-        mongoUserService.checkUserAvailability(userId);
+        BiFunction<ObjectId, ObjectId, BoardWithTaskCategories> boardFunction = (boardId, taskId) -> {
+            return boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
+                    .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        };
 
-        ObjectId boardId = mongoIdUtils.getObjectId(bId);
-        ObjectId taskId = mongoIdUtils.getObjectId(tId);
-
-        BoardWithTaskCategories board = boardAggregationRepository.findBoardForTaskWithCategories(boardId, userId, taskId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
-
-        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-        if (!currentMember.canViewBoard())
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        Task task = taskService.findTaskById(taskId);
-        TaskComment taskComment = getTaskComment(task, commentId);
-
-        UUID boardOwner = board.getOwner().getUserId();
-        if (taskComment.getUser().equals(boardOwner) && !userId.equals(boardOwner))
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        if (!task.getAssignedTo().contains(userId)) {
-            if (!userId.equals(board.getOwner().getUserId()) || !currentMember.canDeleteAnyComment()) {
+        BiFunction<BoardWithTaskCategories, ObjectId, TaskDetailsDTO> taskFunction = (board, taskId) -> {
+            BoardMember currentMember = boardUtils.getBoardMember(board, userId);
+            if (!currentMember.canViewBoard())
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
-            }
-        } else {
-            if (taskComment.getUser().equals(userId)) {
-                if (!currentMember.canDeleteOwnComment())
+
+            Task task = taskService.findTaskById(taskId);
+            TaskComment taskComment = getTaskComment(task, commentId);
+
+            UUID boardOwner = board.getOwner().getUserId();
+            if (taskComment.getUser().equals(boardOwner) && !userId.equals(boardOwner))
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+            if (!task.getAssignedTo().contains(userId)) {
+                if (!userId.equals(board.getOwner().getUserId()) || !currentMember.canDeleteAnyComment()) {
                     throw new RuntimeException(); // TODO: Change In Exceptions Section
+                }
             } else {
-                if (!currentMember.canDeleteAnyComment())
-                    throw new RuntimeException(); // TODO: Change In Exceptions Section
+                if (taskComment.getUser().equals(userId)) {
+                    if (!currentMember.canDeleteOwnComment())
+                        throw new RuntimeException(); // TODO: Change In Exceptions Section
+                } else {
+                    if (!currentMember.canDeleteAnyComment())
+                        throw new RuntimeException(); // TODO: Change In Exceptions Section
+                }
             }
-        }
 
-        boolean result = task.getActivityElements()
-                .removeIf(element -> element instanceof TaskComment tc && tc.getCommentId().equals(commentId));
+            boolean result = task.getActivityElements()
+                    .removeIf(element -> element instanceof TaskComment tc && tc.getCommentId().equals(commentId));
 
-        if (!result)
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
+            if (!result)
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        Task savedTask = taskRepository.save(task);
+            Task savedTask = taskRepository.save(task);
 
-        Set<UUID> usersIds = savedTask.getActivityElements()
-                .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
-        return taskService.detailedTaskDto(task, usersIds);
+            Set<UUID> usersIds = savedTask.getActivityElements()
+                    .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
+            return taskService.detailedTaskDto(task, usersIds);
+        };
+        return taskService.executeTaskOperation(userId, bId, tId, boardFunction, taskFunction);
     }
 
     private TaskComment getTaskComment(Task task, UUID commentId) {
