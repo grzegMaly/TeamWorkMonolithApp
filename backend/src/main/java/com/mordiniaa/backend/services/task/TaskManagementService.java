@@ -1,6 +1,7 @@
 package com.mordiniaa.backend.services.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
+import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
@@ -10,7 +11,6 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.Bo
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepository;
 import com.mordiniaa.backend.request.task.AssignUsersRequest;
 import com.mordiniaa.backend.request.task.PatchTaskDataRequest;
-import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +21,13 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TaskManagementService {
 
-    private final MongoUserService mongoUserService;
     private final MongoIdUtils mongoIdUtils;
     private final BoardAggregationRepository boardAggregationRepository;
     private final BoardUtils boardUtils;
@@ -37,43 +37,44 @@ public class TaskManagementService {
 
     public TaskDetailsDTO updateTask(UUID userId, String bId, String tId, PatchTaskDataRequest patchRequest) {
 
-        mongoUserService.checkUserAvailability(userId);
+        BiFunction<ObjectId, ObjectId, BoardMembersOnly> boardFunction = (boardId, taskId) -> {
+            return boardAggregationRepository
+                    .findBoardMembersForTask(boardId, userId, taskId)
+                    .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        };
 
-        ObjectId boardId = mongoIdUtils.getObjectId(bId);
-        ObjectId taskId = mongoIdUtils.getObjectId(tId);
+        BiFunction<BoardMembersOnly, ObjectId, TaskDetailsDTO> taskFunction = (board, taskId) -> {
+            BoardMember currentMember = boardUtils.getBoardMember(board, userId);
+            Task task = taskService.findTaskById(taskId);
 
-        BoardMembersOnly board = boardAggregationRepository
-                .findBoardMembersForTask(boardId, userId, taskId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+            UUID boardOwner = board.getOwner().getUserId();
+            UUID taskAuthor = task.getCreatedBy();
 
-        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-        Task task = taskService.findTaskById(taskId);
+            if (!userId.equals(boardOwner) && !userId.equals(taskAuthor)) {
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+            }
 
-        UUID boardOwner = board.getOwner().getUserId();
-        UUID taskAuthor = task.getCreatedBy();
+            if (!task.getCreatedBy().equals(userId) && !currentMember.canUpdateTask()) {
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+            }
 
-        if (!userId.equals(boardOwner) && !userId.equals(taskAuthor)) {
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-        }
+            if (patchRequest.getTitle() != null && !patchRequest.getTitle().isBlank())
+                task.setTitle(patchRequest.getTitle());
 
-        if (!task.getCreatedBy().equals(userId) && !currentMember.canUpdateTask()) {
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-        }
+            if (patchRequest.getDescription() != null && !patchRequest.getDescription().isBlank())
+                task.setDescription(patchRequest.getDescription());
 
-        if (patchRequest.getTitle() != null && !patchRequest.getTitle().isBlank())
-            task.setTitle(patchRequest.getTitle());
+            if (patchRequest.getDescription() != null && patchRequest.getDeadline().isAfter(Instant.now()))
+                task.setDeadline(patchRequest.getDeadline());
 
-        if (patchRequest.getDescription() != null && !patchRequest.getDescription().isBlank())
-            task.setDescription(patchRequest.getDescription());
+            Task savedTask = taskRepository.save(task);
 
-        if (patchRequest.getDescription() != null && patchRequest.getDeadline().isAfter(Instant.now()))
-            task.setDeadline(patchRequest.getDeadline());
+            Set<UUID> usersIds = savedTask.getActivityElements()
+                    .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
+            return taskService.detailedTaskDto(task, usersIds);
+        };
 
-        Task savedTask = taskRepository.save(task);
-
-        Set<UUID> usersIds = savedTask.getActivityElements()
-                .stream().map(TaskActivityElement::getUser).collect(Collectors.toSet());
-        return taskService.detailedTaskDto(task, usersIds);
+        return taskService.executeTaskOperation(userId, bId, tId, boardFunction, taskFunction);
     }
 
     public TaskDetailsDTO assignUsersToTask(UUID assigningId, AssignUsersRequest assignRequest, String bId, String tId) {
@@ -126,36 +127,37 @@ public class TaskManagementService {
 
     public void removeUserFromTask(UUID userId, UUID toDeleteId, String bId, String tId) {
 
-        mongoUserService.checkUserAvailability(userId);
+        BiFunction<ObjectId, ObjectId, BoardMembersOnly> boardFunction = (boardId, taskId) -> {
+            return boardAggregationRepository
+                    .findBoardMembersForTask(boardId, userId, taskId)
+                    .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        };
 
-        ObjectId boardId = mongoIdUtils.getObjectId(bId);
-        ObjectId taskId = mongoIdUtils.getObjectId(tId);
-
-        BoardMembersOnly board = boardAggregationRepository
-                .findBoardMembersForTask(boardId, userId, taskId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
-
-        BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-        if (!currentMember.canUnassignTask())
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        UUID boardOwner = board.getOwner().getUserId();
-        if (toDeleteId.equals(boardOwner)) {
-            if (!userId.equals(boardOwner))
+        BiFunction<BoardMembersOnly, ObjectId, TaskShortDto> taskFunction =  (board, taskId) -> {
+            BoardMember currentMember = boardUtils.getBoardMember(board, userId);
+            if (!currentMember.canUnassignTask())
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
-        }
 
-        Set<UUID> membersIds = board.getMembers().stream()
-                .map(BoardMember::getUserId)
-                .collect(Collectors.toSet());
-        membersIds.add(boardOwner);
+            UUID boardOwner = board.getOwner().getUserId();
+            if (toDeleteId.equals(boardOwner)) {
+                if (!userId.equals(boardOwner))
+                    throw new RuntimeException(); // TODO: Change In Exceptions Section
+            }
 
-        Task task = taskService.findTaskById(taskId);
-        if (!task.getAssignedTo().contains(toDeleteId))
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
+            Set<UUID> membersIds = board.getMembers().stream()
+                    .map(BoardMember::getUserId)
+                    .collect(Collectors.toSet());
+            membersIds.add(boardOwner);
 
-        task.removeMember(toDeleteId);
+            Task task = taskService.findTaskById(taskId);
+            if (!task.getAssignedTo().contains(toDeleteId))
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        taskRepository.save(task);
+            task.removeMember(toDeleteId);
+
+            taskRepository.save(task);
+            return null;
+        };
+        taskService.executeTaskOperation(userId, bId, tId, boardFunction, taskFunction);
     }
 }
