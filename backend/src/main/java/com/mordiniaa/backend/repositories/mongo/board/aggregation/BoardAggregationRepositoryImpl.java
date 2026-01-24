@@ -74,7 +74,7 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                         )
                         .as("tasks"),
                 match(Criteria.where("taskCategories.tasks").is(taskId)),
-                project("owner", "members", "tasks")
+                project("id", "owner", "members", "tasks")
         );
 
         return mongoTemplate.aggregate(aggr, "boards", BoardMembersTasksOnly.class)
