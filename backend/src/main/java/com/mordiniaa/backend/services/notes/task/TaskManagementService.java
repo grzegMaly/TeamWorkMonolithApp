@@ -1,14 +1,13 @@
 package com.mordiniaa.backend.services.notes.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
-import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
-import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprAggrRepository;
+import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepository;
 import com.mordiniaa.backend.request.task.AssignUsersRequest;
 import com.mordiniaa.backend.request.task.PatchTaskDataRequest;
 import com.mordiniaa.backend.services.notes.user.MongoUserService;
@@ -16,7 +15,6 @@ import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -35,7 +33,7 @@ public class TaskManagementService {
     private final BoardUtils boardUtils;
     private final TaskRepository taskRepository;
     private final TaskService taskService;
-    private final UserReprAggrRepository userReprAggrRepository;
+    private final UserReprCustomRepository userReprCustomRepository;
 
     public TaskDetailsDTO updateTask(UUID userId, String bId, String tId, PatchTaskDataRequest patchRequest) {
 
@@ -85,7 +83,7 @@ public class TaskManagementService {
         Set<UUID> usersToCheck = new HashSet<>(toAssign);
         usersToCheck.add(assigningId);
 
-        boolean result = userReprAggrRepository.allUsersAvailable(usersToCheck);
+        boolean result = userReprCustomRepository.allUsersAvailable(usersToCheck);
         if (!result)
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
