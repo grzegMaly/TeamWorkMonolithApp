@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.services.notes.task;
+package com.mordiniaa.backend.services.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.models.board.BoardMember;
@@ -10,7 +10,7 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.Bo
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepository;
 import com.mordiniaa.backend.request.task.AssignUsersRequest;
 import com.mordiniaa.backend.request.task.PatchTaskDataRequest;
-import com.mordiniaa.backend.services.notes.user.MongoUserService;
+import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;

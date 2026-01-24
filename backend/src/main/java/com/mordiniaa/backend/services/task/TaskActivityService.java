@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.services.notes.task;
+package com.mordiniaa.backend.services.task;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
@@ -18,7 +18,7 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregati
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardWithTaskCategories;
 import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
 import com.mordiniaa.backend.request.task.UploadCommentRequest;
-import com.mordiniaa.backend.services.notes.user.MongoUserService;
+import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;

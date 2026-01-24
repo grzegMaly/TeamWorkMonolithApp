@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.services.notes.user;
+package com.mordiniaa.backend.services.user;
 
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepository;
 import lombok.RequiredArgsConstructor;
