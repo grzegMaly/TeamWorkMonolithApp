@@ -22,11 +22,15 @@ import com.mordiniaa.backend.models.task.activity.TaskComment;
 import com.mordiniaa.backend.models.task.activity.TaskStatusChange;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
-import com.mordiniaa.backend.repositories.mongo.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
+import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
+import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
 import com.mordiniaa.backend.services.notes.task.TaskService;
+import com.mordiniaa.backend.services.notes.user.MongoUserService;
+import com.mordiniaa.backend.utils.BoardUtils;
+import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +62,11 @@ import static org.junit.jupiter.api.Assertions.*;
         TaskCategoryChangeDtoMapper.class,
         TaskStatusChangeDtoMapper.class,
         UserRepresentationMapper.class,
-        BoardAggregationRepositoryImpl.class
+        BoardAggregationRepositoryImpl.class,
+        MongoUserService.class,
+        MongoIdUtils.class,
+        BoardUtils.class,
+        UserReprCustomRepositoryImpl.class
 })
 public class TaskServiceGetTaskByIdRepoTest {
 
