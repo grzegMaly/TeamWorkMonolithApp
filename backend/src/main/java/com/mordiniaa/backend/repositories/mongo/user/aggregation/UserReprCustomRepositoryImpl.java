@@ -12,14 +12,24 @@ import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
-public class UserReprAggrRepositoryImpl implements UserReprAggrRepository {
+public class UserReprCustomRepositoryImpl implements UserReprCustomRepository {
 
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public boolean allUsersAvailable(Set<UUID> userIds) {
+    public boolean allUsersAvailable(UUID... userIds) {
 
-        if (userIds == null || userIds.isEmpty())
+        if (userIds == null)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        Set<UUID> ids = Set.of(userIds);
+
+        return allUsersAvailable(ids);
+    }
+
+    @Override
+    public boolean allUsersAvailable(Set<UUID> userIds) {
+        if (userIds.isEmpty())
             throw new RuntimeException(); // TODO:
 
         Query query = Query.query(
