@@ -25,6 +25,8 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregati
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.services.notes.task.TaskService;
+import com.mordiniaa.backend.services.notes.user.MongoUserService;
+import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,6 +64,12 @@ public class TaskServiceGetTaskByIdMockTest {
 
     @Mock
     private BoardAggregationRepository boardAggregationRepository;
+
+    @Mock
+    private MongoUserService mongoUserService;
+
+    @Mock
+    private MongoIdUtils mongoIdUtils;
 
     private final UUID user1Id = UUID.randomUUID();
     private final UUID user2Id = UUID.randomUUID();
@@ -131,13 +139,13 @@ public class TaskServiceGetTaskByIdMockTest {
     @Test
     void getTaskById() {
 
-        when(userRepresentationRepository.existsUserRepresentationByUserIdAndDeletedFalse(user1Id))
-                .thenReturn(true);
-
         BoardMembersOnly boardProjection = mock(BoardMembersOnly.class);
 
-        when(boardProjection.getOwner()).thenReturn(boardMember1);
-        when(boardProjection.getMembers()).thenReturn(List.of(boardMember2, boardMember3));
+        ObjectId boardObjectId = ObjectId.get();
+        ObjectId taskId = task.getId();
+
+        when(mongoIdUtils.getObjectId(anyString()))
+                .thenReturn(boardObjectId, taskId);
 
         when(boardAggregationRepository
                 .findBoardMembersForTask(
@@ -145,6 +153,12 @@ public class TaskServiceGetTaskByIdMockTest {
                         any(UUID.class),
                         any(ObjectId.class)))
                 .thenReturn(Optional.of(boardProjection));
+
+        when(boardProjection.getMembers())
+                .thenReturn(List.of(boardMember1, boardMember2, boardMember3));
+
+        when(boardProjection.getOwner())
+                .thenReturn(boardMember1);
 
         when(taskRepository.findById(task.getId()))
                 .thenReturn(Optional.ofNullable(task));

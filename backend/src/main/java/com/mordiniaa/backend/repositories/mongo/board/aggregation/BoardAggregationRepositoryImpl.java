@@ -69,7 +69,7 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                                                                 ComparisonOperators.Eq.valueOf("_id").equalToValue(taskId)
                                                         )
                                                         .thenValueOf("positionInCategory")
-                                                        .otherwise((Integer) null)
+                                                        .otherwise("$$REMOVE")
                                         ).as("taskPosition")
                         )
                         .as("tasks"),
