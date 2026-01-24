@@ -33,7 +33,7 @@ public class UserReprCustomRepositoryImpl implements UserReprCustomRepository {
             throw new RuntimeException(); // TODO:
 
         Query query = Query.query(
-                Criteria.where("_id").in(userIds)
+                Criteria.where("userId").in(userIds)
                         .and("deleted").is(false)
         );
 
