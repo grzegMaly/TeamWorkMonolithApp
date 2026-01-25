@@ -223,4 +223,33 @@ public class TaskActivityServiceRepoTest {
         Task task = taskService.findTaskById(task1.getId());
         assertEquals(1, task.getPositionInCategory());
     }
+
+    @Test
+    @DisplayName("Move Task Between Categories Position 1 Test")
+    void moveTaskBetweenCategoriesTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        UpdateTaskPositionRequest positionRequest = new UpdateTaskPositionRequest();
+        positionRequest.setNewPosition(1);
+        positionRequest.setNewTaskCategory(taskCategory2.getCategoryName());
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        ownerMember.setCategoryPermissions(Set.of(CategoryPermissions.MOVE_TASK_BETWEEN_CATEGORIES));
+        boardRepository.save(board);
+
+        TaskShortDto dto = taskActivityService.changeTaskPosition(
+                ownerId,
+                boardId,
+                taskId,
+                positionRequest
+        );
+
+        assertNotNull(dto);
+        assertEquals(1, dto.getPositionInCategory());
+
+        Task task = taskService.findTaskById(task3.getId());
+        assertEquals(0, task.getPositionInCategory());
+    }
 }
