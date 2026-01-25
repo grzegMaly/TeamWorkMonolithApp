@@ -65,6 +65,8 @@ public class TaskActivityServiceMockitoTest {
                         any(),
                         any()
                 );
+
+        verifyNoMoreInteractions(taskService);
     }
 
     @Test
@@ -101,6 +103,8 @@ public class TaskActivityServiceMockitoTest {
                         any(),
                         any()
                 );
+
+        verifyNoMoreInteractions(taskService);
     }
 
     @Test
@@ -135,6 +139,8 @@ public class TaskActivityServiceMockitoTest {
                         any(),
                         any()
                 );
+
+        verifyNoMoreInteractions(taskService);
     }
 
     @Test
@@ -166,6 +172,8 @@ public class TaskActivityServiceMockitoTest {
                         any(),
                         any()
                 );
+
+        verifyNoMoreInteractions(taskService);
     }
 
     @Test
@@ -206,6 +214,8 @@ public class TaskActivityServiceMockitoTest {
                         any(),
                         any()
                 );
+
+        verifyNoMoreInteractions(taskService);
     }
 
     @Test
@@ -243,6 +253,8 @@ public class TaskActivityServiceMockitoTest {
                         any(),
                         any()
                 );
+
+        verifyNoMoreInteractions(taskService);
     }
 
     @Test
@@ -277,6 +289,8 @@ public class TaskActivityServiceMockitoTest {
                         any(),
                         any()
                 );
+
+        verifyNoMoreInteractions(taskService);
     }
 
     @Test
@@ -309,5 +323,7 @@ public class TaskActivityServiceMockitoTest {
                         any(),
                         any()
                 );
+
+        verifyNoMoreInteractions(taskService);
     }
 }
