@@ -1,0 +1,67 @@
+package com.mordiniaa.backend.services.task;
+
+import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
+import com.mordiniaa.backend.dto.task.TaskShortDto;
+import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
+import org.bson.types.ObjectId;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+public class TaskActivityServiceMockitoTest {
+
+    @InjectMocks
+    private TaskActivityService taskActivityService;
+
+    @Mock
+    private TaskService taskService;
+
+    @Test
+    @DisplayName("Change Task Position Test")
+    void changeTaskPositionTest() {
+
+        UUID userId = UUID.randomUUID();
+        ObjectId boardId = ObjectId.get();
+        ObjectId taskId = ObjectId.get();
+        String bId = boardId.toHexString();
+        String tId = taskId.toHexString();
+        UpdateTaskPositionRequest request = new UpdateTaskPositionRequest();
+
+        TaskShortDto taskShortDto = mock(TaskShortDto.class);
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenReturn(taskShortDto);
+
+        TaskShortDto result = taskActivityService.changeTaskPosition(
+                userId,
+                bId,
+                tId,
+                request
+        );
+
+        assertSame(taskShortDto, result);
+
+        verify(taskService, times(1))
+                .executeTaskOperation(
+                        eq(userId),
+                        eq(bId),
+                        eq(tId),
+                        any(),
+                        any()
+                );
+    }
+}
