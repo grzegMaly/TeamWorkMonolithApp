@@ -53,8 +53,6 @@ public class TaskActivityService {
 
         BiFunction<BoardWithTaskCategories, ObjectId, TaskShortDto> taskFunction = (board, taskId) -> {
             BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-            if (!currentMember.canMoveTaskBetweenCategories())
-                throw new RuntimeException();
 
             TaskCategory taskCategory = board.getTaskCategories()
                     .stream()
@@ -67,7 +65,13 @@ public class TaskActivityService {
             if (task.getCreatedBy().equals(boardOwner) && !userId.equals(boardOwner))
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
 
+            Query positionQuery;
+            Update positionUpdate;
             if (request.getNewTaskCategory() != null) {
+
+                if (!currentMember.canMoveTaskBetweenCategories())
+                    throw new RuntimeException();
+
                 String newCategory = request.getNewTaskCategory();
                 TaskCategory newTaskCategory = board.getTaskCategories()
                         .stream()
@@ -97,15 +101,37 @@ public class TaskActivityService {
                 task.addTaskActivityElement(taskCategoryChange);
 
                 taskCategory = newTaskCategory;
-            }
 
-            Query incPositionsQuery = Query.query(
-                    Criteria.where("_id").in(taskCategory.getTasks())
-                            .and("positionInCategory").gte(request.getNewPosition())
-            );
-            Update inPositionsUpdate = new Update()
-                    .inc("positionInCategory", 1);
-            mongoTemplate.updateMulti(incPositionsQuery, inPositionsUpdate, Task.class);
+                positionQuery = Query.query(
+                        Criteria.where("_id").in(taskCategory.getTasks())
+                                .and("positionInCategory").gte(request.getNewPosition())
+                );
+                positionUpdate = new Update()
+                        .inc("positionInCategory", 1);
+            } else {
+
+                if (task.getPositionInCategory() == request.getNewPosition())
+                    throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+                if (task.getPositionInCategory() < request.getNewPosition()) {
+                    positionQuery = Query.query(
+                            Criteria.where("_id").in(taskCategory.getTasks())
+                                    .and("positionInCategory").gte(task.getPositionInCategory())
+                                    .and("positionInCategory").lt(request.getNewPosition())
+                    );
+                    positionUpdate = new Update()
+                            .inc("positionInCategory", -1);
+                } else {
+                    positionQuery = Query.query(
+                            Criteria.where("_id").in(taskCategory.getTasks())
+                                    .and("positionInCategory").gte(request.getNewPosition())
+                                    .and("positionInCategory").lt(task.getPositionInCategory())
+                    );
+                    positionUpdate = new Update()
+                            .inc("positionInCategory", 1);
+                }
+            }
+            mongoTemplate.updateMulti(positionQuery, positionUpdate, Task.class);
 
             task.setPositionInCategory(request.getNewPosition());
             task = taskRepository.save(task);
