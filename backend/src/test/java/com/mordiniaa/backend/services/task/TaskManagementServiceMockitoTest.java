@@ -1,6 +1,7 @@
 package com.mordiniaa.backend.services.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
+import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.mappers.task.TaskMapperToDtoTest;
 import com.mordiniaa.backend.models.board.BoardMember;
@@ -207,5 +208,36 @@ public class TaskManagementServiceMockitoTest {
                 bId,
                 tId
         ));
+    }
+
+    @Test
+    @DisplayName("Remove User From Task Test")
+    void removeUserFromTaskTest() {
+
+        UUID ownerId = UUID.randomUUID();
+        UUID memberId = UUID.randomUUID();
+        ObjectId boardId = ObjectId.get();
+        ObjectId taskId = ObjectId.get();
+
+        TaskShortDto taskShortDto = mock(TaskShortDto.class);
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenReturn(taskShortDto);
+
+        taskManagementService.removeUserFromTask(
+                ownerId, memberId, boardId.toHexString(), taskId.toHexString()
+        );
+
+        verify(taskService, times(1)).executeTaskOperation(
+                eq(ownerId),
+                eq(boardId.toHexString()),
+                eq(taskId.toHexString()),
+                any(),
+                any()
+        );
     }
 }
