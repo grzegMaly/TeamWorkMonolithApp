@@ -3,6 +3,7 @@ package com.mordiniaa.backend.services.task;
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
+import com.mordiniaa.backend.request.task.UploadCommentRequest;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,6 +98,40 @@ public class TaskActivityServiceMockitoTest {
                         eq(userId),
                         eq(bId),
                         eq(tId),
+                        any(),
+                        any()
+                );
+    }
+
+    @Test
+    @DisplayName("Write Comment Valid Test")
+    void writeCommentValidTest() {
+
+        TaskDetailsDTO taskDetailsDTO = mock(TaskDetailsDTO.class);
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenReturn(taskDetailsDTO);
+
+        UUID ownerId = UUID.randomUUID();
+        String boardId = ObjectId.get().toHexString();
+        String taskId = ObjectId.get().toHexString();
+        UploadCommentRequest uploadCommentRequest = new UploadCommentRequest();
+
+        TaskDetailsDTO result = taskActivityService.writeComment(
+                ownerId, boardId, taskId, uploadCommentRequest
+        );
+
+        assertSame(taskDetailsDTO, result);
+
+        verify(taskService, times(1))
+                .executeTaskOperation(
+                        eq(ownerId),
+                        eq(boardId),
+                        eq(taskId),
                         any(),
                         any()
                 );
