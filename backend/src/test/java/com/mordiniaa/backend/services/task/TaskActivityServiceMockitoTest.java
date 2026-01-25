@@ -167,4 +167,44 @@ public class TaskActivityServiceMockitoTest {
                         any()
                 );
     }
+
+    @Test
+    @DisplayName("Update Comment Valid Test")
+    void updateCommentValidTest() {
+
+        TaskDetailsDTO taskDetailsDTO = mock(TaskDetailsDTO.class);
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenReturn(taskDetailsDTO);
+
+        UUID ownerId = UUID.randomUUID();
+        String boardId = ObjectId.get().toHexString();
+        String taskId = ObjectId.get().toHexString();
+
+        UUID commentId = UUID.randomUUID();
+        UploadCommentRequest uploadCommentRequest = new UploadCommentRequest();
+        uploadCommentRequest.setCommentId(commentId);
+
+        TaskDetailsDTO result = taskActivityService.updateComment(
+                ownerId,
+                boardId,
+                taskId,
+                uploadCommentRequest
+        );
+
+        assertSame(taskDetailsDTO, result);
+
+        verify(taskService, times(1))
+                .executeTaskOperation(
+                        eq(ownerId),
+                        eq(boardId),
+                        eq(taskId),
+                        any(),
+                        any()
+                );
+    }
 }
