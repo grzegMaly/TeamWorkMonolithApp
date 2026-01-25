@@ -56,5 +56,37 @@ public class TaskManagementServiceMockitoTest {
 
     @Mock
     private TaskRepository taskRepository;
-    
+
+    @Test
+    @DisplayName("Update Task By Owner Valid Test")
+    void updateTaskByOwnerValidTest() {
+
+        TaskDetailsDTO dto = mock(TaskDetailsDTO.class);
+
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenReturn(dto);
+
+        UUID ownerId = UUID.randomUUID();
+        ObjectId boardId = ObjectId.get();
+        ObjectId taskId = ObjectId.get();
+        PatchTaskDataRequest patchTaskDataRequest = new PatchTaskDataRequest();
+        TaskDetailsDTO result = taskManagementService.updateTask(
+                ownerId, boardId.toHexString(), taskId.toHexString(), patchTaskDataRequest
+        );
+
+        assertSame(dto, result);
+
+        verify(taskService, times(1)).executeTaskOperation(
+                eq(ownerId),
+                eq(boardId.toHexString()),
+                eq(taskId.toHexString()),
+                any(),
+                any()
+        );
+    }
 }
