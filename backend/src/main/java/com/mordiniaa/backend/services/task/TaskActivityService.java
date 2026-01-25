@@ -17,9 +17,7 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregati
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardWithTaskCategories;
 import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
 import com.mordiniaa.backend.request.task.UploadCommentRequest;
-import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
-import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -38,9 +36,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TaskActivityService {
 
-    private final MongoUserService mongoUserService;
     private final BoardAggregationRepository boardAggregationRepository;
-    private final MongoIdUtils mongoIdUtils;
     private final BoardUtils boardUtils;
     private final TaskRepository taskRepository;
     private final MongoTemplate mongoTemplate;
