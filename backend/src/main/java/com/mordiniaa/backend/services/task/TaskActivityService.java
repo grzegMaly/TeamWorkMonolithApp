@@ -116,16 +116,18 @@ public class TaskActivityService {
                 if (task.getPositionInCategory() < request.getNewPosition()) {
                     positionQuery = Query.query(
                             Criteria.where("_id").in(taskCategory.getTasks())
-                                    .and("positionInCategory").gte(task.getPositionInCategory())
-                                    .and("positionInCategory").lt(request.getNewPosition())
+                                    .and("positionInCategory")
+                                    .gte(task.getPositionInCategory())
+                                    .lt(request.getNewPosition())
                     );
                     positionUpdate = new Update()
                             .inc("positionInCategory", -1);
                 } else {
                     positionQuery = Query.query(
                             Criteria.where("_id").in(taskCategory.getTasks())
-                                    .and("positionInCategory").gte(request.getNewPosition())
-                                    .and("positionInCategory").lt(task.getPositionInCategory())
+                                    .and("positionInCategory")
+                                    .gte(request.getNewPosition())
+                                    .lt(task.getPositionInCategory())
                     );
                     positionUpdate = new Update()
                             .inc("positionInCategory", 1);
