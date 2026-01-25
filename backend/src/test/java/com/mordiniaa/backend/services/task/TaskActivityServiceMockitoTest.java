@@ -278,4 +278,36 @@ public class TaskActivityServiceMockitoTest {
                         any()
                 );
     }
+
+    @Test
+    @DisplayName("Delete Comment Throws Exception Test")
+    void deleteCommentThrowsExceptionTest() {
+
+        TaskDetailsDTO taskDetailsDTO = mock(TaskDetailsDTO.class);
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenThrow(RuntimeException.class);
+
+        UUID ownerId = UUID.randomUUID();
+        String boardId = ObjectId.get().toHexString();
+        String taskId = ObjectId.get().toHexString();
+        UUID commentId = UUID.randomUUID();
+
+        assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(
+                ownerId, boardId, taskId, commentId
+        ));
+
+        verify(taskService, times(1))
+                .executeTaskOperation(
+                        eq(ownerId),
+                        eq(boardId),
+                        eq(taskId),
+                        any(),
+                        any()
+                );
+    }
 }
