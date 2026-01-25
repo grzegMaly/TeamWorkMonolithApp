@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -54,6 +55,42 @@ public class TaskActivityServiceMockitoTest {
         );
 
         assertSame(taskShortDto, result);
+
+        verify(taskService, times(1))
+                .executeTaskOperation(
+                        eq(userId),
+                        eq(bId),
+                        eq(tId),
+                        any(),
+                        any()
+                );
+    }
+
+    @Test
+    @DisplayName("Change Task Position Throws Exception Test")
+    void changeTaskPositionThrowsExceptionTest() {
+
+        UUID userId = UUID.randomUUID();
+        ObjectId boardId = ObjectId.get();
+        ObjectId taskId = ObjectId.get();
+        String bId = boardId.toHexString();
+        String tId = taskId.toHexString();
+        UpdateTaskPositionRequest request = new UpdateTaskPositionRequest();
+
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenThrow(RuntimeException.class);
+
+        assertThrows(RuntimeException.class, () -> taskActivityService.changeTaskPosition(
+                userId,
+                bId,
+                tId,
+                request
+        ));
 
         verify(taskService, times(1))
                 .executeTaskOperation(
