@@ -89,4 +89,24 @@ public class TaskManagementServiceMockitoTest {
                 any()
         );
     }
+
+    @Test
+    @DisplayName("Update Task Throws Exception Test")
+    void updateTaskThrowsExceptionTest() {
+
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenThrow(new RuntimeException());
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.updateTask(
+                UUID.randomUUID(),
+                ObjectId.get().toHexString(),
+                ObjectId.get().toHexString(),
+                new PatchTaskDataRequest()
+        ));
+    }
 }
