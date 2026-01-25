@@ -244,4 +244,38 @@ public class TaskActivityServiceMockitoTest {
                         any()
                 );
     }
+
+    @Test
+    @DisplayName("Delete Comment Valid Test")
+    void deleteCommentValidTest() {
+
+        TaskDetailsDTO taskDetailsDTO = mock(TaskDetailsDTO.class);
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenReturn(taskDetailsDTO);
+
+        UUID ownerId = UUID.randomUUID();
+        String boardId = ObjectId.get().toHexString();
+        String taskId = ObjectId.get().toHexString();
+        UUID commentId = UUID.randomUUID();
+
+        TaskDetailsDTO result = taskActivityService.deleteComment(
+                ownerId, boardId, taskId, commentId
+        );
+
+        assertSame(taskDetailsDTO, result);
+
+        verify(taskService, times(1))
+                .executeTaskOperation(
+                        eq(ownerId),
+                        eq(boardId),
+                        eq(taskId),
+                        any(),
+                        any()
+                );
+    }
 }
