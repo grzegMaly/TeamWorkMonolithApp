@@ -202,4 +202,25 @@ public class TaskActivityServiceRepoTest {
         Task task = taskService.findTaskById(task2.getId());
         assertEquals(0, task.getPositionInCategory());
     }
+
+    @Test
+    @Description("Decrease Task Position Valid Test")
+    void decreaseTaskPositionValidTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task2.getId().toHexString();
+
+        UpdateTaskPositionRequest positionRequest = new UpdateTaskPositionRequest();
+        positionRequest.setNewPosition(0);
+
+        member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+
+        TaskShortDto dto = taskActivityService.changeTaskPosition(member1Id, boardId, taskId, positionRequest);
+        assertNotNull(dto);
+        assertEquals(taskId, dto.getId());
+        assertEquals(0, dto.getPositionInCategory());
+
+        Task task = taskService.findTaskById(task1.getId());
+        assertEquals(1, task.getPositionInCategory());
+    }
 }
