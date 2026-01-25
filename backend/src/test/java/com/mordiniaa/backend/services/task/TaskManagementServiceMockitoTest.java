@@ -2,19 +2,14 @@ package com.mordiniaa.backend.services.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.dto.task.TaskShortDto;
-import com.mordiniaa.backend.mappers.task.TaskMapper;
-import com.mordiniaa.backend.mappers.task.TaskMapperToDtoTest;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
-import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepository;
-import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
 import com.mordiniaa.backend.request.task.AssignUsersRequest;
 import com.mordiniaa.backend.request.task.PatchTaskDataRequest;
-import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
@@ -231,6 +226,36 @@ public class TaskManagementServiceMockitoTest {
         taskManagementService.removeUserFromTask(
                 ownerId, memberId, boardId.toHexString(), taskId.toHexString()
         );
+
+        verify(taskService, times(1)).executeTaskOperation(
+                eq(ownerId),
+                eq(boardId.toHexString()),
+                eq(taskId.toHexString()),
+                any(),
+                any()
+        );
+    }
+
+    @Test
+    @DisplayName("Remove User From Task Throws Exception Test")
+    void removeUserFromTaskThrowsExceptionTest() {
+
+        UUID ownerId = UUID.randomUUID();
+        UUID memberId = UUID.randomUUID();
+        ObjectId boardId = ObjectId.get();
+        ObjectId taskId = ObjectId.get();
+
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenThrow(new RuntimeException());
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.removeUserFromTask(
+                ownerId, memberId, boardId.toHexString(), taskId.toHexString()
+        ));
 
         verify(taskService, times(1)).executeTaskOperation(
                 eq(ownerId),
