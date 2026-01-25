@@ -8,6 +8,7 @@ import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
+import com.mordiniaa.backend.models.board.permissions.CategoryPermissions;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
@@ -19,10 +20,7 @@ import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Description;
@@ -183,7 +181,7 @@ public class TaskActivityServiceRepoTest {
     }
 
     @Test
-    @Description("Increase Task Position Valid Test")
+    @DisplayName("Increase Task Position Valid Test")
     void increaseTaskPositionValidTest() {
 
         String boardId = board.getId().toHexString();
@@ -193,6 +191,7 @@ public class TaskActivityServiceRepoTest {
         positionRequest.setNewPosition(1);
 
         ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardRepository.save(board);
 
         TaskShortDto dto = taskActivityService.changeTaskPosition(ownerId, boardId, taskId, positionRequest);
         assertNotNull(dto);
@@ -204,7 +203,7 @@ public class TaskActivityServiceRepoTest {
     }
 
     @Test
-    @Description("Decrease Task Position Valid Test")
+    @DisplayName("Decrease Task Position Valid Test")
     void decreaseTaskPositionValidTest() {
 
         String boardId = board.getId().toHexString();
@@ -214,6 +213,7 @@ public class TaskActivityServiceRepoTest {
         positionRequest.setNewPosition(0);
 
         member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardRepository.save(board);
 
         TaskShortDto dto = taskActivityService.changeTaskPosition(member1Id, boardId, taskId, positionRequest);
         assertNotNull(dto);
@@ -223,6 +223,4 @@ public class TaskActivityServiceRepoTest {
         Task task = taskService.findTaskById(task1.getId());
         assertEquals(1, task.getPositionInCategory());
     }
-
-
 }
