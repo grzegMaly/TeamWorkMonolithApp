@@ -20,7 +20,7 @@ import com.mordiniaa.backend.request.task.CreateTaskRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -34,19 +34,23 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/*TESTING*/
+@Setter
+@NoArgsConstructor
+//--------
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class TaskService {
 
-    private final UserRepresentationRepository userRepresentationRepository;
-    private final BoardRepository boardRepository;
-    private final BoardAggregationRepository boardAggregationRepository;
-    private final TaskRepository taskRepository;
-    private final MongoTemplate mongoTemplate;
-    private final TaskMapper taskMapper;
-    private final MongoUserService mongoUserService;
-    private final MongoIdUtils mongoIdUtils;
-    private final BoardUtils boardUtils;
+    private UserRepresentationRepository userRepresentationRepository;
+    private BoardRepository boardRepository;
+    private BoardAggregationRepository boardAggregationRepository;
+    private TaskRepository taskRepository;
+    private MongoTemplate mongoTemplate;
+    private TaskMapper taskMapper;
+    private MongoUserService mongoUserService;
+    private MongoIdUtils mongoIdUtils;
+    private BoardUtils boardUtils;
 
     protected Task findTaskById(ObjectId taskId) {
         return taskRepository.findById(taskId)
