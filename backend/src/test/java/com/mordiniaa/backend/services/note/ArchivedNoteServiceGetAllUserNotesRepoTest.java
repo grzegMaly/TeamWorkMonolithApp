@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.note.serviceRepo.archived;
+package com.mordiniaa.backend.services.note;
 
 import com.mordiniaa.backend.dto.note.NoteDto;
 import com.mordiniaa.backend.mappers.note.NoteMapper;

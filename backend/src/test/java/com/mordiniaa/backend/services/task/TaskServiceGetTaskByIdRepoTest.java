@@ -1,5 +1,9 @@
-package com.mordiniaa.backend.task.serviceRepo;
+package com.mordiniaa.backend.services.task;
 
+import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
+import com.mordiniaa.backend.dto.task.activity.TaskActivityElementDto;
+import com.mordiniaa.backend.dto.task.activity.TaskCommentDto;
+import com.mordiniaa.backend.dto.task.activity.TaskStatusChangeDto;
 import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
@@ -23,7 +27,6 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregati
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
-import com.mordiniaa.backend.services.task.TaskService;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
@@ -45,8 +48,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @DataMongoTest
 @ActiveProfiles("test")
@@ -59,13 +62,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         TaskStatusChangeDtoMapper.class,
         UserRepresentationMapper.class,
         BoardAggregationRepositoryImpl.class,
-        BoardAggregationRepositoryImpl.class,
         MongoUserService.class,
-        UserReprCustomRepositoryImpl.class,
         MongoIdUtils.class,
-        BoardUtils.class
+        BoardUtils.class,
+        UserReprCustomRepositoryImpl.class
 })
-public class TaskServiceDeleteTaskFromBoardRepoTest {
+public class TaskServiceGetTaskByIdRepoTest {
 
     @MockitoBean("mongoAuditor")
     private AuditorAware<String> auditorAware;
@@ -83,7 +85,7 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
     private TaskService taskService;
 
     private final Set<BoardPermission> boardPermissions = Set.of(BoardPermission.VIEW_BOARD);
-    private final Set<TaskPermission> taskPermissions = Set.of(TaskPermission.DELETE_TASK, TaskPermission.CREATE_TASK,TaskPermission.ASSIGN_TASK);
+    private final Set<TaskPermission> taskPermissions = Set.of(TaskPermission.CREATE_TASK, TaskPermission.ASSIGN_TASK);
 
     private final UUID ownerId = UUID.randomUUID();
     private final UUID member1Id = UUID.randomUUID();
@@ -139,8 +141,6 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
         BoardMember boardMember1 = new BoardMember();
         boardMember1.setUserId(member1Id);
         boardMember1.setBoardPermissions(boardPermissions);
-        boardMember1.setBoardPermissions(boardPermissions);
-        boardMember1.setTaskPermissions(taskPermissions);
 
         BoardMember boardMember2 = new BoardMember();
         boardMember2.setUserId(member2Id);
@@ -157,8 +157,8 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
         board = boardRepository.save(board);
 
         CreateTaskRequest createTaskRequest = new CreateTaskRequest(title, description, deadline);
-        createTaskRequest.setAssignedTo(Set.of(member1Id, member2Id));
-        taskId = taskService.createTask(member1Id, board.getId().toHexString(), boardCategoryName, createTaskRequest).getId();
+        createTaskRequest.setAssignedTo(Set.of(ownerId, member1Id, member2Id));
+        taskId = taskService.createTask(ownerId, board.getId().toHexString(), boardCategoryName, createTaskRequest).getId();
 
         Task task = taskRepository.findById(new ObjectId(taskId)).orElseThrow(RuntimeException::new);
         task.setActivityElements(List.of(taskComment1, taskCategoryChange1, taskComment2, taskStatusChange1, taskCategoryChange2, taskStatusChange2));
@@ -173,36 +173,101 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
     }
 
     @Test
-    @DisplayName("Delete Task By Id Valid Test")
-    void deleteTaskByIdValidTest() {
-        assertDoesNotThrow(() -> taskService.deleteTaskFromBoard(ownerId, board.getId().toHexString(), taskId));
+    @DisplayName("Get Task By Id And Owner Id Valid Test")
+    void getTaskByIdOwnerIdValidTest() {
+
+        TaskDetailsDTO taskDetailsDTO = taskService.getTaskDetailsById(ownerId, board.getId().toHexString(), taskId);
+        assertNotNull(taskDetailsDTO);
+        assertEquals(title, taskDetailsDTO.getTitle());
+        assertEquals(description, taskDetailsDTO.getDescription());
+        assertEquals(TaskStatus.UNCOMPLETED, taskDetailsDTO.getTaskStatus());
+
+        assertNotNull(taskDetailsDTO.getTaskStatus());
+        assertFalse(taskDetailsDTO.getTaskActivityElements().isEmpty());
+        assertEquals(6, taskDetailsDTO.getTaskActivityElements().size());
+
+        TaskActivityElementDto latestElement = taskDetailsDTO.getTaskActivityElements().getFirst();
+        assertNotNull(latestElement);
+        assertEquals(activityDate6, latestElement.getCreatedAt());
+        assertEquals(member2Id, latestElement.getUser().getUserId());
+        assertEquals("Mem 2", latestElement.getUser().getUsername());
+
+        assertInstanceOf(TaskStatusChangeDto.class, latestElement);
+        TaskStatusChangeDto latestCastedElement = (TaskStatusChangeDto) latestElement;
+        assertEquals(taskStatusChange2.getPrevStatus(), latestCastedElement.getPrevStatus());
+        assertEquals(taskStatusChange2.getNextStatus(), latestCastedElement.getNextStatus());
+
+        TaskActivityElementDto oldestElement = taskDetailsDTO.getTaskActivityElements().getLast();
+        assertNotNull(oldestElement);
+        assertEquals(activityDate1, oldestElement.getCreatedAt());
+        assertEquals(ownerId, oldestElement.getUser().getUserId());
+        assertEquals("Owner 1", oldestElement.getUser().getUsername());
+
+        assertInstanceOf(TaskCommentDto.class, oldestElement);
+        TaskCommentDto oldestCastedElement = (TaskCommentDto) oldestElement;
+        assertEquals(taskComment1.getComment(), oldestCastedElement.getComment());
+        assertEquals(taskComment1.isUpdated(), oldestCastedElement.isUpdated());
     }
 
     @Test
-    @DisplayName("Delete Task By Id Owned Task Test")
-    void deleteTaskByIdOwnedTaskTest() {
-        assertDoesNotThrow(() -> taskService.deleteTaskFromBoard(member1Id, board.getId().toHexString(), taskId));
+    @DisplayName("Get Task By Id And Member Id Valid Test")
+    void getTaskByIdAndMemberIdValidTest() {
+
+        TaskDetailsDTO taskDetailsDTO = taskService.getTaskDetailsById(member1Id, board.getId().toHexString(), taskId);
+        assertNotNull(taskDetailsDTO);
+        assertEquals(title, taskDetailsDTO.getTitle());
+        assertEquals(description, taskDetailsDTO.getDescription());
+        assertEquals(TaskStatus.UNCOMPLETED, taskDetailsDTO.getTaskStatus());
+
+        assertNotNull(taskDetailsDTO.getTaskStatus());
+        assertFalse(taskDetailsDTO.getTaskActivityElements().isEmpty());
+        assertEquals(6, taskDetailsDTO.getTaskActivityElements().size());
     }
 
     @Test
-    @DisplayName("Delete Task Not Permitted Test")
-    void deleteTaskNotPermittedTest() {
+    @DisplayName("Get Task By Id And Member Without Permission Invalid Test")
+    void getTaskByIdAndMemberWithoutPermissionInvalidTest() {
+
         assertThrows(RuntimeException.class,
-                () -> taskService.deleteTaskFromBoard(member2Id, board.getId().toHexString(), taskId));
+                () -> taskService.getTaskDetailsById(member2Id, board.getId().toHexString(), taskId));
     }
 
     @Test
-    @DisplayName("Delete Task Not Found Test")
-    void deleteTaskNotFoundTest() {
+    @DisplayName("Get Task By Id User Not Found Test")
+    void getTaskByIdUserNotFoundTest() {
+
         assertThrows(RuntimeException.class,
-                () -> taskService.deleteTaskFromBoard(ownerId, board.getId().toHexString(), ObjectId.get().toHexString()));
+                () -> taskService.getTaskDetailsById(UUID.randomUUID(), board.getId().toHexString(), taskId));
     }
 
     @Test
-    @DisplayName("Delete Task User Not Found Test")
-    void deleteTaskUserNotFoundTest() {
+    @DisplayName("Get Task By Id Board Not Found Test")
+    void getTaskByIdBoardNotFoundTest() {
+
         assertThrows(RuntimeException.class,
-                () -> taskService.deleteTaskFromBoard(UUID.randomUUID(), board.getId().toHexString(), taskId));
+                () -> taskService.getTaskDetailsById(ownerId, ObjectId.get().toHexString(), taskId));
+    }
+
+    @Test
+    @DisplayName("Get Task By Id Task Not Found Test")
+    void getTaskByIdTaskNotFoundTest() {
+
+        assertThrows(RuntimeException.class,
+                () -> taskService.getTaskDetailsById(ownerId, board.getId().toHexString(), ObjectId.get().toHexString()));
+    }
+
+    @Test
+    @DisplayName("Get Task By Id Invalid Object Ids Test")
+    void getTaskByIdInvalidObjectIdsTest() {
+
+        assertThrows(RuntimeException.class,
+                () -> taskService.getTaskDetailsById(ownerId, "vewrgvswedvcwerg", ObjectId.get().toHexString()));
+
+        assertThrows(RuntimeException.class,
+                () -> taskService.getTaskDetailsById(ownerId, board.getId().toHexString(), "awedvcesgfrvsefdvewrgerg"));
+
+        assertThrows(RuntimeException.class,
+                () -> taskService.getTaskDetailsById(ownerId, "vewrgvswedvcwerg", "vcevfefdvawedvcwrger"));
     }
 
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
