@@ -181,4 +181,31 @@ public class TaskManagementServiceMockitoTest {
 
         assertSame(dto, result);
     }
+
+    @Test
+    @DisplayName("Assign User To Task Throws Exception Test")
+    void assignUserToTaskThrowsExceptionTest() {
+        UUID assigning = UUID.randomUUID();
+
+        ObjectId boardId = ObjectId.get();
+        ObjectId taskId = ObjectId.get();
+        String bId = boardId.toHexString();
+        String tId = taskId.toHexString();
+
+        UUID member1 = UUID.randomUUID();
+        UUID member2 = UUID.randomUUID();
+        Set<UUID> members = Set.of(member1, member2, assigning);
+
+        AssignUsersRequest assignUsersRequest = new AssignUsersRequest();
+        assignUsersRequest.setUsers(members);
+
+        when(userReprCustomRepository.allUsersAvailable(members))
+                .thenReturn(false);
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                assigning,
+                assignUsersRequest,
+                bId,
+                tId
+        ));
+    }
 }
