@@ -207,4 +207,41 @@ public class TaskActivityServiceMockitoTest {
                         any()
                 );
     }
+
+    @Test
+    @DisplayName("Update Comment Throws Exception Test")
+    void updateCommentThrowsExceptionTest() {
+
+        when(taskService.executeTaskOperation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+        )).thenThrow(RuntimeException.class);
+
+        UUID ownerId = UUID.randomUUID();
+        String boardId = ObjectId.get().toHexString();
+        String taskId = ObjectId.get().toHexString();
+
+        UUID commentId = UUID.randomUUID();
+        UploadCommentRequest uploadCommentRequest = new UploadCommentRequest();
+        uploadCommentRequest.setCommentId(commentId);
+
+        assertThrows(RuntimeException.class, () -> taskActivityService.updateComment(
+                ownerId,
+                boardId,
+                taskId,
+                uploadCommentRequest
+        ));
+
+        verify(taskService, times(1))
+                .executeTaskOperation(
+                        eq(ownerId),
+                        eq(boardId),
+                        eq(taskId),
+                        any(),
+                        any()
+                );
+    }
 }
