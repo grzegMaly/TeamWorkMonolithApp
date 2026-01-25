@@ -109,4 +109,76 @@ public class TaskManagementServiceMockitoTest {
                 new PatchTaskDataRequest()
         ));
     }
+
+    @Test
+    @DisplayName("Assign Users To Task Valid Test")
+    void assignUsersToTaskValidTest() {
+
+        UUID assigning = UUID.randomUUID();
+
+        ObjectId boardId = ObjectId.get();
+        ObjectId taskId = ObjectId.get();
+        String bId = boardId.toHexString();
+        String tId = taskId.toHexString();
+
+        UUID member1 = UUID.randomUUID();
+        UUID member2 = UUID.randomUUID();
+        Set<UUID> members = Set.of(member1, member2, assigning);
+
+        AssignUsersRequest assignUsersRequest = new AssignUsersRequest();
+        assignUsersRequest.setUsers(members);
+
+        when(userReprCustomRepository.allUsersAvailable(members))
+                .thenReturn(true);
+
+        when(mongoIdUtils.getObjectId(anyString()))
+                .thenReturn(boardId, taskId);
+
+        BoardMembersOnly board = mock(BoardMembersOnly.class);
+        when(boardAggregationRepository.findBoardMembersForTask(
+                eq(boardId),
+                eq(assigning),
+                eq(taskId)
+        )).thenReturn(Optional.of(board));
+
+        BoardMember currentUser = mock(BoardMember.class);
+        when(boardUtils.getBoardMember(board, assigning))
+                .thenReturn(currentUser);
+
+        when(currentUser.canAssignTask())
+                .thenReturn(true);
+
+        BoardMember member1MB = new BoardMember(member1);
+        BoardMember member2MB = new BoardMember(member2);
+        BoardMember ownerMB = new BoardMember(assigning);
+
+        when(board.getMembers())
+                .thenReturn(List.of(member1MB, member2MB));
+        when(board.getOwner())
+                .thenReturn(ownerMB);
+
+        Task task = new Task();
+
+        when(taskService.findTaskById(taskId))
+                .thenReturn(task);
+
+        Task savedTask = new Task();
+        savedTask.setActivityElements(List.of());
+        when(taskRepository.save(task))
+                .thenReturn(savedTask);
+
+        TaskDetailsDTO dto = mock(TaskDetailsDTO.class);
+        when(taskService.detailedTaskDto(eq(task), anySet()))
+                .thenReturn(dto);
+
+        TaskDetailsDTO result =
+                taskManagementService.assignUsersToTask(
+                        assigning,
+                        assignUsersRequest,
+                        bId,
+                        tId
+                );
+
+        assertSame(dto, result);
+    }
 }
