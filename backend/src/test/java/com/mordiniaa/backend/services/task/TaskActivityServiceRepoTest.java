@@ -85,9 +85,9 @@ public class TaskActivityServiceRepoTest {
     private static UserRepresentation user1;
     private static UserRepresentation user2;
 
-    private static BoardMember ownerMember;
-    private static BoardMember member1;
-    private static BoardMember member2;
+    private BoardMember ownerMember;
+    private BoardMember member1;
+    private BoardMember member2;
 
     private static TaskCategory taskCategory1;
     private static TaskCategory taskCategory2;
@@ -126,15 +126,9 @@ public class TaskActivityServiceRepoTest {
         taskCategory2.setCategoryName("Test");
         taskCategory2.setPosition(1);
 
-        ownerMember = new BoardMember(ownerId);
-        member1 = new BoardMember(member1Id);
-        member2 = new BoardMember(member2Id);
-
         board = new Board();
         board.setBoardName("Board");
         board.setTaskCategories(List.of(taskCategory1, taskCategory2));
-        board.setOwner(ownerMember);
-        board.setMembers(List.of(member1, member2));
 
         Instant deadline = Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
 
@@ -170,6 +164,12 @@ public class TaskActivityServiceRepoTest {
 
         taskCategory1.getTasks().addAll(Set.of(task1.getId(), task2.getId()));
         taskCategory2.getTasks().add(task3.getId());
+
+        ownerMember = new BoardMember(ownerId);
+        member1 = new BoardMember(member1Id);
+        member2 = new BoardMember(member2Id);
+        board.setOwner(ownerMember);
+        board.setMembers(List.of(member1, member2));
 
         board = boardRepository.save(board);
     }
@@ -223,4 +223,6 @@ public class TaskActivityServiceRepoTest {
         Task task = taskService.findTaskById(task1.getId());
         assertEquals(1, task.getPositionInCategory());
     }
+
+
 }
