@@ -28,15 +28,14 @@ public class TaskActivityServiceMockitoTest {
     @Mock
     private TaskService taskService;
 
+    private final UUID ownerId = UUID.randomUUID();
+    private final String boardId = ObjectId.get().toHexString();
+    private final String taskId = ObjectId.get().toHexString();
+
     @Test
     @DisplayName("Change Task Position Test")
     void changeTaskPositionTest() {
 
-        UUID userId = UUID.randomUUID();
-        ObjectId boardId = ObjectId.get();
-        ObjectId taskId = ObjectId.get();
-        String bId = boardId.toHexString();
-        String tId = taskId.toHexString();
         UpdateTaskPositionRequest request = new UpdateTaskPositionRequest();
 
         TaskShortDto taskShortDto = mock(TaskShortDto.class);
@@ -49,9 +48,9 @@ public class TaskActivityServiceMockitoTest {
         )).thenReturn(taskShortDto);
 
         TaskShortDto result = taskActivityService.changeTaskPosition(
-                userId,
-                bId,
-                tId,
+                ownerId,
+                boardId,
+                taskId,
                 request
         );
 
@@ -59,9 +58,9 @@ public class TaskActivityServiceMockitoTest {
 
         verify(taskService, times(1))
                 .executeTaskOperation(
-                        eq(userId),
-                        eq(bId),
-                        eq(tId),
+                        eq(ownerId),
+                        eq(boardId),
+                        eq(taskId),
                         any(),
                         any()
                 );
@@ -73,11 +72,6 @@ public class TaskActivityServiceMockitoTest {
     @DisplayName("Change Task Position Throws Exception Test")
     void changeTaskPositionThrowsExceptionTest() {
 
-        UUID userId = UUID.randomUUID();
-        ObjectId boardId = ObjectId.get();
-        ObjectId taskId = ObjectId.get();
-        String bId = boardId.toHexString();
-        String tId = taskId.toHexString();
         UpdateTaskPositionRequest request = new UpdateTaskPositionRequest();
 
         when(taskService.executeTaskOperation(
@@ -89,17 +83,17 @@ public class TaskActivityServiceMockitoTest {
         )).thenThrow(RuntimeException.class);
 
         assertThrows(RuntimeException.class, () -> taskActivityService.changeTaskPosition(
-                userId,
-                bId,
-                tId,
+                ownerId,
+                boardId,
+                taskId,
                 request
         ));
 
         verify(taskService, times(1))
                 .executeTaskOperation(
-                        eq(userId),
-                        eq(bId),
-                        eq(tId),
+                        eq(ownerId),
+                        eq(boardId),
+                        eq(taskId),
                         any(),
                         any()
                 );
@@ -120,9 +114,6 @@ public class TaskActivityServiceMockitoTest {
                 any()
         )).thenReturn(taskDetailsDTO);
 
-        UUID ownerId = UUID.randomUUID();
-        String boardId = ObjectId.get().toHexString();
-        String taskId = ObjectId.get().toHexString();
         UploadCommentRequest uploadCommentRequest = new UploadCommentRequest();
 
         TaskDetailsDTO result = taskActivityService.writeComment(
@@ -155,9 +146,6 @@ public class TaskActivityServiceMockitoTest {
                 any()
         )).thenThrow(RuntimeException.class);
 
-        UUID ownerId = UUID.randomUUID();
-        String boardId = ObjectId.get().toHexString();
-        String taskId = ObjectId.get().toHexString();
         UploadCommentRequest uploadCommentRequest = new UploadCommentRequest();
 
         assertThrows(RuntimeException.class, () -> taskActivityService.writeComment(
@@ -188,10 +176,6 @@ public class TaskActivityServiceMockitoTest {
                 any(),
                 any()
         )).thenReturn(taskDetailsDTO);
-
-        UUID ownerId = UUID.randomUUID();
-        String boardId = ObjectId.get().toHexString();
-        String taskId = ObjectId.get().toHexString();
 
         UUID commentId = UUID.randomUUID();
         UploadCommentRequest uploadCommentRequest = new UploadCommentRequest();
@@ -230,10 +214,6 @@ public class TaskActivityServiceMockitoTest {
                 any()
         )).thenThrow(RuntimeException.class);
 
-        UUID ownerId = UUID.randomUUID();
-        String boardId = ObjectId.get().toHexString();
-        String taskId = ObjectId.get().toHexString();
-
         UUID commentId = UUID.randomUUID();
         UploadCommentRequest uploadCommentRequest = new UploadCommentRequest();
         uploadCommentRequest.setCommentId(commentId);
@@ -270,9 +250,6 @@ public class TaskActivityServiceMockitoTest {
                 any()
         )).thenReturn(taskDetailsDTO);
 
-        UUID ownerId = UUID.randomUUID();
-        String boardId = ObjectId.get().toHexString();
-        String taskId = ObjectId.get().toHexString();
         UUID commentId = UUID.randomUUID();
 
         TaskDetailsDTO result = taskActivityService.deleteComment(
@@ -297,7 +274,6 @@ public class TaskActivityServiceMockitoTest {
     @DisplayName("Delete Comment Throws Exception Test")
     void deleteCommentThrowsExceptionTest() {
 
-        TaskDetailsDTO taskDetailsDTO = mock(TaskDetailsDTO.class);
         when(taskService.executeTaskOperation(
                 any(),
                 any(),
@@ -306,9 +282,6 @@ public class TaskActivityServiceMockitoTest {
                 any()
         )).thenThrow(RuntimeException.class);
 
-        UUID ownerId = UUID.randomUUID();
-        String boardId = ObjectId.get().toHexString();
-        String taskId = ObjectId.get().toHexString();
         UUID commentId = UUID.randomUUID();
 
         assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(
