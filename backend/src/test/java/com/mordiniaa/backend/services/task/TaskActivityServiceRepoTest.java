@@ -7,6 +7,7 @@ import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
+import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
@@ -14,14 +15,17 @@ import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
+import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
@@ -32,6 +36,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 @ActiveProfiles("test")
@@ -173,5 +180,26 @@ public class TaskActivityServiceRepoTest {
         userRepresentationRepository.deleteAll();
         taskRepository.deleteAll();
         boardRepository.deleteAll();
+    }
+
+    @Test
+    @Description("Increase Task Position Valid Test")
+    void increaseTaskPositionValidTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        UpdateTaskPositionRequest positionRequest = new UpdateTaskPositionRequest();
+        positionRequest.setNewPosition(1);
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+
+        TaskShortDto dto = taskActivityService.changeTaskPosition(ownerId, boardId, taskId, positionRequest);
+        assertNotNull(dto);
+        assertEquals(taskId, dto.getId());
+        assertEquals(1, dto.getPositionInCategory());
+
+        Task task = taskService.findTaskById(task2.getId());
+        assertEquals(0, task.getPositionInCategory());
     }
 }
