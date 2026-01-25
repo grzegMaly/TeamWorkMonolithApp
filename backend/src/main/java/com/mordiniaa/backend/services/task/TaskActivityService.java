@@ -54,6 +54,9 @@ public class TaskActivityService {
         BiFunction<BoardWithTaskCategories, ObjectId, TaskShortDto> taskFunction = (board, taskId) -> {
             BoardMember currentMember = boardUtils.getBoardMember(board, userId);
 
+            if (!currentMember.canViewBoard())
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+
             TaskCategory taskCategory = board.getTaskCategories()
                     .stream()
                     .filter(tC -> tC.getTasks().contains(taskId))
