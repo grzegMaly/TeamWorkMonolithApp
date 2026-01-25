@@ -117,8 +117,8 @@ public class TaskActivityService {
                     positionQuery = Query.query(
                             Criteria.where("_id").in(taskCategory.getTasks())
                                     .and("positionInCategory")
-                                    .gte(task.getPositionInCategory())
-                                    .lt(request.getNewPosition())
+                                    .gt(task.getPositionInCategory())
+                                    .lte(request.getNewPosition())
                     );
                     positionUpdate = new Update()
                             .inc("positionInCategory", -1);
