@@ -131,10 +131,11 @@ public class TaskActivityService {
                             .inc("positionInCategory", 1);
                 }
             }
-            mongoTemplate.updateMulti(positionQuery, positionUpdate, Task.class);
 
             task.setPositionInCategory(request.getNewPosition());
             task = taskRepository.save(task);
+            
+            mongoTemplate.updateMulti(positionQuery, positionUpdate, Task.class);
 
             return taskMapper.toShortenedDto(task);
         };
