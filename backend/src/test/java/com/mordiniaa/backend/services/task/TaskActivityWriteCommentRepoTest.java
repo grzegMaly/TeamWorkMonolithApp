@@ -25,6 +25,7 @@ import com.mordiniaa.backend.request.task.UploadCommentRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -307,5 +308,21 @@ public class TaskActivityWriteCommentRepoTest {
         UserDto uDto = commentDto.getUser();
         assertNotNull(uDto);
         assertEquals(ownerId, uDto.getUserId());
+    }
+
+    @Test
+    @DisplayName("Upload Comment Board Not Found")
+    void uploadCommentBoardNotFound() {
+
+        String boardId = ObjectId.get().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.writeComment(
+                        ownerId,
+                        boardId,
+                        taskId,
+                        new UploadCommentRequest()
+                ));
     }
 }
