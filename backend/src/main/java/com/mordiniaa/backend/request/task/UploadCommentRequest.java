@@ -19,7 +19,7 @@ public class UploadCommentRequest {
     @Size(min = 3, max = 256)
     private String comment;
 
-    public void setContent(String comment) {
-        this.comment = comment.trim();
+    public void setComment(String comment) {
+        this.comment = comment == null ? null : comment.trim();
     }
 }
