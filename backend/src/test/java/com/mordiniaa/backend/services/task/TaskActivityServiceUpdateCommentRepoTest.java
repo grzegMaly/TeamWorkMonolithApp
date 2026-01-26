@@ -185,24 +185,16 @@ public class TaskActivityServiceUpdateCommentRepoTest {
         String boardId = board.getId().toHexString();
         String taskId = task1.getId().toHexString();
 
-        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
-        ownerMember.setCommentPermissions(Set.of(CommentPermission.EDIT_OWN_COMMENT, CommentPermission.COMMENT_TASK));
-        boardRepository.save(board);
-
         String originalComment = "Original Comment";
-        UploadCommentRequest uploadRequest = new UploadCommentRequest();
-        uploadRequest.setComment(originalComment);
-
-        TaskDetailsDTO dto = taskActivityService.writeComment(
-                ownerId,
-                boardId,
-                taskId,
-                uploadRequest
-        );
+        TaskDetailsDTO dto = writeCommentAndResetPermission(ownerMember, taskId, originalComment);
 
         TaskCommentDto commentDto = (TaskCommentDto) dto.getTaskActivityElements().getFirst();
         assertEquals(originalComment, commentDto.getComment());
         UUID commentId = commentDto.getCommentId();
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        ownerMember.setCommentPermissions(Set.of(CommentPermission.EDIT_OWN_COMMENT));
+        boardRepository.save(board);
 
         String updatedComment = "Updated Comment";
         UploadCommentRequest updateRequest = new UploadCommentRequest();
@@ -224,5 +216,27 @@ public class TaskActivityServiceUpdateCommentRepoTest {
         assertEquals(commentId, sameId);
         assertTrue(updatedCommentDto.isUpdated());
         assertEquals(updatedComment, updatedCommentDto.getComment());
+    }
+
+    private TaskDetailsDTO writeCommentAndResetPermission(BoardMember boardMember, String taskId, String comment) {
+
+        boardMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardMember.setCommentPermissions(Set.of(CommentPermission.COMMENT_TASK));
+        boardRepository.save(board);
+
+        UploadCommentRequest request = new UploadCommentRequest();
+        request.setComment(comment);
+        TaskDetailsDTO dto = taskActivityService.writeComment(
+                boardMember.getUserId(),
+                board.getId().toHexString(),
+                taskId,
+                request
+        );
+
+        boardMember.setBoardPermissions(Set.of());
+        boardMember.setCommentPermissions(Set.of());
+        boardRepository.save(board);
+
+        return dto;
     }
 }
