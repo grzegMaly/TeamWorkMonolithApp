@@ -3,6 +3,7 @@ package com.mordiniaa.backend.services.task;
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.dto.task.activity.TaskActivityElementDto;
 import com.mordiniaa.backend.dto.task.activity.TaskCommentDto;
+import com.mordiniaa.backend.dto.user.mongodb.UserDto;
 import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
@@ -262,6 +263,49 @@ public class TaskActivityWriteCommentRepoTest {
 
         Task dbTask = taskService.findTaskById(task1.getId());
         assertEquals(commentDto.getCommentId(), ((TaskComment) dbTask.getActivityElements().getFirst()).getCommentId());
+    }
 
+    @Test
+    @DisplayName("Board Owner Post Any Comment Test")
+    void boardOwnerPostAnyCommentTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task2.getId().toHexString();
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        ownerMember.setCommentPermissions(Set.of(CommentPermission.COMMENT_TASK));
+        boardRepository.save(board);
+
+        String comment = "Comment";
+
+        UploadCommentRequest request = new UploadCommentRequest();
+        request.setComment(comment);
+
+        TaskDetailsDTO dto = taskActivityService.writeComment(
+                ownerId,
+                boardId,
+                taskId,
+                request
+        );
+        assertNotNull(dto);
+
+        assertEquals(taskId, dto.getId());
+        assertFalse(dto.getTaskActivityElements().isEmpty());
+
+        TaskActivityElementDto element = dto.getTaskActivityElements().getFirst();
+        assertInstanceOf(TaskCommentDto.class, element);
+
+        TaskCommentDto commentDto = (TaskCommentDto) element;
+        assertNotNull(commentDto);
+        assertEquals(comment, commentDto.getComment());
+        assertNotNull(commentDto.getCommentId());
+        assertFalse(commentDto.isUpdated());
+
+        Task dbTask = taskService.findTaskById(task2.getId());
+        assertEquals(commentDto.getCommentId(), ((TaskComment) dbTask.getActivityElements().getFirst()).getCommentId());
+
+        UserDto uDto = commentDto.getUser();
+        assertNotNull(uDto);
+        assertEquals(ownerId, uDto.getUserId());
     }
 }
