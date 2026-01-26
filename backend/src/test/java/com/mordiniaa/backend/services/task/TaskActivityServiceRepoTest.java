@@ -20,6 +20,7 @@ import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -349,5 +350,20 @@ public class TaskActivityServiceRepoTest {
                 .findFirst().orElseThrow();
 
         assertTrue(emptyCategory.getTasks().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Change Task Position Task Not Found Test")
+    void changePositionTaskNotFound() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = ObjectId.get().toHexString();
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardRepository.save(board);
+
+        assertThrows(RuntimeException.class, () -> taskActivityService.changeTaskPosition(
+                ownerId, boardId, taskId, new UpdateTaskPositionRequest()
+        ));
     }
 }
