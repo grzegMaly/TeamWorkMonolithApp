@@ -21,7 +21,6 @@ import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
-import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
 import com.mordiniaa.backend.request.task.UploadCommentRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
@@ -405,6 +404,22 @@ public class TaskActivityWriteCommentRepoTest {
         assertThrows(RuntimeException.class,
                 () -> taskActivityService.writeComment(
                         userId,
+                        bId,
+                        tId,
+                        new UploadCommentRequest()
+                ));
+    }
+
+    @Test
+    @DisplayName("Upload Comment User Without Permission Test")
+    void uploadCommentUserWithoutPermissionTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.writeComment(
+                        member2Id,
                         bId,
                         tId,
                         new UploadCommentRequest()
