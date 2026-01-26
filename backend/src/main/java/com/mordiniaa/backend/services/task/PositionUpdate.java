@@ -33,7 +33,7 @@ public class PositionUpdate {
                                     Filters.in("_id", prevCategory.getTasks()),
                                     Filters.gt("positionInCategory", oldPosition)
                             ),
-                            Updates.inc("positionInCategory", 1)
+                            Updates.inc("positionInCategory", -1)
                     )
             );
 
