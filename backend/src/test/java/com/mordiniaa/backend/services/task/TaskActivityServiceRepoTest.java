@@ -9,6 +9,7 @@ import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.board.permissions.CategoryPermissions;
+import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
@@ -387,5 +388,19 @@ public class TaskActivityServiceRepoTest {
 
         assertThrows(RuntimeException.class,
                 () -> taskActivityService.changeTaskPosition(UUID.randomUUID(), boardId, taskId, new UpdateTaskPositionRequest()));
+    }
+
+    @Test
+    @DisplayName("Change Task Position User Without Board Permission Test")
+    void changeTaskPositionUserWithoutBoardPermissionTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task2.getId().toHexString();
+
+        member1.setCategoryPermissions(Set.of(CategoryPermissions.MOVE_TASK_BETWEEN_CATEGORIES));
+        boardRepository.save(board);
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.changeTaskPosition(member1Id, boardId, taskId, new UpdateTaskPositionRequest()));
     }
 }
