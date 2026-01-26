@@ -1,7 +1,6 @@
 package com.mordiniaa.backend.services.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
-import com.mordiniaa.backend.dto.task.activity.TaskActivityElementDto;
 import com.mordiniaa.backend.dto.task.activity.TaskCommentDto;
 import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
@@ -13,7 +12,6 @@ import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.board.permissions.CommentPermission;
 import com.mordiniaa.backend.models.task.Task;
-import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
@@ -246,6 +244,50 @@ public class TaskActivityServiceUpdateCommentRepoTest {
                 member1Id,
                 boardId,
                 taskId,
+                updateRequest
+        );
+
+        assertNotNull(updatedDto);
+        TaskCommentDto updatedCommentDto = (TaskCommentDto) updatedDto.getTaskActivityElements().getFirst();
+        assertEquals(updatedComment, updatedCommentDto.getComment());
+        UUID sameId = updatedCommentDto.getCommentId();
+
+        assertEquals(commentId, sameId);
+        assertTrue(updatedCommentDto.isUpdated());
+        assertEquals(updatedComment, updatedCommentDto.getComment());
+    }
+
+    @Test
+    @DisplayName("Update Own Comment Member Assigned Test")
+    void updateOwnCommentMemberAssignedTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        task2.setAssignedTo(Set.of(member2Id));
+        task2 = taskRepository.save(task2);
+
+        String originalComment = "Original Comment";
+        TaskDetailsDTO dto = writeCommentAndResetPermission(member2, tId, originalComment);
+
+        TaskCommentDto commentDto = (TaskCommentDto) dto.getTaskActivityElements().getFirst();
+        assertNotNull(commentDto);
+        assertEquals(originalComment, commentDto.getComment());
+        UUID commentId = commentDto.getCommentId();
+
+        member2.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member2.setCommentPermissions(Set.of(CommentPermission.EDIT_OWN_COMMENT));
+        boardRepository.save(board);
+
+        String updatedComment = "Updated Comment";
+        UploadCommentRequest updateRequest = new UploadCommentRequest();
+        updateRequest.setCommentId(commentId);
+        updateRequest.setComment(updatedComment);
+
+        TaskDetailsDTO updatedDto = taskActivityService.updateComment(
+                member2Id,
+                bId,
+                tId,
                 updateRequest
         );
 
