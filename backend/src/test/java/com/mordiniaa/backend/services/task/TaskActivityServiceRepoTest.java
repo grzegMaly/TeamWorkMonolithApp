@@ -9,7 +9,6 @@ import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.board.permissions.CategoryPermissions;
-import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
@@ -402,5 +401,30 @@ public class TaskActivityServiceRepoTest {
 
         assertThrows(RuntimeException.class,
                 () -> taskActivityService.changeTaskPosition(member1Id, boardId, taskId, new UpdateTaskPositionRequest()));
+    }
+
+    @Test
+    @DisplayName("Change Task Position User Not Board Member Test")
+    void changeTaskPositionUserNotBoardMemberTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation user = new UserRepresentation();
+        user.setUserId(userId);
+        user.setUsername("Not Board User");
+        user.setImageUrl("Https://random123.com");
+
+        userRepresentationRepository.save(user);
+
+        BoardMember member = new BoardMember(userId);
+        Board anotherBoard = new Board();
+        anotherBoard.setOwner(member);
+        anotherBoard.setBoardName("Another Board");
+        boardRepository.save(anotherBoard);
+
+        String boardId = board.getId().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.changeTaskPosition(userId, boardId, taskId, new UpdateTaskPositionRequest()));
     }
 }
