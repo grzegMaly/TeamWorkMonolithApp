@@ -23,7 +23,6 @@ import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
@@ -35,8 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @ActiveProfiles("test")
@@ -172,7 +170,7 @@ public class TaskActivityServiceRepoTest {
         board = boardRepository.save(board);
     }
 
-//    @AfterEach
+    @AfterEach
     void afterEachClearing() {
 
         userRepresentationRepository.deleteAll();
@@ -251,6 +249,23 @@ public class TaskActivityServiceRepoTest {
 
         Task task = taskService.findTaskById(task3.getId());
         assertEquals(0, task.getPositionInCategory());
+
+        Task prevCatTask = taskService.findTaskById(task2.getId());
+        assertEquals(0, prevCatTask.getPositionInCategory());
+
+        Board dbBoard = boardRepository.findById(board.getId())
+                .orElseThrow(RuntimeException::new);
+
+        TaskCategory nextCat = dbBoard.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(taskCategory2.getCategoryName()))
+                .findFirst().orElseThrow(RuntimeException::new);
+
+        TaskCategory prevCat = dbBoard.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(taskCategory1.getCategoryName()))
+                .findFirst().orElseThrow();
+
+        assertTrue(nextCat.getTasks().contains(task.getId()));
+        assertFalse(prevCat.getTasks().contains(task.getId()));
     }
 
     @Test
@@ -283,5 +298,19 @@ public class TaskActivityServiceRepoTest {
 
         Task prevCatTask = taskService.findTaskById(task2.getId());
         assertEquals(0, prevCatTask.getPositionInCategory());
+
+        Board dbBoard = boardRepository.findById(board.getId())
+                .orElseThrow(RuntimeException::new);
+
+        TaskCategory nextCat = dbBoard.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(taskCategory2.getCategoryName()))
+                .findFirst().orElseThrow(RuntimeException::new);
+
+        TaskCategory prevCat = dbBoard.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(taskCategory1.getCategoryName()))
+                .findFirst().orElseThrow();
+
+        assertTrue(nextCat.getTasks().contains(task.getId()));
+        assertFalse(prevCat.getTasks().contains(task.getId()));
     }
 }
