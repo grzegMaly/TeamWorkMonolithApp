@@ -441,4 +441,20 @@ public class TaskActivityServiceRepoTest {
         assertThrows(RuntimeException.class,
                 () -> taskActivityService.changeTaskPosition(member1Id, boardId, taskId, new UpdateTaskPositionRequest()));
     }
+
+    @Test
+    @DisplayName("Change Task Position And Category User Not Permitted Test")
+    void changeTaskPositionAndCategoryUserNotPermittedTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task2.getId().toHexString();
+
+        member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        UpdateTaskPositionRequest request = new UpdateTaskPositionRequest();
+        request.setNewPosition(1);
+        request.setNewTaskCategory(taskCategory2.getCategoryName());
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.changeTaskPosition(member1Id, boardId, taskId, request));
+    }
 }
