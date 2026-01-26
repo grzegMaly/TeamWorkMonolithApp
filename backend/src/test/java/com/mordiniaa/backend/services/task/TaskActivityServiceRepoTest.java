@@ -366,4 +366,15 @@ public class TaskActivityServiceRepoTest {
                 ownerId, boardId, taskId, new UpdateTaskPositionRequest()
         ));
     }
+
+    @Test
+    @DisplayName("Change Task Position Board Not Found Test")
+    void changeTaskPositionBoardNotFoundTest() {
+
+        String boardId = ObjectId.get().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.changeTaskPosition(ownerId, boardId, taskId, new UpdateTaskPositionRequest()));
+    }
 }
