@@ -377,4 +377,15 @@ public class TaskActivityServiceRepoTest {
         assertThrows(RuntimeException.class,
                 () -> taskActivityService.changeTaskPosition(ownerId, boardId, taskId, new UpdateTaskPositionRequest()));
     }
+
+    @Test
+    @DisplayName("Change Task Position User Not Found Test")
+    void changeTaskPositionUserNotFound() {
+
+        String boardId = ObjectId.get().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.changeTaskPosition(UUID.randomUUID(), boardId, taskId, new UpdateTaskPositionRequest()));
+    }
 }
