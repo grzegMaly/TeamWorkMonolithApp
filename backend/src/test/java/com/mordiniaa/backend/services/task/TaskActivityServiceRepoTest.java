@@ -427,4 +427,18 @@ public class TaskActivityServiceRepoTest {
         assertThrows(RuntimeException.class,
                 () -> taskActivityService.changeTaskPosition(userId, boardId, taskId, new UpdateTaskPositionRequest()));
     }
+
+    @Test
+    @DisplayName("Change Board Owner Task User Member Test")
+    void changeBoardOwnerTaskUserMemberTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardRepository.save(board);
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.changeTaskPosition(member1Id, boardId, taskId, new UpdateTaskPositionRequest()));
+    }
 }
