@@ -22,8 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,8 +66,7 @@ public class TaskActivityService {
             if (task.getCreatedBy().equals(boardOwner) && !userId.equals(boardOwner))
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-            Query positionQuery;
-            Update positionUpdate;
+            PositionUpdate positionUpdate = new PositionUpdate(mongoTemplate);
             if (request.getNewTaskCategory() != null) {
 
                 if (!currentMember.canMoveTaskBetweenCategories())
@@ -103,40 +100,19 @@ public class TaskActivityService {
                 taskCategoryChange.setNextCategory(newCategory);
                 task.addTaskActivityElement(taskCategoryChange);
 
-                taskCategory = newTaskCategory;
-
-                positionQuery = Query.query(
-                        Criteria.where("_id").in(taskCategory.getTasks())
-                                .and("positionInCategory").gte(request.getNewPosition())
-                );
-                positionUpdate = new Update()
-                        .inc("positionInCategory", 1);
+                positionUpdate.moveBetweenCategories(taskCategory, newTaskCategory, task.getPositionInCategory(), request.getNewPosition());
             } else {
 
                 if (task.getPositionInCategory() == request.getNewPosition())
                     throw new RuntimeException(); // TODO: Change In Exceptions Section
 
                 if (task.getPositionInCategory() < request.getNewPosition()) {
-                    positionQuery = Query.query(
-                            Criteria.where("_id").in(taskCategory.getTasks())
-                                    .and("positionInCategory")
-                                    .gt(task.getPositionInCategory())
-                                    .lte(request.getNewPosition())
-                    );
-                    positionUpdate = new Update()
-                            .inc("positionInCategory", -1);
+                    positionUpdate.moveUpInCategory(taskCategory, task.getPositionInCategory(), request.getNewPosition());
                 } else {
-                    positionQuery = Query.query(
-                            Criteria.where("_id").in(taskCategory.getTasks())
-                                    .and("positionInCategory")
-                                    .gte(request.getNewPosition())
-                                    .lt(task.getPositionInCategory())
-                    );
-                    positionUpdate = new Update()
-                            .inc("positionInCategory", 1);
+                    positionUpdate.moveDownInCategory(taskCategory, task.getPositionInCategory(), request.getNewPosition());
                 }
             }
-            mongoTemplate.updateMulti(positionQuery, positionUpdate, Task.class);
+            positionUpdate.update();
 
             task.setPositionInCategory(request.getNewPosition());
             task = taskRepository.save(task);
