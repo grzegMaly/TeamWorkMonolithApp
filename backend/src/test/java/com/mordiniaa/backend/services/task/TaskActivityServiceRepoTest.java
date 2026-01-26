@@ -313,4 +313,41 @@ public class TaskActivityServiceRepoTest {
         assertTrue(nextCat.getTasks().contains(task.getId()));
         assertFalse(prevCat.getTasks().contains(task.getId()));
     }
+
+    @Test
+    @DisplayName("Move From Cat 2 To Cat 1 Valid Test")
+    void moveFromTestToDevCatValidTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task3.getId().toHexString();
+
+        UpdateTaskPositionRequest positionRequest = new UpdateTaskPositionRequest();
+        positionRequest.setNewPosition(1);
+        positionRequest.setNewTaskCategory(taskCategory1.getCategoryName());
+
+        member2.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member2.setCategoryPermissions(Set.of(CategoryPermissions.MOVE_TASK_BETWEEN_CATEGORIES));
+        boardRepository.save(board);
+
+        TaskShortDto dto = taskActivityService.changeTaskPosition(member2Id, boardId, taskId, positionRequest);
+
+        assertNotNull(dto);
+        assertEquals(1, dto.getPositionInCategory());
+
+        Task firstTask = taskService.findTaskById(task1.getId());
+        assertEquals(0, firstTask.getPositionInCategory());
+
+        Task lastTask = taskService.findTaskById(task2.getId());
+        assertEquals(2, lastTask.getPositionInCategory());
+
+        Board dbBoard = boardRepository.findById(board.getId())
+                .orElseThrow();
+
+        TaskCategory emptyCategory = dbBoard.getTaskCategories()
+                .stream()
+                .filter(tc -> tc.getCategoryName().equals(taskCategory2.getCategoryName()))
+                .findFirst().orElseThrow();
+
+        assertTrue(emptyCategory.getTasks().isEmpty());
+    }
 }
