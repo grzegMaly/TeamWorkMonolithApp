@@ -59,7 +59,7 @@ public class PositionUpdate {
             Query positionQuery = Query.query(
                     Criteria.where("_id").in(currentCategory.getTasks())
                             .and("positionInCategory")
-                            .gt(currentCategory)
+                            .gt(currentPosition)
                             .lte(nextPosition)
             );
             Update positionUpdate = new Update()
@@ -78,7 +78,7 @@ public class PositionUpdate {
                             .lt(currentPosition)
             );
             Update positionUpdate = new Update()
-                    .inc("positionInCategory", -1);
+                    .inc("positionInCategory", 1);
             mongoTemplate.updateMulti(positionQuery, positionUpdate, Task.class);
         };
     }
