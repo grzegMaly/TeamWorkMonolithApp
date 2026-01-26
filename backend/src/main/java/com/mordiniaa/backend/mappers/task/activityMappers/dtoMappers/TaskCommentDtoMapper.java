@@ -20,6 +20,7 @@ public class TaskCommentDtoMapper extends AbstractActivityDtoMapper<TaskComment,
 
         mapBase(element, builder, user);
         return builder
+                .commentId(element.getCommentId())
                 .comment(element.getComment().trim())
                 .updated(element.isUpdated())
                 .build();
