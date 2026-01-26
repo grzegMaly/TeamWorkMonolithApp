@@ -90,6 +90,7 @@ public class TaskActivityWriteCommentRepoTest {
     private static TaskCategory taskCategory1;
     private static TaskCategory taskCategory2;
 
+    private static Board boardTemplate;
     private static Board board;
     private static Task task1;
     private static Task task2;
@@ -121,9 +122,9 @@ public class TaskActivityWriteCommentRepoTest {
         taskCategory2.setCategoryName("Test");
         taskCategory2.setPosition(1);
 
-        board = new Board();
-        board.setBoardName("Board");
-        board.setTaskCategories(List.of(taskCategory1, taskCategory2));
+        boardTemplate = new Board();
+        boardTemplate.setBoardName("Board");
+        boardTemplate.setTaskCategories(List.of(taskCategory1, taskCategory2));
 
         Instant deadline = Instant.now().plus(2, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
 
@@ -163,10 +164,10 @@ public class TaskActivityWriteCommentRepoTest {
         ownerMember = new BoardMember(ownerId);
         member1 = new BoardMember(member1Id);
         member2 = new BoardMember(member2Id);
-        board.setOwner(ownerMember);
-        board.setMembers(List.of(member1, member2));
+        boardTemplate.setOwner(ownerMember);
+        boardTemplate.setMembers(List.of(member1, member2));
 
-        board = boardRepository.save(board);
+        board = boardRepository.save(boardTemplate);
     }
 
     @AfterEach
@@ -181,7 +182,7 @@ public class TaskActivityWriteCommentRepoTest {
     @DisplayName("Write Comment Valid Test")
     void writeCommentValidTest() {
 
-        String boardId = board.getId().toHexString();
+        String boardId = boardTemplate.getId().toHexString();
         String taskId = task1.getId().toHexString();
 
         ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
@@ -216,5 +217,51 @@ public class TaskActivityWriteCommentRepoTest {
 
         Task dbTask = taskService.findTaskById(task1.getId());
         assertEquals(commentDto.getCommentId(), ((TaskComment) dbTask.getActivityElements().getFirst()).getCommentId());
+    }
+
+    @Test
+    @DisplayName("Write Comment Member Valid Test")
+    void writeCommentMemberValidTest() {
+
+        task1.setAssignedTo(Set.of(member1Id));
+        taskRepository.save(task1);
+
+        String boardId = board.getId().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member1.setCommentPermissions(Set.of(CommentPermission.COMMENT_TASK));
+
+        boardRepository.save(board);
+
+        String comment = "Test Comment By owner";
+
+        UploadCommentRequest commentRequest = new UploadCommentRequest();
+        commentRequest.setComment(comment);
+
+        TaskDetailsDTO dto = taskActivityService.writeComment(
+                member1Id,
+                boardId,
+                taskId,
+                commentRequest
+        );
+
+        assertNotNull(dto);
+
+        assertEquals(taskId, dto.getId());
+        assertFalse(dto.getTaskActivityElements().isEmpty());
+
+        TaskActivityElementDto element = dto.getTaskActivityElements().getFirst();
+        assertInstanceOf(TaskCommentDto.class, element);
+
+        TaskCommentDto commentDto = (TaskCommentDto) element;
+        assertNotNull(commentDto);
+        assertEquals(comment, commentDto.getComment());
+        assertNotNull(commentDto.getCommentId());
+        assertFalse(commentDto.isUpdated());
+
+        Task dbTask = taskService.findTaskById(task1.getId());
+        assertEquals(commentDto.getCommentId(), ((TaskComment) dbTask.getActivityElements().getFirst()).getCommentId());
+
     }
 }
