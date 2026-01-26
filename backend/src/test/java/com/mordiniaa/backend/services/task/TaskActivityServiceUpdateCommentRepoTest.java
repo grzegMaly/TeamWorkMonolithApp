@@ -218,6 +218,47 @@ public class TaskActivityServiceUpdateCommentRepoTest {
         assertEquals(updatedComment, updatedCommentDto.getComment());
     }
 
+    @Test
+    @DisplayName("Update Own Comment Member Test")
+    void updateOwnCommentMemberTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task2.getId().toHexString();
+
+        String originalComment = "Original Comment";
+        TaskDetailsDTO dto = writeCommentAndResetPermission(member1, taskId, originalComment);
+
+        TaskCommentDto commentDto = (TaskCommentDto) dto.getTaskActivityElements().getFirst();
+        assertNotNull(commentDto);
+        assertEquals(originalComment, commentDto.getComment());
+        UUID commentId = commentDto.getCommentId();
+
+        member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member1.setCommentPermissions(Set.of(CommentPermission.EDIT_OWN_COMMENT));
+        boardRepository.save(board);
+
+        String updatedComment = "Updated Comment";
+        UploadCommentRequest updateRequest = new UploadCommentRequest();
+        updateRequest.setCommentId(commentId);
+        updateRequest.setComment(updatedComment);
+
+        TaskDetailsDTO updatedDto = taskActivityService.updateComment(
+                member1Id,
+                boardId,
+                taskId,
+                updateRequest
+        );
+
+        assertNotNull(updatedDto);
+        TaskCommentDto updatedCommentDto = (TaskCommentDto) updatedDto.getTaskActivityElements().getFirst();
+        assertEquals(updatedComment, updatedCommentDto.getComment());
+        UUID sameId = updatedCommentDto.getCommentId();
+
+        assertEquals(commentId, sameId);
+        assertTrue(updatedCommentDto.isUpdated());
+        assertEquals(updatedComment, updatedCommentDto.getComment());
+    }
+
     private TaskDetailsDTO writeCommentAndResetPermission(BoardMember boardMember, String taskId, String comment) {
 
         boardMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
