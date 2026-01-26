@@ -136,9 +136,11 @@ public class TaskActivityService {
 
             Task task = taskService.findTaskById(taskId);
 
-            if (!task.getAssignedTo().contains(currentMember.getUserId()))
-                if (!currentMember.getUserId().equals(board.getOwner().getUserId()))
-                    throw new RuntimeException(); // TODO: Change In Exceptions Section
+            boolean taskOwner = task.getCreatedBy().equals(currentMember.getUserId());
+            boolean isAssigned = task.getAssignedTo().contains(currentMember.getUserId());
+            boolean boardOwner = currentMember.getUserId().equals(board.getOwner().getUserId());
+            if (!taskOwner && !isAssigned && !boardOwner)
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
 
             TaskComment taskComment = new TaskComment(userId);
             taskComment.setComment(uploadCommentRequest.getComment());
