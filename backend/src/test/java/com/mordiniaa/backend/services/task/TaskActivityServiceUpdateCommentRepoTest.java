@@ -177,4 +177,52 @@ public class TaskActivityServiceUpdateCommentRepoTest {
         taskRepository.deleteAll();
         boardRepository.deleteAll();
     }
+
+    @Test
+    @DisplayName("Update Own Comment Owner Test")
+    void updateOwnCommentOwnerTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        ownerMember.setCommentPermissions(Set.of(CommentPermission.EDIT_OWN_COMMENT, CommentPermission.COMMENT_TASK));
+        boardRepository.save(board);
+
+        String originalComment = "Original Comment";
+        UploadCommentRequest uploadRequest = new UploadCommentRequest();
+        uploadRequest.setComment(originalComment);
+
+        TaskDetailsDTO dto = taskActivityService.writeComment(
+                ownerId,
+                boardId,
+                taskId,
+                uploadRequest
+        );
+
+        TaskCommentDto commentDto = (TaskCommentDto) dto.getTaskActivityElements().getFirst();
+        assertEquals(originalComment, commentDto.getComment());
+        UUID commentId = commentDto.getCommentId();
+
+        String updatedComment = "Updated Comment";
+        UploadCommentRequest updateRequest = new UploadCommentRequest();
+        updateRequest.setCommentId(commentId);
+        updateRequest.setComment(updatedComment);
+
+        TaskDetailsDTO updatedDto = taskActivityService.updateComment(
+                ownerId,
+                boardId,
+                taskId,
+                updateRequest
+        );
+
+        assertNotNull(updatedDto);
+        TaskCommentDto updatedCommentDto = (TaskCommentDto) updatedDto.getTaskActivityElements().getFirst();
+        assertEquals(updatedComment, updatedCommentDto.getComment());
+        UUID sameId = updatedCommentDto.getCommentId();
+
+        assertEquals(commentId, sameId);
+        assertTrue(updatedCommentDto.isUpdated());
+        assertEquals(updatedComment, updatedCommentDto.getComment());
+    }
 }
