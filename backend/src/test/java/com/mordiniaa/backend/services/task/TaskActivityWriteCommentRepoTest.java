@@ -358,4 +358,24 @@ public class TaskActivityWriteCommentRepoTest {
                         new UploadCommentRequest()
                 ));
     }
+
+    @Test
+    @DisplayName("Upload Comment User Not Assigned To Task")
+    void uploadCommentUserNotAssignedToTask() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        member2.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member2.setCommentPermissions(Set.of(CommentPermission.COMMENT_TASK));
+        boardRepository.save(board);
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.writeComment(
+                        member2Id,
+                        bId,
+                        tId,
+                        new UploadCommentRequest()
+                ));
+    }
 }
