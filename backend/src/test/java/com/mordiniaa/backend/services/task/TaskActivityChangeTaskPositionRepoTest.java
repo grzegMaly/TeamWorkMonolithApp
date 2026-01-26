@@ -1,6 +1,5 @@
 package com.mordiniaa.backend.services.task;
 
-import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
@@ -53,13 +52,10 @@ import static org.junit.jupiter.api.Assertions.*;
         TaskService.class,
         TaskActivityService.class
 })
-public class TaskActivityServiceRepoTest {
+public class TaskActivityChangeTaskPositionRepoTest {
 
     @MockitoBean("mongoAuditor")
     private AuditorAware<String> mongoAuditor;
-
-    @Autowired
-    private BoardAggregationRepositoryImpl boardAggregationRepository;
 
     @Autowired
     private BoardRepository boardRepository;
@@ -95,9 +91,6 @@ public class TaskActivityServiceRepoTest {
     private static Task task1;
     private static Task task2;
     private static Task task3;
-
-    private TaskShortDto taskShortDto;
-    private TaskDetailsDTO taskDetailsDTO;
 
     @BeforeAll
     static void setup() {
