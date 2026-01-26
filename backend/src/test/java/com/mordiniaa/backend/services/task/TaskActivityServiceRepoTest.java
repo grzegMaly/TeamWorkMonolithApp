@@ -132,21 +132,21 @@ public class TaskActivityServiceRepoTest {
 
         task1 = new Task();
         task1.setCreatedBy(ownerId);
-        task1.setTitle("Test Task 1");
+        task1.setTitle("Dev 0");
         task1.setPositionInCategory(0);
         task1.setDeadline(deadline);
         task1.setDescription("Test Task Description 1");
 
         task2 = new Task();
         task2.setCreatedBy(member1Id);
-        task2.setTitle("Test Task 2");
+        task2.setTitle("Dev 1");
         task2.setPositionInCategory(1);
         task2.setDeadline(deadline);
         task2.setDescription("Test Task Description 2");
 
         task3 = new Task();
         task3.setCreatedBy(member2Id);
-        task3.setTitle("Dev Task 1");
+        task3.setTitle("Test 0");
         task3.setPositionInCategory(0);
         task3.setDeadline(deadline);
         task3.setDescription("Dev Task Description 1");
@@ -172,7 +172,7 @@ public class TaskActivityServiceRepoTest {
         board = boardRepository.save(board);
     }
 
-    @AfterEach
+//    @AfterEach
     void afterEachClearing() {
 
         userRepresentationRepository.deleteAll();
@@ -251,5 +251,37 @@ public class TaskActivityServiceRepoTest {
 
         Task task = taskService.findTaskById(task3.getId());
         assertEquals(0, task.getPositionInCategory());
+    }
+
+    @Test
+    @DisplayName("Move Task Between Categories Position 0 Test")
+    void moveTaskBetweenCategoriesPt2Test() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        UpdateTaskPositionRequest positionRequest = new UpdateTaskPositionRequest();
+        positionRequest.setNewPosition(0);
+        positionRequest.setNewTaskCategory(taskCategory2.getCategoryName());
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        ownerMember.setCategoryPermissions(Set.of(CategoryPermissions.MOVE_TASK_BETWEEN_CATEGORIES));
+        boardRepository.save(board);
+
+        TaskShortDto dto = taskActivityService.changeTaskPosition(
+                ownerId,
+                boardId,
+                taskId,
+                positionRequest
+        );
+
+        assertNotNull(dto);
+        assertEquals(0, dto.getPositionInCategory());
+
+        Task task = taskService.findTaskById(task3.getId());
+        assertEquals(1, task.getPositionInCategory());
+
+        Task prevCatTask = taskService.findTaskById(task2.getId());
+        assertEquals(0, prevCatTask.getPositionInCategory());
     }
 }
