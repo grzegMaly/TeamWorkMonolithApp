@@ -378,4 +378,36 @@ public class TaskActivityWriteCommentRepoTest {
                         new UploadCommentRequest()
                 ));
     }
+
+    @Test
+    @DisplayName("Upload Task User Not Board Member Test")
+    void uploadTaskUSerNotBoardMemberTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation user = new UserRepresentation();
+        user.setUserId(userId);
+        user.setUsername("Test User");
+        user.setImageUrl("http://random123.com");
+        userRepresentationRepository.save(user);
+
+        BoardMember boardMember = new BoardMember(userId);
+        boardMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardMember.setCommentPermissions(Set.of(CommentPermission.COMMENT_TASK));
+
+        Board anotherBoard = new Board();
+        anotherBoard.setBoardName("Another Board");
+        anotherBoard.setOwner(boardMember);
+        boardRepository.save(anotherBoard);
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.writeComment(
+                        userId,
+                        bId,
+                        tId,
+                        new UploadCommentRequest()
+                ));
+    }
 }
