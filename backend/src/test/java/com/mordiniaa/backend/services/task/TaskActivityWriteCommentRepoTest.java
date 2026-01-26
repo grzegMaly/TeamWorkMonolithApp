@@ -21,6 +21,7 @@ import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
+import com.mordiniaa.backend.request.task.UpdateTaskPositionRequest;
 import com.mordiniaa.backend.request.task.UploadCommentRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
@@ -322,6 +323,22 @@ public class TaskActivityWriteCommentRepoTest {
                         ownerId,
                         boardId,
                         taskId,
+                        new UploadCommentRequest()
+                ));
+    }
+
+    @Test
+    @DisplayName("Upload Comment Task Not Found")
+    void uploadCommentTaskNotFound() {
+
+        String boardId = board.getId().toHexString();
+        String taskIsd = ObjectId.get().toHexString();
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.writeComment(
+                        ownerId,
+                        boardId,
+                        taskIsd,
                         new UploadCommentRequest()
                 ));
     }
