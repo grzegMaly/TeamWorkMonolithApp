@@ -10,6 +10,8 @@ import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.board.permissions.CategoryPermissions;
 import com.mordiniaa.backend.models.task.Task;
+import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
+import com.mordiniaa.backend.models.task.activity.TaskCategoryChange;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
@@ -267,6 +269,17 @@ public class TaskActivityServiceRepoTest {
 
         assertTrue(nextCat.getTasks().contains(task.getId()));
         assertFalse(prevCat.getTasks().contains(task.getId()));
+
+        Task movedTask = taskService.findTaskById(task1.getId());
+        assertNotNull(movedTask.getActivityElements());
+        assertFalse(movedTask.getActivityElements().isEmpty());
+
+        TaskActivityElement activityElement = movedTask.getActivityElements().getFirst();
+        assertInstanceOf(TaskCategoryChange.class, activityElement);
+        TaskCategoryChange categoryChange = (TaskCategoryChange) activityElement;
+        assertEquals(taskCategory1.getCategoryName(), categoryChange.getPrevCategory());
+        assertEquals(taskCategory2.getCategoryName(), categoryChange.getNextCategory());
+        assertEquals(ownerId, categoryChange.getUser());
     }
 
     @Test
