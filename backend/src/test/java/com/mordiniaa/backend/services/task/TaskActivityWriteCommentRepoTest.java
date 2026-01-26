@@ -312,7 +312,7 @@ public class TaskActivityWriteCommentRepoTest {
     }
 
     @Test
-    @DisplayName("Upload Comment Board Not Found")
+    @DisplayName("Upload Comment Board Not Found Test")
     void uploadCommentBoardNotFound() {
 
         String boardId = ObjectId.get().toHexString();
@@ -328,7 +328,7 @@ public class TaskActivityWriteCommentRepoTest {
     }
 
     @Test
-    @DisplayName("Upload Comment Task Not Found")
+    @DisplayName("Upload Comment Task Not Found Test")
     void uploadCommentTaskNotFound() {
 
         String boardId = board.getId().toHexString();
@@ -339,6 +339,22 @@ public class TaskActivityWriteCommentRepoTest {
                         ownerId,
                         boardId,
                         taskIsd,
+                        new UploadCommentRequest()
+                ));
+    }
+
+    @Test
+    @DisplayName("Upload Comment User Not Found Test")
+    void uploadCommentUserNotFoundTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.writeComment(
+                        UUID.randomUUID(),
+                        boardId,
+                        taskId,
                         new UploadCommentRequest()
                 ));
     }
