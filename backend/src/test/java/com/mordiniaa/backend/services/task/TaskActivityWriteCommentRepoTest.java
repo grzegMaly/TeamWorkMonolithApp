@@ -1,23 +1,30 @@
 package com.mordiniaa.backend.services.task;
 
+import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
+import com.mordiniaa.backend.dto.task.activity.TaskActivityElementDto;
+import com.mordiniaa.backend.dto.task.activity.TaskCommentDto;
+import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
+import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
+import com.mordiniaa.backend.models.board.permissions.BoardPermission;
+import com.mordiniaa.backend.models.board.permissions.CommentPermission;
 import com.mordiniaa.backend.models.task.Task;
+import com.mordiniaa.backend.models.task.activity.TaskComment;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
+import com.mordiniaa.backend.request.task.UploadCommentRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
@@ -31,6 +38,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @ActiveProfiles("test")
 @DataMongoTest
 @Import({
@@ -40,9 +49,11 @@ import java.util.UUID;
         BoardUtils.class,
         MongoIdUtils.class,
         TaskMapper.class,
-        TaskActivityMapper.class,
         TaskService.class,
-        TaskActivityService.class
+        TaskActivityService.class,
+        TaskCommentDtoMapper.class,
+        TaskActivityMapper.class,
+        UserRepresentationMapper.class
 })
 public class TaskActivityWriteCommentRepoTest {
 
@@ -164,5 +175,46 @@ public class TaskActivityWriteCommentRepoTest {
         userRepresentationRepository.deleteAll();
         taskRepository.deleteAll();
         boardRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("Write Comment Valid Test")
+    void writeCommentValidTest() {
+
+        String boardId = board.getId().toHexString();
+        String taskId = task1.getId().toHexString();
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        ownerMember.setCommentPermissions(Set.of(CommentPermission.COMMENT_TASK));
+        boardRepository.save(board);
+
+        String comment = "Test Comment By owner";
+
+        UploadCommentRequest commentRequest = new UploadCommentRequest();
+        commentRequest.setComment(comment);
+
+        TaskDetailsDTO dto = taskActivityService.writeComment(
+                ownerId,
+                boardId,
+                taskId,
+                commentRequest
+        );
+
+        assertNotNull(dto);
+
+        assertEquals(taskId, dto.getId());
+        assertFalse(dto.getTaskActivityElements().isEmpty());
+
+        TaskActivityElementDto element = dto.getTaskActivityElements().getFirst();
+        assertInstanceOf(TaskCommentDto.class, element);
+
+        TaskCommentDto commentDto = (TaskCommentDto) element;
+        assertNotNull(commentDto);
+        assertEquals(comment, commentDto.getComment());
+        assertNotNull(commentDto.getCommentId());
+        assertFalse(commentDto.isUpdated());
+
+        Task dbTask = taskService.findTaskById(task1.getId());
+        assertEquals(commentDto.getCommentId(), ((TaskComment) dbTask.getActivityElements().getFirst()).getCommentId());
     }
 }
