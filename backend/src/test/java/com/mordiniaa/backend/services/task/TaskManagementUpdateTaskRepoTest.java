@@ -334,6 +334,22 @@ public class TaskManagementUpdateTaskRepoTest {
                 new PatchTaskDataRequest()
         ));
     }
+
     // User Not Found
+    @Test
+    @Order(7)
+    @DisplayName("User Not Found Test")
+    void userNotFoundTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.updateTask(
+                UUID.randomUUID(),
+                bId,
+                tId,
+                new PatchTaskDataRequest()
+        ));
+    }
     // Task Not Found
 }
