@@ -395,6 +395,25 @@ public class TaskActivityServiceUpdateCommentRepoTest {
                 ));
     }
 
+    @Test
+    @Order(7)
+    @DisplayName("Update Comment Member Not Permitted Throws Exception Test")
+    void updateCommentMemberNotPermittedThrowsExceptionTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+
+        TaskDetailsDTO dto = writeCommentAndResetPermission(ownerMember, tId, "Comment");
+        UUID commentId = ((TaskCommentDto) dto.getTaskActivityElements().getFirst()).getCommentId();
+
+        UploadCommentRequest updateRequest = new UploadCommentRequest();
+        updateRequest.setComment("Updated Comment");
+        updateRequest.setCommentId(commentId);
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.updateComment(member1Id, bId, tId, updateRequest));
+    }
+
     private TaskDetailsDTO writeCommentAndResetPermission(BoardMember boardMember, String taskId, String comment) {
 
         boardMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
