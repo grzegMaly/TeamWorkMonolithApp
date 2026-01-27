@@ -358,7 +358,22 @@ public class TaskActivityDeleteCommentRepoTest {
         String tId = task2.getId().toHexString();
         assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(userId, bId, tId, null));
     }
+
     // 10Comment Not Found
+    @Test
+    @Order(10)
+    @DisplayName("Delete Comment Comment Not Found Test")
+    void deleteCommentCommentNotFoundTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+        writeCommentAndResetPermission(member1, tId, "Task Comment");
+
+        assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(member1Id, bId, tId, UUID.randomUUID()));
+        Task task = taskService.findTaskById(task2.getId());
+        assertFalse(task.getActivityElements().isEmpty());
+        assertEquals(1, task.getActivityElements().size());
+    }
     // 11Member Trying To Delete Board Owner Comment
 
     private TaskDetailsDTO writeCommentAndResetPermission(BoardMember boardMember, String taskId, String comment) {
