@@ -212,19 +212,15 @@ public class TaskActivityService {
             if (taskComment.getUser().equals(boardOwner) && !userId.equals(boardOwner))
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-            if (!task.getAssignedTo().contains(userId)) {
-                if (!userId.equals(board.getOwner().getUserId()) || !currentMember.canDeleteAnyComment()) {
-                    throw new RuntimeException(); // TODO: Change In Exceptions Section
-                }
-            } else {
-                if (taskComment.getUser().equals(userId)) {
-                    if (!currentMember.canDeleteOwnComment())
-                        throw new RuntimeException(); // TODO: Change In Exceptions Section
-                } else {
-                    if (!currentMember.canDeleteAnyComment())
-                        throw new RuntimeException(); // TODO: Change In Exceptions Section
-                }
-            }
+            boolean isBoardOwner = currentMember.getUserId().equals(boardOwner);
+            boolean isTaskOwner = currentMember.getUserId().equals(task.getCreatedBy());
+            boolean isAssignedTo = task.getAssignedTo().contains(currentMember.getUserId());
+            if (!isBoardOwner && !isTaskOwner && !isAssignedTo)
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+            boolean canDelete = isTaskOwner || currentMember.canDeleteAnyComment();
+            if (!canDelete)
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
 
             boolean result = task.getActivityElements()
                     .removeIf(element -> element instanceof TaskComment tc && tc.getCommentId().equals(commentId));
