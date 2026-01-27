@@ -22,6 +22,7 @@ import com.mordiniaa.backend.request.task.UploadCommentRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -204,7 +205,6 @@ public class TaskActivityDeleteCommentRepoTest {
         assertTrue(task.getActivityElements().isEmpty());
     }
 
-    // 2Delete Comment Owned By Member
     @Test
     @Order(2)
     @DisplayName("Delete Comment Owned By Member")
@@ -225,7 +225,6 @@ public class TaskActivityDeleteCommentRepoTest {
         assertTrue(task.getAssignedTo().isEmpty());
     }
 
-    // 3Delete Comment By Owner Owned By Member
     @Test
     @Order(3)
     @DisplayName("Delete Comment By Owner Owned By Member Test")
@@ -250,7 +249,6 @@ public class TaskActivityDeleteCommentRepoTest {
         assertTrue(task.getActivityElements().isEmpty());
     }
 
-    // 4Member Not Assigned To Task Can Delete Any Comment
     @Test
     @Order(4)
     @DisplayName("Member Not Assigned To Task Can Delete Any Comment")
@@ -271,7 +269,6 @@ public class TaskActivityDeleteCommentRepoTest {
         assertTrue(task.getActivityElements().isEmpty());
     }
 
-    // 5Member Assigned Can Delete Any Comment
     @Test
     @Order(5)
     @DisplayName("Member Assigned Can Delete Any Comment Test")
@@ -298,6 +295,15 @@ public class TaskActivityDeleteCommentRepoTest {
     }
 
     // 6Board Not Found
+    @Test
+    @Order(6)
+    @DisplayName("Delete Comment Board Not Found Test")
+    void deleteCommentBoardNotFoundTest() {
+
+        String bId = ObjectId.get().toHexString();
+        String tId = task1.getId().toHexString();
+        assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(member1Id, bId, tId, null));
+    }
     // 7Task Not Found
     // 8Member Not Found
     // 9User Not Board Member
