@@ -203,7 +203,35 @@ public class TaskManagementUpdateTaskRepoTest {
         assertEquals(newDeadline, dto.getDeadline());
         assertEquals(newDescription, dto.getDescription());
     }
+
     // Board Owner Can Update Task
+    @Test
+    @Order(2)
+    @DisplayName("Board Owner Can Update Task Test")
+    void boardOwnerCanUpdateTaskTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        String newTitle = "New Title";
+        String newDescription = "New Description";
+        Instant newDeadline = Instant.now().plus(10, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
+
+        PatchTaskDataRequest request = new PatchTaskDataRequest();
+        request.setTitle(newTitle);
+        request.setDescription(newDescription);
+        request.setDeadline(newDeadline);
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        ownerMember.setTaskPermissions(Set.of(TaskPermission.EDIT_TASK));
+        boardRepository.save(board);
+
+        TaskDetailsDTO dto = taskManagementService.updateTask(ownerId, bId, tId, request);
+        assertNotNull(dto);
+        assertEquals(newTitle, dto.getTitle());
+        assertEquals(newDescription, dto.getDescription());
+        assertEquals(newDeadline, dto.getDeadline());
+    }
 
     // Not Assigned User Cannot Update Task
     // Assigned User Cannot Update Task
