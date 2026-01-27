@@ -296,7 +296,6 @@ public class TaskActivityDeleteCommentRepoTest {
         assertTrue(task.getActivityElements().isEmpty());
     }
 
-    // 6Board Not Found
     @Test
     @Order(6)
     @DisplayName("Delete Comment Board Not Found Test")
@@ -307,7 +306,6 @@ public class TaskActivityDeleteCommentRepoTest {
         assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(member1Id, bId, tId, null));
     }
 
-    // 7Task Not Found
     @Test
     @Order(7)
     @DisplayName("Delete Comment Task Not Found Test")
@@ -318,7 +316,6 @@ public class TaskActivityDeleteCommentRepoTest {
         assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(member1Id, bId, tId, null));
     }
 
-    // 8Member Not Found
     @Test
     @Order(8)
     @DisplayName("Delete Comment Member Not Found Test")
@@ -330,7 +327,6 @@ public class TaskActivityDeleteCommentRepoTest {
         assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(randomId, bId, tId, null));
     }
 
-    // 9User Not Board Member
     @Test
     @Order(9)
     @DisplayName("Delete Comment User Not Board Member Test")
@@ -359,7 +355,6 @@ public class TaskActivityDeleteCommentRepoTest {
         assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(userId, bId, tId, null));
     }
 
-    // 10Comment Not Found
     @Test
     @Order(10)
     @DisplayName("Delete Comment Comment Not Found Test")
@@ -374,7 +369,26 @@ public class TaskActivityDeleteCommentRepoTest {
         assertFalse(task.getActivityElements().isEmpty());
         assertEquals(1, task.getActivityElements().size());
     }
-    // 11Member Trying To Delete Board Owner Comment
+
+    @Test
+    @Order(11)
+    @DisplayName("Member Trying To Delete Board Owner Comment Test")
+    void memberTryingToDeleteBoardOwnerCommentTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+        TaskDetailsDTO dto = writeCommentAndResetPermission(ownerMember, tId, "Test Comment");
+
+        assertNotNull(dto);
+
+        UUID commentId = ((TaskCommentDto) dto.getTaskActivityElements().getFirst()).getCommentId();
+
+        member2.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member2.setCommentPermissions(Set.of(CommentPermission.DELETE_ANY_COMMENT));
+        boardRepository.save(board);
+
+        assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(member2Id, bId, tId, commentId));
+    }
 
     private TaskDetailsDTO writeCommentAndResetPermission(BoardMember boardMember, String taskId, String comment) {
 
