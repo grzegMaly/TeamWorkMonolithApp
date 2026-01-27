@@ -36,8 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @DataMongoTest
@@ -207,6 +206,7 @@ public class TaskActivityDeleteCommentRepoTest {
 
     // 2Delete Comment Owned By Member
     @Test
+    @Order(2)
     @DisplayName("Delete Comment Owned By Member")
     void deleteCommentOwnedByMember() {
 
@@ -226,6 +226,30 @@ public class TaskActivityDeleteCommentRepoTest {
     }
 
     // 3Delete Comment By Owner Owned By Member
+    @Test
+    @Order(3)
+    @DisplayName("Delete Comment By Owner Owned By Member Test")
+    void deleteCommentByOwnerOwnerByMemberTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        TaskDetailsDTO dto = writeCommentAndResetPermission(member1, tId, "Task Comment");
+        assertNotNull(dto);
+
+        UUID commentId = ((TaskCommentDto) dto.getTaskActivityElements().getFirst()).getCommentId();
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        ownerMember.setCommentPermissions(Set.of(CommentPermission.DELETE_ANY_COMMENT));
+        boardRepository.save(board);
+
+        assertDoesNotThrow(() -> taskActivityService.deleteComment(ownerId, bId, tId, commentId));
+
+        Task task = taskService.findTaskById(task2.getId());
+        assertNotNull(task);
+        assertTrue(task.getActivityElements().isEmpty());
+    }
+
     // 4Member Not Assigned To Task Can Delete Any Comment
     // 5Member Assigned Can Delete Any Comment
 
