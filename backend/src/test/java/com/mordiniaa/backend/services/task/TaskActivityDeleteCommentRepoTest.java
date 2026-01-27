@@ -1,6 +1,7 @@
 package com.mordiniaa.backend.services.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
+import com.mordiniaa.backend.dto.task.activity.TaskCommentDto;
 import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
@@ -21,9 +22,7 @@ import com.mordiniaa.backend.request.task.UploadCommentRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
@@ -36,6 +35,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ActiveProfiles("test")
 @DataMongoTest
@@ -174,6 +176,46 @@ public class TaskActivityDeleteCommentRepoTest {
         taskRepository.deleteAll();
         boardRepository.deleteAll();
     }
+    
+    @Test
+    @DisplayName("Delete Comment Owned By Owner Test")
+    void deleteCommentOwnedByOwnerTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+
+        TaskDetailsDTO dto = writeCommentAndResetPermission(ownerMember, tId, "Comment");
+        assertNotNull(dto);
+
+        TaskCommentDto commentDto = ((TaskCommentDto) dto.getTaskActivityElements().getFirst());
+        assertNotNull(commentDto);
+
+        UUID commentId = commentDto.getCommentId();
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        ownerMember.setCommentPermissions(Set.of(CommentPermission.DELETE_ANY_COMMENT));
+        boardRepository.save(board);
+
+        taskActivityService.deleteComment(ownerId, bId, tId, commentId);
+
+        Task task = taskService.findTaskById(task1.getId());
+        assertNotNull(task);
+
+        assertTrue(task.getActivityElements().isEmpty());
+    }
+
+
+    // Delete Comment Owned By Member
+    // Delete Comment By Owner Owned By Member
+    // Member Not Assigned To Task Can Delete Any Comment
+    // Member Assigned Can Delete Any Comment
+
+    // Board Not Found
+    // Task Not Found
+    // Member Not Found
+    // User Not Board Member
+    // Comment Not Found
+    // Member Trying To Delete Board Owner Comment
 
     private TaskDetailsDTO writeCommentAndResetPermission(BoardMember boardMember, String taskId, String comment) {
 
