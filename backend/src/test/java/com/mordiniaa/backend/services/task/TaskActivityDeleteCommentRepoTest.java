@@ -10,7 +10,9 @@ import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
+import com.mordiniaa.backend.models.board.permissions.CategoryPermissions;
 import com.mordiniaa.backend.models.board.permissions.CommentPermission;
+import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
@@ -327,7 +329,35 @@ public class TaskActivityDeleteCommentRepoTest {
         UUID randomId = UUID.randomUUID();
         assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(randomId, bId, tId, null));
     }
+
     // 9User Not Board Member
+    @Test
+    @Order(9)
+    @DisplayName("Delete Comment User Not Board Member Test")
+    void deleteCommentUserNotBoardMemberTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation user = new UserRepresentation();
+        user.setUsername("Random Name");
+        user.setImageUrl("https://random123.com");
+        user.setUserId(userId);
+        userRepresentationRepository.save(user);
+
+        BoardMember userMember = new BoardMember(userId);
+        userMember.setBoardPermissions(Set.of(BoardPermission.values()));
+        userMember.setTaskPermissions(Set.of(TaskPermission.values()));
+        userMember.setCategoryPermissions(Set.of(CategoryPermissions.values()));
+        userMember.setCommentPermissions(Set.of(CommentPermission.values()));
+
+        Board anotherBoard = new Board();
+        anotherBoard.setOwner(userMember);
+        anotherBoard.setBoardName("Board Name");
+        boardRepository.save(anotherBoard);
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+        assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(userId, bId, tId, null));
+    }
     // 10Comment Not Found
     // 11Member Trying To Delete Board Owner Comment
 
