@@ -11,7 +11,6 @@ import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.board.permissions.CommentPermission;
-import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.task.activity.TaskComment;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
@@ -179,6 +178,7 @@ public class TaskActivityServiceUpdateCommentRepoTest {
     }
 
     @Test
+    @Order(1)
     @DisplayName("Update Own Comment Owner Test")
     void updateOwnCommentOwnerTest() {
 
@@ -219,6 +219,7 @@ public class TaskActivityServiceUpdateCommentRepoTest {
     }
 
     @Test
+    @Order(2)
     @DisplayName("Update Own Comment Member Test")
     void updateOwnCommentMemberTest() {
 
@@ -260,6 +261,7 @@ public class TaskActivityServiceUpdateCommentRepoTest {
     }
 
     @Test
+    @Order(3)
     @DisplayName("Update Own Comment Member Assigned Test")
     void updateOwnCommentMemberAssignedTest() {
 
@@ -304,6 +306,7 @@ public class TaskActivityServiceUpdateCommentRepoTest {
     }
 
     @Test
+    @Order(4)
     @DisplayName("Update Comment CommentId Is Null Test")
     void updateCommentCommentIdIsNullTest() {
 
@@ -312,6 +315,7 @@ public class TaskActivityServiceUpdateCommentRepoTest {
     }
 
     @Test
+    @Order(5)
     @DisplayName("Update Comment Already Updated Test")
     void updateCommentAlreadyUpdatedTest() {
 
@@ -362,6 +366,34 @@ public class TaskActivityServiceUpdateCommentRepoTest {
         assertTrue(comment.isUpdated());
     }
 
+    @Test
+    @Order(6)
+    @DisplayName("Update Not Owned Comment Throws Exception Test")
+    void updateNotOwnedCommentThrowsExceptionTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        TaskDetailsDTO dto = writeCommentAndResetPermission(member1, tId, "Comment");
+
+        UUID commentId = ((TaskCommentDto) dto.getTaskActivityElements().getFirst()).getCommentId();
+
+        member2.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member2.setCommentPermissions(Set.of(CommentPermission.EDIT_OWN_COMMENT));
+        boardRepository.save(board);
+
+        UploadCommentRequest commentRequest = new UploadCommentRequest();
+        commentRequest.setComment("Comment");
+        commentRequest.setCommentId(commentId);
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.updateComment(
+                        member2Id,
+                        bId,
+                        tId,
+                        commentRequest
+                ));
+    }
 
     private TaskDetailsDTO writeCommentAndResetPermission(BoardMember boardMember, String taskId, String comment) {
 
