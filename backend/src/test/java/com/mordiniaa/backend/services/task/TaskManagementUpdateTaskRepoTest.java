@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.services.task;
 
+import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
@@ -7,6 +8,8 @@ import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskComment
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
+import com.mordiniaa.backend.models.board.permissions.BoardPermission;
+import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
@@ -14,12 +17,11 @@ import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
+import com.mordiniaa.backend.request.task.PatchTaskDataRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
@@ -33,6 +35,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @ActiveProfiles("test")
 @DataMongoTest
 @Import({
@@ -43,7 +48,7 @@ import java.util.UUID;
         MongoIdUtils.class,
         TaskMapper.class,
         TaskService.class,
-        TaskActivityService.class,
+        TaskManagementService.class,
         TaskCommentDtoMapper.class,
         TaskActivityMapper.class,
         UserRepresentationMapper.class
@@ -66,7 +71,7 @@ public class TaskManagementUpdateTaskRepoTest {
     private TaskService taskService;
 
     @Autowired
-    private TaskActivityService taskActivityService;
+    private TaskManagementService taskManagementService;
 
     private static final UUID ownerId = UUID.randomUUID();
     private static final UUID member1Id = UUID.randomUUID();
@@ -170,4 +175,40 @@ public class TaskManagementUpdateTaskRepoTest {
         taskRepository.deleteAll();
         boardRepository.deleteAll();
     }
+
+    // Task Owner Can Update Task
+    @Test
+    @Order(1)
+    @DisplayName("Task Owner Can Update Task Test")
+    void taskOwnerCanUpdateTaskTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        String newTitle = "New Title";
+        String newDescription = "New Description";
+        Instant newDeadline = Instant.now().plus(10, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MILLIS);
+        PatchTaskDataRequest request = new PatchTaskDataRequest();
+        request.setTitle(newTitle);
+        request.setDescription(newDescription);
+        request.setDeadline(newDeadline);
+
+        member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member1.setTaskPermissions(Set.of(TaskPermission.EDIT_TASK));
+        boardRepository.save(board);
+
+        TaskDetailsDTO dto = taskManagementService.updateTask(member1Id, bId, tId, request);
+        assertNotNull(dto);
+        assertEquals(newTitle, dto.getTitle());
+        assertEquals(newDeadline, dto.getDeadline());
+        assertEquals(newDescription, dto.getDescription());
+    }
+    // Board Owner Can Update Task
+
+    // Not Assigned User Cannot Update Task
+    // Assigned User Cannot Update Task
+    // Not Board User Cannot Update Task
+    // Board Not Found
+    // User Not Found
+    // Task Not Found
 }
