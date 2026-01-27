@@ -35,8 +35,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @DataMongoTest
@@ -176,7 +175,6 @@ public class TaskManagementUpdateTaskRepoTest {
         boardRepository.deleteAll();
     }
 
-    // Task Owner Can Update Task
     @Test
     @Order(1)
     @DisplayName("Task Owner Can Update Task Test")
@@ -204,7 +202,6 @@ public class TaskManagementUpdateTaskRepoTest {
         assertEquals(newDescription, dto.getDescription());
     }
 
-    // Board Owner Can Update Task
     @Test
     @Order(2)
     @DisplayName("Board Owner Can Update Task Test")
@@ -234,6 +231,20 @@ public class TaskManagementUpdateTaskRepoTest {
     }
 
     // Not Assigned User Cannot Update Task
+    @Test
+    @Order(3)
+    @DisplayName("Not Assigned User Cannot Update Task Test")
+    void notAssignedUserCannotUpdateTaskTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+        
+        member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member1.setTaskPermissions(Set.of(TaskPermission.EDIT_TASK));
+        boardRepository.save(board);
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.updateTask(member1Id, bId, tId, null));
+    }
     // Assigned User Cannot Update Task
     // Not Board User Cannot Update Task
     // Board Not Found
