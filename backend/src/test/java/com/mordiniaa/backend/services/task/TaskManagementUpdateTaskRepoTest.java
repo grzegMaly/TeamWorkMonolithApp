@@ -21,6 +21,7 @@ import com.mordiniaa.backend.request.task.PatchTaskDataRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -317,7 +318,22 @@ public class TaskManagementUpdateTaskRepoTest {
         assertEquals(currentDescription, task.getDescription());
         assertEquals(currentDeadline, task.getDeadline());
     }
+
     // Board Not Found
+    @Test
+    @Order(6)
+    @DisplayName("Board Not Found Test")
+    void boardNotFoundTest() {
+
+        String bId = ObjectId.get().toHexString();
+        String tId = task1.getId().toHexString();
+        assertThrows(RuntimeException.class, () -> taskManagementService.updateTask(
+                ownerId,
+                bId,
+                tId,
+                new PatchTaskDataRequest()
+        ));
+    }
     // User Not Found
     // Task Not Found
 }
