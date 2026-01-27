@@ -64,7 +64,7 @@ public class TaskManagementService {
             if (patchRequest.getDescription() != null && !patchRequest.getDescription().isBlank())
                 task.setDescription(patchRequest.getDescription());
 
-            if (patchRequest.getDescription() != null && patchRequest.getDeadline().isAfter(Instant.now()))
+            if (patchRequest.getDeadline() != null && patchRequest.getDeadline().isAfter(Instant.now()))
                 task.setDeadline(patchRequest.getDeadline());
 
             Task savedTask = taskRepository.save(task);
