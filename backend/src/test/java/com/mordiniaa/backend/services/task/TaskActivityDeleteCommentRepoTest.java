@@ -251,6 +251,25 @@ public class TaskActivityDeleteCommentRepoTest {
     }
 
     // 4Member Not Assigned To Task Can Delete Any Comment
+    @Test
+    @Order(4)
+    @DisplayName("Member Not Assigned To Task Can Delete Any Comment")
+    void memberNotAssignedToTaskCanDeleteAnyComment() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+        TaskDetailsDTO dto = writeCommentAndResetPermission(member1, tId, "Task Comment");
+        assertNotNull(dto);
+
+        UUID commentId = ((TaskCommentDto) dto.getTaskActivityElements().getFirst()).getCommentId();
+        member2.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member2.setCommentPermissions(Set.of(CommentPermission.DELETE_ANY_COMMENT));
+        boardRepository.save(board);
+
+        assertDoesNotThrow(() -> taskActivityService.deleteComment(member2Id, bId, tId, commentId));
+        Task task = taskService.findTaskById(task2.getId());
+        assertTrue(task.getActivityElements().isEmpty());
+    }
     // 5Member Assigned Can Delete Any Comment
 
     // 6Board Not Found
