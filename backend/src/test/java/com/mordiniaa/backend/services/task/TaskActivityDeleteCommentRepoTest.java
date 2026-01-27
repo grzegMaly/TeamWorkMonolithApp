@@ -304,6 +304,16 @@ public class TaskActivityDeleteCommentRepoTest {
         String tId = task1.getId().toHexString();
         assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(member1Id, bId, tId, null));
     }
+
+    @Test
+    @Order(7)
+    @DisplayName("Delete Comment Task Not Found Test")
+    void deleteCommentTaskNotFoundTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = ObjectId.get().toHexString();
+        assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(member1Id, bId, tId, null));
+    }
     // 7Task Not Found
     // 8Member Not Found
     // 9User Not Board Member
