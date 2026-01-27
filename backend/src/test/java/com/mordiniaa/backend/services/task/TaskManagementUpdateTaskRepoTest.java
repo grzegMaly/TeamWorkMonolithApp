@@ -238,7 +238,7 @@ public class TaskManagementUpdateTaskRepoTest {
 
         String bId = board.getId().toHexString();
         String tId = task1.getId().toHexString();
-        
+
         member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
         member1.setTaskPermissions(Set.of(TaskPermission.EDIT_TASK));
         boardRepository.save(board);
@@ -275,7 +275,48 @@ public class TaskManagementUpdateTaskRepoTest {
         assertEquals(currentDesc, dbTask.getDescription());
         assertEquals(currentDeadline, dbTask.getDeadline());
     }
+
     // Not Board User Cannot Update Task
+    @Test
+    @Order(5)
+    @DisplayName("Not Board User Cannot Update Task Test")
+    void notBoardUserCannotUpdateTaskTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation user = new UserRepresentation();
+        user.setUserId(userId);
+        user.setUsername("Username");
+        user.setImageUrl("https://random123.com");
+        userRepresentationRepository.save(user);
+
+        BoardMember member = new BoardMember(userId);
+        member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member.setTaskPermissions(Set.of(TaskPermission.EDIT_TASK));
+
+        Board newBoard = new Board();
+        newBoard.setOwner(member);
+        newBoard.setBoardName("Boardname");
+        boardRepository.save(newBoard);
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+
+        String currentTitle = task1.getTitle();
+        String currentDescription = task1.getDescription();
+        Instant currentDeadline = task1.getDeadline();
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.updateTask(
+                userId,
+                bId,
+                tId,
+                new PatchTaskDataRequest()
+        ));
+
+        Task task = taskService.findTaskById(task1.getId());
+        assertEquals(currentTitle, task.getTitle());
+        assertEquals(currentDescription, task.getDescription());
+        assertEquals(currentDeadline, task.getDeadline());
+    }
     // Board Not Found
     // User Not Found
     // Task Not Found
