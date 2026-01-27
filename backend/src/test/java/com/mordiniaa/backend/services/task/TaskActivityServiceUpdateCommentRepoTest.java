@@ -217,6 +217,15 @@ public class TaskActivityServiceUpdateCommentRepoTest {
     }
 
     @Test
+    @DisplayName("Update Comment CommentId Is Null Test")
+    void updateCommentCommentIdIsNullTest() {
+
+        assertThrows(RuntimeException.class,
+                () -> taskActivityService.updateComment(ownerId, "", "", new UploadCommentRequest()));
+    }
+
+
+    @Test
     @DisplayName("Update Own Comment Member Test")
     void updateOwnCommentMemberTest() {
 
