@@ -176,8 +176,9 @@ public class TaskActivityDeleteCommentRepoTest {
         taskRepository.deleteAll();
         boardRepository.deleteAll();
     }
-    
+
     @Test
+    @Order(1)
     @DisplayName("Delete Comment Owned By Owner Test")
     void deleteCommentOwnedByOwnerTest() {
 
@@ -204,18 +205,36 @@ public class TaskActivityDeleteCommentRepoTest {
         assertTrue(task.getActivityElements().isEmpty());
     }
 
+    // 2Delete Comment Owned By Member
+    @Test
+    @DisplayName("Delete Comment Owned By Member")
+    void deleteCommentOwnedByMember() {
 
-    // Delete Comment Owned By Member
-    // Delete Comment By Owner Owned By Member
-    // Member Not Assigned To Task Can Delete Any Comment
-    // Member Assigned Can Delete Any Comment
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
 
-    // Board Not Found
-    // Task Not Found
-    // Member Not Found
-    // User Not Board Member
-    // Comment Not Found
-    // Member Trying To Delete Board Owner Comment
+        TaskDetailsDTO dto = writeCommentAndResetPermission(member1, tId, "Comment");
+        assertNotNull(dto);
+
+        UUID commentId = ((TaskCommentDto) dto.getTaskActivityElements().getFirst()).getCommentId();
+        member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardRepository.save(board);
+
+        taskActivityService.deleteComment(member1Id, bId, tId, commentId);
+        Task task = taskService.findTaskById(task2.getId());
+        assertTrue(task.getAssignedTo().isEmpty());
+    }
+
+    // 3Delete Comment By Owner Owned By Member
+    // 4Member Not Assigned To Task Can Delete Any Comment
+    // 5Member Assigned Can Delete Any Comment
+
+    // 6Board Not Found
+    // 7Task Not Found
+    // 8Member Not Found
+    // 9User Not Board Member
+    // 10Comment Not Found
+    // 11Member Trying To Delete Board Owner Comment
 
     private TaskDetailsDTO writeCommentAndResetPermission(BoardMember boardMember, String taskId, String comment) {
 
