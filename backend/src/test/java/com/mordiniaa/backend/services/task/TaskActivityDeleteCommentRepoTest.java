@@ -305,6 +305,7 @@ public class TaskActivityDeleteCommentRepoTest {
         assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(member1Id, bId, tId, null));
     }
 
+    // 7Task Not Found
     @Test
     @Order(7)
     @DisplayName("Delete Comment Task Not Found Test")
@@ -314,8 +315,18 @@ public class TaskActivityDeleteCommentRepoTest {
         String tId = ObjectId.get().toHexString();
         assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(member1Id, bId, tId, null));
     }
-    // 7Task Not Found
+
     // 8Member Not Found
+    @Test
+    @Order(8)
+    @DisplayName("Delete Comment Member Not Found Test")
+    void deleteCommentDeleteNotFoundTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+        UUID randomId = UUID.randomUUID();
+        assertThrows(RuntimeException.class, () -> taskActivityService.deleteComment(randomId, bId, tId, null));
+    }
     // 9User Not Board Member
     // 10Comment Not Found
     // 11Member Trying To Delete Board Owner Comment
