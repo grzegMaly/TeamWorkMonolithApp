@@ -245,7 +245,36 @@ public class TaskManagementUpdateTaskRepoTest {
 
         assertThrows(RuntimeException.class, () -> taskManagementService.updateTask(member1Id, bId, tId, null));
     }
+
     // Assigned User Cannot Update Task
+    @Test
+    @Order(4)
+    @DisplayName("Assigned User Cannot Update Task Test")
+    void assignedUserCannotUpdateTaskTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        Task task = taskService.findTaskById(task2.getId());
+        task.setAssignedTo(Set.of(member2Id));
+        taskRepository.save(task);
+
+        String currentTitle = task.getTitle();
+        String currentDesc = task.getDescription();
+        Instant currentDeadline = task.getDeadline();
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.updateTask(
+                member2Id,
+                bId,
+                tId,
+                new PatchTaskDataRequest()
+        ));
+
+        Task dbTask = taskService.findTaskById(task.getId());
+        assertEquals(currentTitle, dbTask.getTitle());
+        assertEquals(currentDesc, dbTask.getDescription());
+        assertEquals(currentDeadline, dbTask.getDeadline());
+    }
     // Not Board User Cannot Update Task
     // Board Not Found
     // User Not Found
