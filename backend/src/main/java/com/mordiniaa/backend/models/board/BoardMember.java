@@ -71,11 +71,6 @@ public class BoardMember {
                 && commentPermissions.contains(CommentPermission.EDIT_OWN_COMMENT);
     }
 
-    public boolean canDeleteOwnComment() {
-        return canViewBoard()
-                && commentPermissions.contains(CommentPermission.DELETE_OWN_COMMENT);
-    }
-
     public boolean canDeleteAnyComment() {
         return canViewBoard()
                 && commentPermissions.contains(CommentPermission.DELETE_ANY_COMMENT);
