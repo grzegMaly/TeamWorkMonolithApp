@@ -98,15 +98,28 @@ public class TaskManagementService {
         BoardMember currentUser = boardUtils.getBoardMember(board, assigningId);
 
         Task task = taskService.findTaskById(taskId);
+
         UUID taskOwner = task.getCreatedBy();
-        
+        UUID boardOwner = board.getOwner().getUserId();
+
         boolean isTaskOwner = currentUser.getUserId().equals(taskOwner);
         boolean isBoardOwner = currentUser.getUserId().equals(board.getOwner().getUserId());
-        boolean isBoardMember = board.getMembers().stream().map(BoardMember::getUserId).toList().contains(currentUser.getUserId());
 
-        if (!isTaskOwner && !isBoardOwner)
-            if (!isBoardMember && !currentUser.canAssignTask())
-                throw new RuntimeException(); //TODO: Change In Exceptions Section
+        if (!isTaskOwner && !isBoardOwner) {
+            if (toAssign.contains(boardOwner) || toAssign.contains(taskOwner))
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+            if (!currentUser.canAssignTask())
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        if (isTaskOwner && toAssign.contains(boardOwner))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        Set<UUID> assigned = new HashSet<>(task.getAssignedTo());
+        assigned.retainAll(toAssign);
+        if (!assigned.isEmpty()) {
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
 
         Set<UUID> membersIds = board.getMembers().stream()
                 .map(BoardMember::getUserId)
@@ -114,13 +127,6 @@ public class TaskManagementService {
         membersIds.add(assigningId);
 
         if (!membersIds.containsAll(toAssign))
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        UUID boardOwner = board.getOwner().getUserId();
-        if (!boardOwner.equals(assigningId) && toAssign.contains(boardOwner))
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        if (task.getAssignedTo().containsAll(toAssign))
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
         task.addMembers(toAssign);
