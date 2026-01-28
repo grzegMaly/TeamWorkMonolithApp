@@ -498,8 +498,30 @@ public class TaskManagementAssignUserToTaskRepoTest {
                 tId
         ));
     }
-    
+
     // 12 Current User Inactive
+    @Test
+    @Order(12)
+    @DisplayName("Current User Inactive")
+    void currentUserInactiveTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        this.setAssignmentPermissionForMember(member1);
+        user1.setDeleted(true);
+        userRepresentationRepository.save(user1);
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member2Id));
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                member1Id,
+                request,
+                bId,
+                tId
+        ));
+    }
     // 13 User To Assign Inactive
     // 14 Task Owner Assigning To Different Task
     // 15 Task Owner Assigning Self To Different Task
