@@ -445,6 +445,24 @@ public class TaskManagementAssignUserToTaskRepoTest {
     }
 
     // 10 User Not Found
+    @Test
+    @Order(10)
+    @DisplayName("User Not Found")
+    void userNotFoundTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id, member2Id));
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                UUID.randomUUID(),
+                request,
+                bId,
+                tId
+        ));
+    }
+
     // 11 Current User Not Board User
     // 12 Current User Inactive
     // 13 User To Assign Inactive
