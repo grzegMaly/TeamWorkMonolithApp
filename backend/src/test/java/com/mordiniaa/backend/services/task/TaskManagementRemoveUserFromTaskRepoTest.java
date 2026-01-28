@@ -200,6 +200,36 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         ));
     }
 
+    @Test
+    @Order(2)
+    @DisplayName("Board Owner Can Unassign User From Owned Task")
+    void boardOwnerCanUnassignUserFromOwnedTask() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+
+        this.setAssignmentPermissionForMember(ownerMember);
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id, member2Id));
+        assertDoesNotThrow(() -> taskManagementService.assignUsersToTask(
+                ownerId,
+                request,
+                bId,
+                tId
+        ));
+
+        assertDoesNotThrow(() -> taskManagementService.removeUserFromTask(
+                ownerId,
+                member1Id,
+                bId,
+                tId
+        ));
+
+        Task task = taskService.findTaskById(task1.getId());
+        assertEquals(1, task.getAssignedTo().size());
+        assertTrue(task.getAssignedTo().contains(member2Id));
+    }
+
     private void setAssignmentPermissionForMember(BoardMember member) {
 
         member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
