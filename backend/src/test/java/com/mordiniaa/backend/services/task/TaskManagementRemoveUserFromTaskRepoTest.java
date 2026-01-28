@@ -386,6 +386,61 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         ));
     }
 
+    @Test
+    @Order(9)
+    @DisplayName("Member Without Permission Cannot Unassign User From Any Task")
+    void memberWithoutPermissionCannotUnassignUserFromAnyTask() {
+
+        String bId = board.getId().toHexString();
+        String tId = task3.getId().toHexString();
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation user = new UserRepresentation();
+        user.setUserId(userId);
+        user.setUsername("Username");
+        user.setImageUrl("https://random123.com");
+        userRepresentationRepository.save(user);
+
+        BoardMember member = new BoardMember(userId);
+        board.getMembers().add(member);
+        boardRepository.save(board);
+
+        this.setAssignmentPermissionForMember(member1);
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id));
+        assertDoesNotThrow(() -> taskManagementService.assignUsersToTask(
+                member1Id,
+                request,
+                bId,
+                tId
+        ));
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.removeUserFromTask(
+                userId,
+                member1Id,
+                bId,
+                tId
+        ));
+
+        Task task = taskService.findTaskById(task3.getId());
+        assertEquals(1, task.getAssignedTo().size());
+        assertTrue(task.getAssignedTo().contains(member1Id));
+
+        member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardRepository.save(board);
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.removeUserFromTask(
+                userId,
+                member1Id,
+                bId,
+                tId
+        ));
+
+        task = taskService.findTaskById(task3.getId());
+        assertEquals(1, task.getAssignedTo().size());
+        assertTrue(task.getAssignedTo().contains(member1Id));
+    }
+
     private void setAssignmentPermissionForMember(BoardMember member) {
 
         member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
