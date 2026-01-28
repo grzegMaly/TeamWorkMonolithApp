@@ -16,12 +16,14 @@ import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
+import com.mordiniaa.backend.request.task.AssignUsersRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import lombok.With;
+import org.bson.types.ObjectId;
+import org.junit.jupiter.api.*;
+import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
@@ -29,12 +31,15 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.security.Permission;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @DataMongoTest
@@ -174,16 +179,26 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         boardRepository.deleteAll();
     }
 
-    // 1 Task Owner Can Unassign User From Owned Task
-    // 2 Board Owner Can Unassign User From Owned Task
-    // 3 Board Owner Can Unassign User From Any Task
-    // 4 Board Member With Permission Can Unassign User From Any Task Apart From BOwner And TOwner
+    @Test
+    @Order(1)
+    @DisplayName("Task Owner Can Unassign User From Owned Task")
+    void taskOwnerCanUnassignUserFromOwnedTask() {
 
-    // 5 Board Not Found
-    // 6 Task Not Found
-    // 7 User Not Found
-    // 8 User With Permission Not Board Member
-    // 9 Member Without Permission Cannot Unassign User From Any Task
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        this.setAssignmentPermissionForMember(member1);
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member2Id));
+        taskManagementService.assignUsersToTask(member1Id, request, bId, tId);
+
+        assertDoesNotThrow(() -> taskManagementService.removeUserFromTask(
+                member1Id,
+                member2Id,
+                bId,
+                tId
+        ));
+    }
 
     private void setAssignmentPermissionForMember(BoardMember member) {
 
