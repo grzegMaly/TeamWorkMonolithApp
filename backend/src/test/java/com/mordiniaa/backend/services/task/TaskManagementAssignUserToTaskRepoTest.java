@@ -180,7 +180,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         boardRepository.deleteAll();
     }
 
-    // 1 Task Owner Can Assign Board Member To Owned Task
     @Test
     @Order(1)
     @DisplayName("Task Owner Can Assign Board Member To Owner Task Test")
@@ -207,7 +206,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         assertTrue(dto.getAssignedTo().contains(member2Id));
     }
 
-    // 2 Board Owner Can Assign Any Board Member To Any Task
     @Test
     @Order(2)
     @DisplayName("Board Owner Can Assign Any Board Member To Any Task")
@@ -232,7 +230,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         assertTrue(dto.getAssignedTo().containsAll(Set.of(member1Id, member2Id)));
     }
 
-    // 3 Board Member With Permission Can Assign Any Member To Task Apart From BOwner And TOwner
     @Test
     @Order(3)
     @DisplayName("Board Member With Permission Can Assign Any Member To Task Apart From BOwner And TOwner")
@@ -298,7 +295,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
                 ));
     }
 
-    // 4 Task Owner Can Assign Self To Owned Task
     @Test
     @Order(4)
     @DisplayName("Task Owner Can Assign Self To Owned Task")
@@ -325,7 +321,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         assertTrue(dto.getAssignedTo().contains(member1Id));
     }
 
-    // 5 Board Owner Can Assign Self To Owned Task
     @Test
     @Order(5)
     @DisplayName("Board Owner Can Assign Self To Owned Task")
@@ -353,7 +348,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         assertTrue(dto.getAssignedTo().contains(ownerId));
     }
 
-    // 6 Task Owner Can Assign Self To Owned Task With Members
     @Test
     @Order(6)
     @DisplayName("Task Owner Can Assign Self To Owned Task With Members")
@@ -379,7 +373,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         assertTrue(dto.getAssignedTo().containsAll(Set.of(member1Id, member2Id)));
     }
 
-    // 7 Board Owner Can Assign Self To Owned Task With Members
     @Test
     @Order(7)
     @DisplayName("Board Owner Can Assign Self To Owned Task With Members")
@@ -405,7 +398,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         assertTrue(dto.getAssignedTo().containsAll(Set.of(member1Id, member2Id, ownerId)));
     }
 
-    // 8 Board Not Found
     @Test
     @Order(8)
     @DisplayName("Board Not Found")
@@ -425,7 +417,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         ));
     }
 
-    // 9 Task Not Found
     @Test
     @Order(9)
     @DisplayName("Task Not Found")
@@ -444,7 +435,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         ));
     }
 
-    // 10 User Not Found
     @Test
     @Order(10)
     @DisplayName("User Not Found")
@@ -463,7 +453,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         ));
     }
 
-    // 11 Current User Not Board User
     @Test
     @Order(11)
     @DisplayName("Current User Not Board User")
@@ -499,7 +488,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         ));
     }
 
-    // 12 Current User Inactive
     @Test
     @Order(12)
     @DisplayName("Current User Inactive")
@@ -523,7 +511,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         ));
     }
 
-    // 13 User To Assign Inactive
     @Test
     @Order(13)
     @DisplayName("User To Assign Inactive")
@@ -548,7 +535,6 @@ public class TaskManagementAssignUserToTaskRepoTest {
         ));
     }
 
-    // 14 Board Member Assigning To Task Without Permission
     @Test
     @Order(14)
     @DisplayName("Board Member Assigning To Task Without Permission")
@@ -576,7 +562,32 @@ public class TaskManagementAssignUserToTaskRepoTest {
         ));
     }
 
-    // 15 Board Member Assigning Self To Task Without Permission
+    @Test
+    @Order(15)
+    @DisplayName("Board Member Assigning Self To Task Without Permission")
+    void boardMemberAssigningSelfToTaskWithoutPermission() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member2Id));
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                member2Id,
+                request,
+                bId,
+                tId
+        ));
+        member2.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardRepository.save(board);
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                member2Id,
+                request,
+                bId,
+                tId
+        ));
+    }
 
     private void setAssignmentPermissionForMember(BoardMember member) {
 
