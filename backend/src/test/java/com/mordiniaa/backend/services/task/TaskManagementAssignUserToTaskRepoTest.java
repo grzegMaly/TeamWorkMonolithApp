@@ -22,6 +22,7 @@ import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.With;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -405,6 +406,24 @@ public class TaskManagementAssignUserToTaskRepoTest {
     }
 
     // 8 Board Not Found
+    @Test
+    @Order(8)
+    @DisplayName("Board Not Found")
+    void boardNotFound() {
+
+        String bId = ObjectId.get().toHexString();
+        String tId = task1.getId().toHexString();
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id));
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                ownerId,
+                request,
+                bId,
+                tId
+        ));
+    }
     // 9 Task Not Found
     // 10 User Not Found
     // 11 Current User Not Board User
