@@ -548,10 +548,35 @@ public class TaskManagementAssignUserToTaskRepoTest {
         ));
     }
 
-    // 14 Task Owner Assigning To Different Task
-    // 15 Task Owner Assigning Self To Different Task
-    // 16 Board Member Assigning To Task Without Permission
-    // 17 Board Member Assigning Self To Task Without Permission
+    // 14 Board Member Assigning To Task Without Permission
+    @Test
+    @Order(14)
+    @DisplayName("Board Member Assigning To Task Without Permission")
+    void boardMemberAssigningToTaskWithoutPermission() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id));
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                member2Id,
+                request,
+                bId,
+                tId
+        ));
+        member2.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardRepository.save(board);
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                member2Id,
+                request,
+                bId,
+                tId
+        ));
+    }
+
+    // 15 Board Member Assigning Self To Task Without Permission
 
     private void setAssignmentPermissionForMember(BoardMember member) {
 
