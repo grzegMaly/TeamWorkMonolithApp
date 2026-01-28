@@ -150,21 +150,27 @@ public class TaskManagementService {
 
         BiFunction<BoardMembersOnly, ObjectId, TaskShortDto> taskFunction =  (board, taskId) -> {
             BoardMember currentMember = boardUtils.getBoardMember(board, userId);
-            if (!currentMember.canUnassignTask())
+            if (!currentMember.canViewBoard())
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
 
+            Task task = taskService.findTaskById(taskId);
+
+            UUID taskOwner = task.getCreatedBy();
             UUID boardOwner = board.getOwner().getUserId();
-            if (toDeleteId.equals(boardOwner)) {
-                if (!userId.equals(boardOwner))
+
+            boolean isTaskOwner = currentMember.getUserId().equals(taskOwner);
+            boolean isBoardOwner = currentMember.getUserId().equals(board.getOwner().getUserId());
+
+            if (!isTaskOwner && !isBoardOwner) {
+                if (toDeleteId.equals(taskOwner) || toDeleteId.equals(boardOwner))
+                    throw new RuntimeException(); // TODO: Change In Exceptions Section
+                if (!currentMember.canUnassignTask())
                     throw new RuntimeException(); // TODO: Change In Exceptions Section
             }
 
-            Set<UUID> membersIds = board.getMembers().stream()
-                    .map(BoardMember::getUserId)
-                    .collect(Collectors.toSet());
-            membersIds.add(boardOwner);
+            if (!currentMember.getUserId().equals(boardOwner) && toDeleteId.equals(boardOwner))
+                throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-            Task task = taskService.findTaskById(taskId);
             if (!task.getAssignedTo().contains(toDeleteId))
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
 
