@@ -441,6 +441,22 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         assertTrue(task.getAssignedTo().contains(member1Id));
     }
 
+    @Test
+    @Order(10)
+    @DisplayName("User Not Assigned In Task")
+    void userNotAssignedInTaskTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.removeUserFromTask(
+                member1Id,
+                member2Id,
+                bId,
+                tId
+        ));
+    }
+
     private void setAssignmentPermissionForMember(BoardMember member) {
 
         member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
