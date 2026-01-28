@@ -45,9 +45,10 @@ public class BoardMember {
 
     public boolean canCreateTask() {
         return canViewBoard()
-                && taskPermissions.contains(TaskPermission.CREATE_TASK);
+                && canAssignTask()
+                && taskPermissions.contains(TaskPermission.ASSIGN_TASK);
     }
-
+    
     public boolean canAssignTask() {
         return taskPermissions.contains(TaskPermission.ASSIGN_TASK);
     }
