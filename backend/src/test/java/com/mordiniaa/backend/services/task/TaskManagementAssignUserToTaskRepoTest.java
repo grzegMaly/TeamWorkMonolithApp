@@ -379,6 +379,30 @@ public class TaskManagementAssignUserToTaskRepoTest {
     }
 
     // 7 Board Owner Can Assign Self To Owned Task With Members
+    @Test
+    @Order(7)
+    @DisplayName("Board Owner Can Assign Self To Owned Task With Members")
+    void boardOwnerCanAssignSelfToOwnedTaskWithMembers() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+
+        this.setAssignmentPermissionForMember(ownerMember);
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id, member2Id, ownerId));
+
+        TaskDetailsDTO dto = taskManagementService.assignUsersToTask(
+                ownerId,
+                request,
+                bId,
+                tId
+        );
+        assertNotNull(dto);
+        assertFalse(dto.getAssignedTo().isEmpty());
+        assertEquals(3, dto.getAssignedTo().size());
+        assertTrue(dto.getAssignedTo().containsAll(Set.of(member1Id, member2Id, ownerId)));
+    }
 
     // 8 Board Not Found
     // 9 Task Not Found
