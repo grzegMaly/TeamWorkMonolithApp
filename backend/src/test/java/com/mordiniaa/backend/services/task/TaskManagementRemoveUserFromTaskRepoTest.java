@@ -338,6 +338,22 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         ));
     }
 
+    @Test
+    @Order(7)
+    @DisplayName("User Not Found")
+    void userNotFoundTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.removeUserFromTask(
+                ownerId,
+                UUID.randomUUID(),
+                bId,
+                tId
+        ));
+    }
+
     private void setAssignmentPermissionForMember(BoardMember member) {
 
         member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
