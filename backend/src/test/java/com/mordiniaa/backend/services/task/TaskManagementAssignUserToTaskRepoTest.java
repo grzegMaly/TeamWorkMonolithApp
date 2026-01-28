@@ -21,7 +21,9 @@ import com.mordiniaa.backend.request.task.AssignUsersRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
+import lombok.With;
 import org.junit.jupiter.api.*;
+import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
@@ -32,6 +34,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -163,7 +166,7 @@ public class TaskManagementAssignUserToTaskRepoTest {
         member1 = new BoardMember(member1Id);
         member2 = new BoardMember(member2Id);
         boardTemplate.setOwner(ownerMember);
-        boardTemplate.setMembers(List.of(member1, member2));
+        boardTemplate.setMembers(new ArrayList<>(List.of(member1, member2)));
 
         board = boardRepository.save(boardTemplate);
     }
@@ -229,6 +232,70 @@ public class TaskManagementAssignUserToTaskRepoTest {
     }
 
     // 3 Board Member With Permission Can Assign Any Member To Task Apart From BOwner And TOwner
+    @Test
+    @Order(3)
+    @DisplayName("Board Member With Permission Can Assign Any Member To Task Apart From BOwner And TOwner")
+    void boardMemberWithPermissionCanAssignAnyMemberToTaskApartFromBOwnerAndTOwner() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation user = new UserRepresentation();
+        user.setUserId(userId);
+        user.setUsername("Username");
+        user.setImageUrl("https://random123.com");
+        userRepresentationRepository.save(user);
+
+        BoardMember boardMember = new BoardMember(userId);
+        board.getMembers().add(boardMember);
+        this.setAssignmentPermissionForMember(boardMember);
+
+        String bId = board.getId().toHexString();
+        String tId = task3.getId().toHexString();
+
+        AssignUsersRequest request1 = new AssignUsersRequest();
+        request1.setUsers(Set.of(member1Id));
+        TaskDetailsDTO dto = taskManagementService.assignUsersToTask(
+                userId,
+                request1,
+                bId,
+                tId
+        );
+        assertNotNull(dto);
+        assertEquals(1, dto.getAssignedTo().size());
+        assertTrue(dto.getAssignedTo().contains(member1Id));
+
+        /*CANNOT ASSIGN BOWNER*/
+        AssignUsersRequest request2 = new AssignUsersRequest();
+        request2.setUsers(Set.of(ownerId));
+        assertThrows(RuntimeException.class,
+                () -> taskManagementService.assignUsersToTask(
+                        userId,
+                        request2,
+                        bId,
+                        tId
+                ));
+
+        /*CANNOT ASSIGN TOWNER*/
+        AssignUsersRequest request3 = new AssignUsersRequest();
+        request3.setUsers(Set.of(member2Id));
+        assertThrows(RuntimeException.class,
+                () -> taskManagementService.assignUsersToTask(
+                        userId,
+                        request3,
+                        bId,
+                        tId
+                ));
+
+        /*CANNOT ASSIGN BOTH*/
+        AssignUsersRequest request4 = new AssignUsersRequest();
+        request4.setUsers(Set.of(member2Id, ownerId));
+        assertThrows(RuntimeException.class,
+                () -> taskManagementService.assignUsersToTask(
+                        userId,
+                        request4,
+                        bId,
+                        tId
+                ));
+    }
     // 4 Task Owner Can Assign Self To Owned Task
     // 5 Board Owner Can Assign Self To Owned Task
     // 6 Task Owner Can Assign Self To Owned Task With Members
