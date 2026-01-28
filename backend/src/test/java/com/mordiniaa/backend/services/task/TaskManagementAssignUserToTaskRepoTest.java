@@ -464,6 +464,41 @@ public class TaskManagementAssignUserToTaskRepoTest {
     }
 
     // 11 Current User Not Board User
+    @Test
+    @Order(11)
+    @DisplayName("Current User Not Board User")
+    void currentUserNotBoardUserTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task1.getId().toHexString();
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation user = new UserRepresentation();
+        user.setUserId(userId);
+        user.setUsername("Username");
+        user.setImageUrl("https://random123.com");
+        userRepresentationRepository.save(user);
+
+        BoardMember member = new BoardMember(userId);
+        member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member.setTaskPermissions(Set.of(TaskPermission.CREATE_TASK, TaskPermission.ASSIGN_TASK));
+
+        Board newBoard = new Board();
+        newBoard.setBoardName("Boardname");
+        newBoard.setOwner(member);
+        boardRepository.save(newBoard);
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id, member2Id));
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                userId,
+                request,
+                bId,
+                tId
+        ));
+    }
+    
     // 12 Current User Inactive
     // 13 User To Assign Inactive
     // 14 Task Owner Assigning To Different Task
