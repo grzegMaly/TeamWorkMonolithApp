@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.services.task;
 
+import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
@@ -7,6 +8,8 @@ import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskComment
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
+import com.mordiniaa.backend.models.board.permissions.BoardPermission;
+import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
@@ -14,16 +17,16 @@ import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
+import com.mordiniaa.backend.request.task.AssignUsersRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.expression.spel.ast.Assign;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -32,6 +35,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @DataMongoTest
@@ -169,5 +174,55 @@ public class TaskManagementAssignUserToTaskRepoTest {
         userRepresentationRepository.deleteAll();
         taskRepository.deleteAll();
         boardRepository.deleteAll();
+    }
+
+    // 1 Task Owner Can Assign Board Member To Owned Task
+    @Test
+    @DisplayName("Task Owner Can Assign Board Member To Owner Task Test")
+    void taskOwnerCanAssignBoardMemberToOwnerTask() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member2Id));
+
+        setAssignmentPermissionForMember(member1);
+        TaskDetailsDTO dto = taskManagementService.assignUsersToTask(
+                member1Id,
+                request,
+                bId,
+                tId
+        );
+
+        assertNotNull(dto);
+        assertFalse(dto.getAssignedTo().isEmpty());
+
+        assertEquals(1, dto.getAssignedTo().size());
+        assertTrue(dto.getAssignedTo().contains(member2Id));
+    }
+    // 2 Board Owner Can Assign Any Board Member To Any Task
+    // 3 Board Member With Permission Can Assign Any Member To Task Apart From BOwner And TOwner
+    // 4 Task Owner Can Assign Self To Owned Task
+    // 5 Board Owner Can Assign Self To Owned Task
+    // 6 Task Owner Can Assign Self To Owned Task With Members
+    // 7 Board Owner Can Assign Self To Owned Task With Members
+
+    // 8 Board Not Found
+    // 9 Task Not Found
+    // 10 User Not Found
+    // 11 Current User Not Board User
+    // 12 Current User Inactive
+    // 13 User To Assign Inactive
+    // 14 Task Owner Assigning To Different Task
+    // 15 Task Owner Assigning Self To Different Task
+    // 16 Board Member Assigning To Task Without Permission
+    // 17 Board Member Assigning Self To Task Without Permission
+
+    private void setAssignmentPermissionForMember(BoardMember member) {
+
+        member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member.setTaskPermissions(Set.of(TaskPermission.CREATE_TASK, TaskPermission.ASSIGN_TASK));
+        boardRepository.save(board);
     }
 }
