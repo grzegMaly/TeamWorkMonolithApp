@@ -96,8 +96,17 @@ public class TaskManagementService {
                 .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
         BoardMember currentUser = boardUtils.getBoardMember(board, assigningId);
-        if (!currentUser.canAssignTask())
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        Task task = taskService.findTaskById(taskId);
+        UUID taskOwner = task.getCreatedBy();
+        
+        boolean isTaskOwner = currentUser.getUserId().equals(taskOwner);
+        boolean isBoardOwner = currentUser.getUserId().equals(board.getOwner().getUserId());
+        boolean isBoardMember = board.getMembers().stream().map(BoardMember::getUserId).toList().contains(currentUser.getUserId());
+
+        if (!isTaskOwner && !isBoardOwner)
+            if (!isBoardMember && !currentUser.canAssignTask())
+                throw new RuntimeException(); //TODO: Change In Exceptions Section
 
         Set<UUID> membersIds = board.getMembers().stream()
                 .map(BoardMember::getUserId)
@@ -110,8 +119,6 @@ public class TaskManagementService {
         UUID boardOwner = board.getOwner().getUserId();
         if (!boardOwner.equals(assigningId) && toAssign.contains(boardOwner))
             throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        Task task = taskService.findTaskById(taskId);
 
         if (task.getAssignedTo().containsAll(toAssign))
             throw new RuntimeException(); // TODO: Change In Exceptions Section
