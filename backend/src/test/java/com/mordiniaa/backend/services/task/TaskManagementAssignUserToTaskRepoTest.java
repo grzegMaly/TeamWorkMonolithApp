@@ -296,7 +296,34 @@ public class TaskManagementAssignUserToTaskRepoTest {
                         tId
                 ));
     }
+
     // 4 Task Owner Can Assign Self To Owned Task
+    @Test
+    @Order(4)
+    @DisplayName("Task Owner Can Assign Self To Owned Task")
+    void tskOwnerCanAssignSelfToOwnedTask() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id));
+
+        member1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardRepository.save(board);
+
+        TaskDetailsDTO dto = taskManagementService.assignUsersToTask(
+                member1Id,
+                request,
+                bId,
+                tId
+        );
+
+        assertNotNull(dto);
+        assertEquals(1, dto.getAssignedTo().size());
+        assertTrue(dto.getAssignedTo().contains(member1Id));
+    }
+
     // 5 Board Owner Can Assign Self To Owned Task
     // 6 Task Owner Can Assign Self To Owned Task With Members
     // 7 Board Owner Can Assign Self To Owned Task With Members
