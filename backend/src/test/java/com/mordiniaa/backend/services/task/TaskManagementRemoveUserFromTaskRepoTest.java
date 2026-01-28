@@ -260,6 +260,52 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         assertTrue(task.getAssignedTo().contains(member1Id));
     }
 
+    @Test
+    @Order(4)
+    @DisplayName("Board Member With Permission Can Unassign User From Any Task Apart From BOwner And TOwner")
+    void boardMemberWithPermissionCanUnassignUserFromAnyTaskApartFromBOwnerAndTOwner() {
+
+        String bId = board.getId().toHexString();
+        String tId = task3.getId().toHexString();
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation user = new UserRepresentation();
+        user.setUserId(userId);
+        user.setUsername("Username");
+        user.setImageUrl("https://random123.com");
+        userRepresentationRepository.save(user);
+
+        BoardMember newMember = new BoardMember(userId);
+        board.setMembers(List.of(member1, member2, newMember));
+        boardRepository.save(board);
+
+        this.setAssignmentPermissionForMember(member1);
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id, userId));
+
+        assertDoesNotThrow(() -> taskManagementService.assignUsersToTask(
+                member1Id,
+                request,
+                bId,
+                tId
+        ));
+
+        member1.setTaskPermissions(Set.of(TaskPermission.UNASSIGN_TASK));
+        boardRepository.save(board);
+
+        assertDoesNotThrow(() -> taskManagementService.removeUserFromTask(
+                member1Id,
+                userId,
+                bId,
+                tId
+        ));
+
+        Task task = taskService.findTaskById(task3.getId());
+        assertEquals(1, task.getAssignedTo().size());
+        assertTrue(task.getAssignedTo().contains(member1Id));
+    }
+
     private void setAssignmentPermissionForMember(BoardMember member) {
 
         member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
