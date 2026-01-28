@@ -96,6 +96,8 @@ public class TaskManagementService {
                 .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
         BoardMember currentUser = boardUtils.getBoardMember(board, assigningId);
+        if (!currentUser.canViewBoard())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
 
         Task task = taskService.findTaskById(taskId);
 
