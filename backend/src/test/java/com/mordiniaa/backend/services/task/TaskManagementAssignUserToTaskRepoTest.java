@@ -522,7 +522,32 @@ public class TaskManagementAssignUserToTaskRepoTest {
                 tId
         ));
     }
+
     // 13 User To Assign Inactive
+    @Test
+    @Order(13)
+    @DisplayName("User To Assign Inactive")
+    void userToAssignInactiveTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        user2.setDeleted(true);
+        userRepresentationRepository.save(user2);
+
+        this.setAssignmentPermissionForMember(member1);
+
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member2Id));
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                member1Id,
+                request,
+                bId,
+                tId
+        ));
+    }
+
     // 14 Task Owner Assigning To Different Task
     // 15 Task Owner Assigning Self To Different Task
     // 16 Board Member Assigning To Task Without Permission
