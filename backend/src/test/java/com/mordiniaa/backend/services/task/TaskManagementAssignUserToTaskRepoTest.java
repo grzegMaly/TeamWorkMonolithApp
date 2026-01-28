@@ -178,6 +178,7 @@ public class TaskManagementAssignUserToTaskRepoTest {
 
     // 1 Task Owner Can Assign Board Member To Owned Task
     @Test
+    @Order(1)
     @DisplayName("Task Owner Can Assign Board Member To Owner Task Test")
     void taskOwnerCanAssignBoardMemberToOwnerTask() {
 
@@ -201,7 +202,32 @@ public class TaskManagementAssignUserToTaskRepoTest {
         assertEquals(1, dto.getAssignedTo().size());
         assertTrue(dto.getAssignedTo().contains(member2Id));
     }
+
     // 2 Board Owner Can Assign Any Board Member To Any Task
+    @Test
+    @Order(2)
+    @DisplayName("Board Owner Can Assign Any Board Member To Any Task")
+    void boardOwnerCanAssignAnyBoardMemberToAnyTask() {
+
+        String bId = board.getId().toHexString();
+        String tId = task3.getId().toHexString();
+
+        this.setAssignmentPermissionForMember(ownerMember);
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id, member2Id));
+
+        TaskDetailsDTO dto = taskManagementService.assignUsersToTask(
+                ownerId,
+                request,
+                bId,
+                tId
+        );
+
+        assertNotNull(dto);
+        assertEquals(2, dto.getAssignedTo().size());
+        assertTrue(dto.getAssignedTo().containsAll(Set.of(member1Id, member2Id)));
+    }
+
     // 3 Board Member With Permission Can Assign Any Member To Task Apart From BOwner And TOwner
     // 4 Task Owner Can Assign Self To Owned Task
     // 5 Board Owner Can Assign Self To Owned Task
