@@ -354,6 +354,38 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         ));
     }
 
+    @Test
+    @Order(8)
+    @DisplayName("User With Permission Not Board Member")
+    void userWithPermissionNotBoardMember() {
+
+        String bId = board.getId().toHexString();
+        String tId = task2.getId().toHexString();
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation user = new UserRepresentation();
+        user.setUserId(userId);
+        user.setUsername("Username");
+        user.setImageUrl("https://random123.com");
+        userRepresentationRepository.save(user);
+
+        BoardMember member = new BoardMember(userId);
+        member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        member.setTaskPermissions(Set.of(TaskPermission.CREATE_TASK, TaskPermission.ASSIGN_TASK, TaskPermission.UNASSIGN_TASK));
+
+        Board newBoard = new Board();
+        newBoard.setBoardName("New Board");
+        newBoard.setOwner(member);
+        boardRepository.save(newBoard);
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.removeUserFromTask(
+                userId,
+                member1Id,
+                bId,
+                tId
+        ));
+    }
+
     private void setAssignmentPermissionForMember(BoardMember member) {
 
         member.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
