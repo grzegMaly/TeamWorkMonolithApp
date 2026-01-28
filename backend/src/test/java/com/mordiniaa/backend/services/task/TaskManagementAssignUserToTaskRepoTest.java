@@ -424,7 +424,26 @@ public class TaskManagementAssignUserToTaskRepoTest {
                 tId
         ));
     }
+
     // 9 Task Not Found
+    @Test
+    @Order(9)
+    @DisplayName("Task Not Found")
+    void taskNotFoundTest() {
+
+        String bId = board.getId().toHexString();
+        String tId = ObjectId.get().toHexString();
+        AssignUsersRequest request = new AssignUsersRequest();
+        request.setUsers(Set.of(member1Id));
+
+        assertThrows(RuntimeException.class, () -> taskManagementService.assignUsersToTask(
+                ownerId,
+                request,
+                bId,
+                tId
+        ));
+    }
+
     // 10 User Not Found
     // 11 Current User Not Board User
     // 12 Current User Inactive
