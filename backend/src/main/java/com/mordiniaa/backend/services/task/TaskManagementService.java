@@ -114,7 +114,7 @@ public class TaskManagementService {
                 throw new RuntimeException(); // TODO: Change In Exceptions Section
         }
 
-        if (isTaskOwner && toAssign.contains(boardOwner))
+        if (!currentUser.getUserId().equals(boardOwner) && toAssign.contains(boardOwner))
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
         Set<UUID> assigned = new HashSet<>(task.getAssignedTo());
