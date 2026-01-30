@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -29,6 +30,10 @@ public class Board implements BoardMembers, BoardTemplate {
     @Indexed
     @Field("owner")
     private BoardMember owner;
+
+    @Indexed
+    @Field("teamId")
+    private UUID teamId;
 
     @Indexed
     @Field("boardName")

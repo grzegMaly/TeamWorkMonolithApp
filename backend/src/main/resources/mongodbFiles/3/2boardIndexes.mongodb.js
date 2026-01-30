@@ -8,5 +8,8 @@ db.boards.createIndexes([
     },
     {
         boardName: "text"
+    },
+    {
+        teamId: 1
     }
 ])
