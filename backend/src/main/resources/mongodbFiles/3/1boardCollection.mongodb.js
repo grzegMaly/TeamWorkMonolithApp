@@ -12,11 +12,16 @@ db.runCommand({
         $jsonSchema: {
             bsonType: "object",
             title: "Board Specification Schema",
-            required: ["owner", "boardName"],
+            required: ["owner", "boardName", "teamId"],
             additionalProperties: false,
             properties: {
                 _id: {
                     bsonType: "objectId"
+                },
+                teamId: {
+                    bsonType: "binData",
+                    title: "Team Id From MySQL",
+                    description: "Team Is Required"
                 },
                 _class: {
                     bsonType: "string",
