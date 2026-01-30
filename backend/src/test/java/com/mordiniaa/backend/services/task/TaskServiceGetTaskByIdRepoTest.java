@@ -149,6 +149,7 @@ public class TaskServiceGetTaskByIdRepoTest {
         String boardCategoryName = "Testing";
         boardCategory.setCategoryName(boardCategoryName);
         board = new Board();
+        board.setTeamId(UUID.randomUUID());
         board.setBoardName("Test 1");
         board.setOwner(boardMemberOwner);
         board.setMembers(List.of(boardMember1, boardMember2));

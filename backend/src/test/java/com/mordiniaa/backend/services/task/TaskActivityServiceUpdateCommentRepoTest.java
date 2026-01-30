@@ -122,6 +122,7 @@ public class TaskActivityServiceUpdateCommentRepoTest {
         taskCategory2.setPosition(1);
 
         boardTemplate = new Board();
+        boardTemplate.setTeamId(UUID.randomUUID());
         boardTemplate.setBoardName("Board");
         boardTemplate.setTaskCategories(List.of(taskCategory1, taskCategory2));
 

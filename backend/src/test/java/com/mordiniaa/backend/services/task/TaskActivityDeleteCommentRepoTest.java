@@ -124,6 +124,7 @@ public class TaskActivityDeleteCommentRepoTest {
         taskCategory2.setPosition(1);
 
         boardTemplate = new Board();
+        boardTemplate.setTeamId(UUID.randomUUID());
         boardTemplate.setBoardName("Board");
         boardTemplate.setTaskCategories(List.of(taskCategory1, taskCategory2));
 
@@ -347,6 +348,7 @@ public class TaskActivityDeleteCommentRepoTest {
 
         Board anotherBoard = new Board();
         anotherBoard.setOwner(userMember);
+        anotherBoard.setTeamId(UUID.randomUUID());
         anotherBoard.setBoardName("Board Name");
         boardRepository.save(anotherBoard);
 

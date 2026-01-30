@@ -141,7 +141,7 @@ public class TaskManagementServiceMockitoTest {
         when(boardUtils.getBoardMember(board, assigning))
                 .thenReturn(currentUser);
 
-        when(currentUser.canAssignTask())
+        when(currentUser.canViewBoard())
                 .thenReturn(true);
 
         BoardMember member1MB = new BoardMember(member1);
@@ -157,6 +157,9 @@ public class TaskManagementServiceMockitoTest {
 
         when(taskService.findTaskById(taskId))
                 .thenReturn(task);
+
+        when(currentUser.getUserId())
+                .thenReturn(assigning);
 
         Task savedTask = new Task();
         savedTask.setActivityElements(List.of());

@@ -161,6 +161,7 @@ public class TaskActivityChangeTaskPositionRepoTest {
         member1 = new BoardMember(member1Id);
         member2 = new BoardMember(member2Id);
         board.setOwner(ownerMember);
+        board.setTeamId(UUID.randomUUID());
         board.setMembers(List.of(member1, member2));
 
         board = boardRepository.save(board);
@@ -423,6 +424,7 @@ public class TaskActivityChangeTaskPositionRepoTest {
 
         BoardMember member = new BoardMember(userId);
         Board anotherBoard = new Board();
+        anotherBoard.setTeamId(UUID.randomUUID());
         anotherBoard.setOwner(member);
         anotherBoard.setBoardName("Another Board");
         boardRepository.save(anotherBoard);

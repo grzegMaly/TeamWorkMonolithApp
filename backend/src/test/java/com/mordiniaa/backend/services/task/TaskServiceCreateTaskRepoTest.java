@@ -169,6 +169,7 @@ public class TaskServiceCreateTaskRepoTest {
         TaskCategory board1Category = new TaskCategory();
         board1Category.setCategoryName(board1CategoryName);
         board1 = new Board();
+        board1.setTeamId(UUID.randomUUID());
         board1.setBoardName("Test 1");
         board1.setOwner(boardMemberOwner1);
         board1.setMembers(List.of(member11, member12));
@@ -178,6 +179,7 @@ public class TaskServiceCreateTaskRepoTest {
         String board2CategoryName = "Developing";
         board2Category.setCategoryName(board2CategoryName);
         Board board2 = new Board();
+        board2.setTeamId(UUID.randomUUID());
         board2.setBoardName("Test 2");
         board2.setOwner(boardMemberOwner2);
         board2.setMembers(List.of(member21, member22));

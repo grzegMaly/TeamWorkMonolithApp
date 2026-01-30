@@ -121,6 +121,7 @@ public class TaskManagementUpdateTaskRepoTest {
         taskCategory2.setPosition(1);
 
         boardTemplate = new Board();
+        boardTemplate.setTeamId(UUID.randomUUID());
         boardTemplate.setBoardName("Board");
         boardTemplate.setTaskCategories(List.of(taskCategory1, taskCategory2));
 
@@ -293,6 +294,7 @@ public class TaskManagementUpdateTaskRepoTest {
 
         Board newBoard = new Board();
         newBoard.setOwner(member);
+        newBoard.setTeamId(UUID.randomUUID());
         newBoard.setBoardName("Boardname");
         boardRepository.save(newBoard);
 

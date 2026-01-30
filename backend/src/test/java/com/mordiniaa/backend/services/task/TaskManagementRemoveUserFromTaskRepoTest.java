@@ -166,6 +166,7 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         member1 = new BoardMember(member1Id);
         member2 = new BoardMember(member2Id);
         boardTemplate.setOwner(ownerMember);
+        boardTemplate.setTeamId(UUID.randomUUID());
         boardTemplate.setMembers(new ArrayList<>(List.of(member1, member2)));
 
         board = boardRepository.save(boardTemplate);
@@ -374,6 +375,7 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         member.setTaskPermissions(Set.of(TaskPermission.CREATE_TASK, TaskPermission.ASSIGN_TASK, TaskPermission.UNASSIGN_TASK));
 
         Board newBoard = new Board();
+        newBoard.setTeamId(UUID.randomUUID());
         newBoard.setBoardName("New Board");
         newBoard.setOwner(member);
         boardRepository.save(newBoard);

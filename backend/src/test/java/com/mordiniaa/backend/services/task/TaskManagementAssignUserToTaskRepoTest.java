@@ -81,9 +81,13 @@ public class TaskManagementAssignUserToTaskRepoTest {
     private static final UUID member1Id = UUID.randomUUID();
     private static final UUID member2Id = UUID.randomUUID();
 
-    private static UserRepresentation owner;
-    private static UserRepresentation user1;
-    private static UserRepresentation user2;
+    private static UserRepresentation ownerTemplate;
+    private static UserRepresentation user1Template;
+    private static UserRepresentation user2Template;
+
+    private UserRepresentation owner;
+    private UserRepresentation user1;
+    private UserRepresentation user2;
 
     private BoardMember ownerMember;
     private BoardMember member1;
@@ -101,20 +105,23 @@ public class TaskManagementAssignUserToTaskRepoTest {
     @BeforeAll
     static void setup() {
 
-        owner = new UserRepresentation();
-        owner.setUserId(ownerId);
-        owner.setUsername("Owner");
-        owner.setImageUrl("http:random123.com");
+        ownerTemplate = new UserRepresentation();
+        ownerTemplate.setUserId(ownerId);
+        ownerTemplate.setUsername("Owner");
+        ownerTemplate.setDeleted(false);
+        ownerTemplate.setImageUrl("http:random123.com");
 
-        user1 = new UserRepresentation();
-        user1.setUserId(member1Id);
-        user1.setUsername("Member 1");
-        user1.setImageUrl("http:random123.com");
+        user1Template = new UserRepresentation();
+        user1Template.setUserId(member1Id);
+        user1Template.setUsername("Member 1");
+        user1Template.setDeleted(false);
+        user1Template.setImageUrl("http:random123.com");
 
-        user2 = new UserRepresentation();
-        user2.setUserId(member2Id);
-        user2.setUsername("Member 2");
-        user2.setImageUrl("http:random123.com");
+        user2Template = new UserRepresentation();
+        user2Template.setUserId(member2Id);
+        user2Template.setUsername("Member 2");
+        user2Template.setDeleted(false);
+        user2Template.setImageUrl("http:random123.com");
 
         taskCategory1 = new TaskCategory();
         taskCategory1.setCategoryName("Dev");
@@ -155,7 +162,12 @@ public class TaskManagementAssignUserToTaskRepoTest {
     @BeforeEach
     void beforeEachSetup() {
 
-        userRepresentationRepository.saveAll(List.of(owner, user1, user2));
+        ownerTemplate.setDeleted(false);
+        user1Template.setDeleted(false);
+        user2Template.setDeleted(false);
+        owner = userRepresentationRepository.save(ownerTemplate);
+        user1 = userRepresentationRepository.save(user1Template);
+        user2 = userRepresentationRepository.save(user2Template);
         task1 = taskRepository.save(task1);
         task2 = taskRepository.save(task2);
         task3 = taskRepository.save(task3);
@@ -167,6 +179,7 @@ public class TaskManagementAssignUserToTaskRepoTest {
         member1 = new BoardMember(member1Id);
         member2 = new BoardMember(member2Id);
         boardTemplate.setOwner(ownerMember);
+        boardTemplate.setTeamId(UUID.randomUUID());
         boardTemplate.setMembers(new ArrayList<>(List.of(member1, member2)));
 
         board = boardRepository.save(boardTemplate);
@@ -473,6 +486,7 @@ public class TaskManagementAssignUserToTaskRepoTest {
         member.setTaskPermissions(Set.of(TaskPermission.CREATE_TASK, TaskPermission.ASSIGN_TASK));
 
         Board newBoard = new Board();
+        newBoard.setTeamId(UUID.randomUUID());
         newBoard.setBoardName("Boardname");
         newBoard.setOwner(member);
         boardRepository.save(newBoard);

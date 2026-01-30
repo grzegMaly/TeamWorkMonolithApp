@@ -125,6 +125,7 @@ public class TaskActivityWriteCommentRepoTest {
         taskCategory2.setPosition(1);
 
         boardTemplate = new Board();
+        boardTemplate.setTeamId(UUID.randomUUID());
         boardTemplate.setBoardName("Board");
         boardTemplate.setTaskCategories(List.of(taskCategory1, taskCategory2));
 
@@ -394,6 +395,7 @@ public class TaskActivityWriteCommentRepoTest {
         boardMember.setCommentPermissions(Set.of(CommentPermission.COMMENT_TASK));
 
         Board anotherBoard = new Board();
+        anotherBoard.setTeamId(UUID.randomUUID());
         anotherBoard.setBoardName("Another Board");
         anotherBoard.setOwner(boardMember);
         boardRepository.save(anotherBoard);
