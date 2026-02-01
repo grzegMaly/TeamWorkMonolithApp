@@ -1,4 +1,4 @@
 package com.mordiniaa.backend.models.user.mysql;
 
-public class Role {
+public enum Role {
 }
