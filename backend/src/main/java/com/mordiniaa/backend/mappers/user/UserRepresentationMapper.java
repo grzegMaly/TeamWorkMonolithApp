@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.mappers.User;
+package com.mordiniaa.backend.mappers.user;
 
 import com.mordiniaa.backend.dto.user.mongodb.UserDto;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
