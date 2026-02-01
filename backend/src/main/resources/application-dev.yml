@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: backend
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: ${DB_NAME}
+      username: ${DB_USERNAME}
+      password: ${MONGODB_PASSWORD}
+      authentication-database: ${DB_NAME}
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    database: ${DB_TYPE}
