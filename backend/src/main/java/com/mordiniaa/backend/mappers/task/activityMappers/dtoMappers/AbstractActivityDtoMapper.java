@@ -1,7 +1,7 @@
 package com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers;
 
 import com.mordiniaa.backend.dto.task.activity.TaskActivityElementDto;
-import com.mordiniaa.backend.dto.user.mongodb.UserDto;
+import com.mordiniaa.backend.dto.user.mongodb.MongoUserDto;
 import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
 import com.mordiniaa.backend.models.task.activity.TaskActivityElement;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
@@ -19,9 +19,9 @@ public abstract class AbstractActivityDtoMapper<T extends TaskActivityElement, D
     protected void mapBase(TaskActivityElement element,
                            TaskActivityElementDto.TaskActivityElementDtoBuilder<?, ?> b,
                            UserRepresentation user) {
-        UserDto userDto = userRepresentationMapper.toDto(user);
+        MongoUserDto mongoUserDto = userRepresentationMapper.toDto(user);
         b
-                .user(userDto)
+                .user(mongoUserDto)
                 .createdAt(element.getCreatedAt());
     }
 
