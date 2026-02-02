@@ -2,7 +2,6 @@ package com.mordiniaa.backend.services.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.dto.task.activity.TaskCommentDto;
-import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
@@ -52,7 +51,6 @@ import static org.junit.jupiter.api.Assertions.*;
         TaskActivityService.class,
         TaskCommentDtoMapper.class,
         TaskActivityMapper.class,
-        UserRepresentationMapper.class
 })
 public class TaskActivityServiceUpdateCommentRepoTest {
 
