@@ -26,6 +26,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
@@ -42,20 +43,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
-@DataMongoTest
-@Import({
-        BoardAggregationRepositoryImpl.class,
-        UserReprCustomRepositoryImpl.class,
-        MongoUserService.class,
-        BoardUtils.class,
-        MongoIdUtils.class,
-        TaskMapper.class,
-        TaskService.class,
-        TaskManagementService.class,
-        TaskCommentDtoMapper.class,
-        TaskActivityMapper.class,
-        UserRepresentationMapper.class
-})
+@SpringBootTest
 public class TaskManagementRemoveUserFromTaskRepoTest {
 
     @MockitoBean("mongoAuditor")

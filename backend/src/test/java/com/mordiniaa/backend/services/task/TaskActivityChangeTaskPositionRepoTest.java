@@ -24,7 +24,10 @@ import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
@@ -40,18 +43,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @ActiveProfiles("test")
-@DataMongoTest
-@Import({
-        BoardAggregationRepositoryImpl.class,
-        UserReprCustomRepositoryImpl.class,
-        MongoUserService.class,
-        BoardUtils.class,
-        MongoIdUtils.class,
-        TaskMapper.class,
-        TaskActivityMapper.class,
-        TaskService.class,
-        TaskActivityService.class
-})
+@SpringBootTest
 public class TaskActivityChangeTaskPositionRepoTest {
 
     @MockitoBean("mongoAuditor")

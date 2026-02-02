@@ -20,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -37,13 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
-@DataMongoTest
-@Import({
-        NoteMapper.class,
-        ArchivedNotesServiceImpl.class,
-        RegularNoteDtoMapper.class,
-        DeadlineNoteDtoMapper.class
-})
+@SpringBootTest
 public class ArchivedNoteServiceGetAllUserNotesRepoTest {
 
     @MockitoBean(name = "mongoAuditor")
