@@ -35,5 +35,4 @@ build/
 /mvnw
 /mvnw.cmd
 /.mvn/wrapper/maven-wrapper.properties
-/env/.env
-/src/main/resources/application-test.yml
+/.env
