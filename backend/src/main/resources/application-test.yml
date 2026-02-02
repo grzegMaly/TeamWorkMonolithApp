@@ -1,21 +1,21 @@
 spring:
   data:
     mongodb:
-      host: ${MONGO_HOST}
-      port: ${MONGO_PORT}
-      database: ${DB_NAME}
-      username: ${DB_USERNAME}
-      password: ${MONGODB_PASSWORD}
-      authentication-database: ${DB_NAME}
+      host: ${TEST_MONGO_HOST}
+      port: ${TEST_MONGO_PORT}
+      database: ${TEST_DB_NAME}
+      username: ${TEST_DB_USERNAME}
+      password: ${TEST_MONGODB_PASSWORD}
+      authentication-database: ${TEST_DB_NAME}
   h2:
     console:
       enabled: true
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${TEST_DB_URL}
+    username: ${TEST_DB_USERNAME}
+    password: ${TEST_DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
-    database: ${DB_TYPE}
+    database: ${TEST_DB_TYPE}
