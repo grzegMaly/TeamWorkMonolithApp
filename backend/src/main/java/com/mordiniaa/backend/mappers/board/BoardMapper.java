@@ -37,7 +37,9 @@ public class BoardMapper {
 
     public BoardDetailsDto toDetailedDto(BoardFull board) {
 
-        BoardDetailsDto dto = (BoardDetailsDto) toShortDto(board);
+        BoardDetailsDto dto = new BoardDetailsDto();
+        dto.setBoardId(board.getId().toHexString());
+        dto.setBoardName(board.getBoardName());
 
         CompletableFuture<List<BoardDetailsDto.TaskCategoryDTO>> categoriesFuture = CompletableFuture
                 .supplyAsync(() -> board.getTaskCategories()
