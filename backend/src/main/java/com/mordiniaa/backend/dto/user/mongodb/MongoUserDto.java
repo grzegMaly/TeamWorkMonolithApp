@@ -9,7 +9,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class MongoUserDto {
 
     private UUID userId;
     private String username;

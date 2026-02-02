@@ -1,7 +1,7 @@
 package com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers;
 
 import com.mordiniaa.backend.dto.task.activity.TaskCommentDto;
-import com.mordiniaa.backend.mappers.User.UserRepresentationMapper;
+import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
 import com.mordiniaa.backend.models.task.activity.TaskComment;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import org.springframework.stereotype.Component;

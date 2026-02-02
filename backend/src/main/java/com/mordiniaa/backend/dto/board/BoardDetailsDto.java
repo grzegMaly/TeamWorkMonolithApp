@@ -1,20 +1,29 @@
 package com.mordiniaa.backend.dto.board;
 
 import com.mordiniaa.backend.dto.task.TaskShortDto;
-import com.mordiniaa.backend.dto.user.mongodb.UserDto;
+import com.mordiniaa.backend.dto.user.mongodb.MongoUserDto;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.List;
 
-public class BoardDetailsDto {
+@Getter
+@Setter
+@NoArgsConstructor
+public class BoardDetailsDto extends BoardShortDto {
 
-    private String boardId;
-    private String boardName;
+    private MongoUserDto owner;
     private List<TaskCategoryDTO> taskCategories;
-    private List<UserDto> members;
+    private List<MongoUserDto> members;
     private Instant createdAt;
+    private Instant updatedAt;
 
-    private static class TaskCategoryDTO {
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class TaskCategoryDTO {
 
         private int position;
         private String categoryName;

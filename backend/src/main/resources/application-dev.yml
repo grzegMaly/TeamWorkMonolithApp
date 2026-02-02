@@ -1,10 +1,12 @@
 spring:
+  application:
+    name: backend
   data:
     mongodb:
-      host: ${MONGO_HOST}
-      port: ${MONGO_PORT}
+      host: localhost
+      port: 27017
       database: ${DB_NAME}
-      username: ${MONGODB_USERNAME}
+      username: ${DB_USERNAME}
       password: ${MONGODB_PASSWORD}
       authentication-database: ${DB_NAME}
   h2:

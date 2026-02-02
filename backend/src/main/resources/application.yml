@@ -1,11 +1,3 @@
 spring:
-  application:
-    name: backend
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      database: team-work
-      username: team-work-dev
-      password: ${MONGODB_USER_PWD}
-      authentication-database: team-work
+  profiles:
+    active: dev
