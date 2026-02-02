@@ -36,4 +36,3 @@ build/
 /mvnw.cmd
 /.mvn/wrapper/maven-wrapper.properties
 /env/.env
-/env/.env-test
