@@ -54,6 +54,7 @@ public class BoardMapper {
                                     .map(task -> {
                                         TaskShortDto shortDto = new TaskShortDto();
                                         shortDto.setId(task.getId().toHexString());
+                                        shortDto.setCreatedBy(task.getCreatedBy());
                                         shortDto.setPositionInCategory(task.getPositionInCategory());
                                         shortDto.setTitle(task.getTitle());
                                         shortDto.setDeadline(task.getDeadline());
