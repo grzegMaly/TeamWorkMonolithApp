@@ -166,6 +166,9 @@ db.runCommand({
                 },
                 createdAt: {
                     bsonType: "date"
+                },
+                updatedAt: {
+                    bsonType: "date"
                 }
             }
         }
