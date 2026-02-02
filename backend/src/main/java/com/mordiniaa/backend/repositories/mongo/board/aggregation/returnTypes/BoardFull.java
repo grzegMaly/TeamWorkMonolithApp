@@ -1,10 +1,9 @@
 package com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes;
 
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
-import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.BoardMembers;
 import com.mordiniaa.backend.models.board.BoardTemplate;
 import com.mordiniaa.backend.models.task.Task;
+import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,11 +18,11 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class BoardAndTasks implements BoardMembers, BoardTemplate {
+public class BoardFull implements BoardTemplate {
 
     private ObjectId id;
-    private UserRepresentationMapper owner;
-    private List<UserRepresentationMapper> members;
+    private UserRepresentation owner;
+    private List<UserRepresentation> members;
     private UUID teamId;
     private String boardName;
     private List<TaskCategoryFull> taskCategories;
