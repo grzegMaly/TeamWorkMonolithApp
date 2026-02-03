@@ -53,5 +53,8 @@ public class Board implements BoardMembers, BoardTemplate {
     @LastModifiedDate
     @Field("updatedAt")
     private Instant updatedAt;
+
+    @Field("archived")
+    private boolean archived = false;
 }
 
