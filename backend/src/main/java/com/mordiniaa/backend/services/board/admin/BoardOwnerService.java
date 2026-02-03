@@ -82,8 +82,15 @@ public class BoardOwnerService {
         boardRepository.save(board);
     }
 
-    public void removeUserFromBoard() {
+    public void removeUserFromBoard(UUID boardOwner, UUID userId, String bId) {
 
+        mongoUserService.checkUserAvailability(boardOwner);
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+
+        Board board = boardAggregationRepositoryImpl.findFullBoardByIdAndOwner(boardId, boardOwner)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        board.removeMember(userId);
+        boardRepository.save(board);
     }
 
     public void updateBoardDetails() {
