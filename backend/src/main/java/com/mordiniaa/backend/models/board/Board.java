@@ -56,5 +56,10 @@ public class Board implements BoardMembers, BoardTemplate {
 
     @Field("archived")
     private boolean archived = false;
+
+    public void addMember(BoardMember member) {
+        if (!members.contains(member))
+            members.add(member);
+    }
 }
 
