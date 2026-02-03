@@ -1,16 +1,61 @@
 package com.mordiniaa.backend.services.board.admin;
 
+import com.mordiniaa.backend.dto.board.BoardDetailsDto;
+import com.mordiniaa.backend.mappers.board.BoardMapper;
 import com.mordiniaa.backend.models.board.Board;
+import com.mordiniaa.backend.models.board.BoardMember;
+import com.mordiniaa.backend.models.board.permissions.BoardPermission;
+import com.mordiniaa.backend.models.board.permissions.CategoryPermissions;
+import com.mordiniaa.backend.models.board.permissions.CommentPermission;
+import com.mordiniaa.backend.models.board.permissions.TaskPermission;
+import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
+import com.mordiniaa.backend.repositories.mysql.TeamRepository;
+import com.mordiniaa.backend.request.board.BoardCreationRequest;
+import com.mordiniaa.backend.services.user.MongoUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class BoardOwnerService {
 
-    public Board createBoard() {
+    private final MongoUserService mongoUserService;
+    private final TeamRepository teamRepository;
+    private final BoardRepository boardRepository;
+    private final BoardMapper boardMapper;
+    private final BoardAggregationRepositoryImpl boardAggregationRepositoryImpl;
 
-        return null;
+    public BoardDetailsDto createBoard(UUID userId, BoardCreationRequest boardCreationRequest) {
+
+        mongoUserService.checkUserAvailability(userId);
+        UUID teamId = boardCreationRequest.getTeamId();
+
+        if (!teamRepository.existsTeamByTeamIdAndManager_UserId(teamId, userId))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        Board board = new Board();
+        board.setTeamId(teamId);
+        board.setBoardName(boardCreationRequest.getBoardName());
+
+        BoardMember ownerMember = new BoardMember(userId);
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.values()));
+        ownerMember.setCategoryPermissions(Set.of(CategoryPermissions.values()));
+        ownerMember.setTaskPermissions(Set.of(TaskPermission.values()));
+        ownerMember.setCommentPermissions(Set.of(CommentPermission.values()));
+
+        board.setOwner(ownerMember);
+
+        Board savedBoard = boardRepository.save(board);
+        BoardFull aggregatedBoardDocument = boardAggregationRepositoryImpl
+                .findBoardWithTasksByUserIdAndBoardIdAndTeamId(userId, savedBoard.getId(), teamId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        return boardMapper.toDetailedDto(aggregatedBoardDocument);
     }
 
     public void addUserToBoard() {
