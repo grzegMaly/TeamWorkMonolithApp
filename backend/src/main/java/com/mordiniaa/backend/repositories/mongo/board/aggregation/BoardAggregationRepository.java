@@ -22,4 +22,8 @@ public interface BoardAggregationRepository {
     Set<Board> findAllBoardsForUserByUserIdAndTeamId(UUID userId, UUID teamId);
 
     Optional<BoardFull> findBoardWithTasksByUserIdAndBoardIdAndTeamId(UUID userId, ObjectId boardId, UUID teamId);
+
+    Optional<Board> findFullBoardByIdAndOwnerAndExistingMember(ObjectId boardId, UUID ownerId, UUID userId);
+
+    Optional<Board> findFullBoardByIdAndOwner(ObjectId boardId, UUID ownerId);
 }
