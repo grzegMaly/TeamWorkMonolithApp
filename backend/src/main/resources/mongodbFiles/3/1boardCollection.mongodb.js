@@ -169,6 +169,11 @@ db.runCommand({
                 },
                 updatedAt: {
                     bsonType: "date"
+                },
+                archived: {
+                    bsonType: "bool",
+                    title: "Board Status",
+                    description: "Archived Status Is Required"
                 }
             }
         }
