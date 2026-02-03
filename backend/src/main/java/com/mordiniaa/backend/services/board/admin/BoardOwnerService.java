@@ -14,7 +14,9 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.Bo
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.request.board.BoardCreationRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
+import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -29,6 +31,7 @@ public class BoardOwnerService {
     private final BoardRepository boardRepository;
     private final BoardMapper boardMapper;
     private final BoardAggregationRepositoryImpl boardAggregationRepositoryImpl;
+    private final MongoIdUtils mongoIdUtils;
 
     public BoardDetailsDto createBoard(UUID userId, BoardCreationRequest boardCreationRequest) {
 
@@ -58,8 +61,25 @@ public class BoardOwnerService {
         return boardMapper.toDetailedDto(aggregatedBoardDocument);
     }
 
-    public void addUserToBoard() {
+    public void addUserToBoard(UUID boardOwner, UUID userId, String bId) {
 
+        mongoUserService.checkUserAvailability(boardOwner, userId);
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+
+        Board board = boardAggregationRepositoryImpl.findFullBoardByIdAndOwner(boardId, boardOwner)
+                .orElseThrow(RuntimeException::new);
+
+
+        UUID teamId = board.getTeamId();
+        if (!teamRepository.existsUserInTeam(teamId, userId))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        BoardMember newMember = new BoardMember(userId);
+        newMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        newMember.setCommentPermissions(Set.of(CommentPermission.COMMENT_TASK, CommentPermission.DELETE_OWN_COMMENT));
+
+        board.addMember(newMember);
+        boardRepository.save(board);
     }
 
     public void removeUserFromBoard() {
