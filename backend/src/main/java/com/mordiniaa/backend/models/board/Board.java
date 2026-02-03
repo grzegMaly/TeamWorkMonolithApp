@@ -15,7 +15,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -60,6 +62,13 @@ public class Board implements BoardMembers, BoardTemplate {
     public void addMember(BoardMember member) {
         if (!members.contains(member))
             members.add(member);
+    }
+
+    public void removeMember(UUID userId) {
+        members.stream()
+                .filter(bm -> bm.getUserId().equals(userId))
+                .findFirst()
+                .ifPresent(member -> members.remove(member));
     }
 }
 
