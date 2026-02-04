@@ -1,10 +1,12 @@
 package com.mordiniaa.backend.services.board.admin;
 
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.mappers.board.BoardMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.TaskCategory;
+import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
@@ -140,6 +142,48 @@ public class BoardOwnerTaskCategoryService {
             categoryStream.filter(tc -> tc.getPosition() < currentPosition && tc.getPosition() >= newPosition)
                     .forEach(TaskCategory::higherPosition);
         category.setPosition(newPosition);
+
+        boardRepository.save(board);
+        BoardFull updatedBoard = boardAggregationRepository
+                .findBoardWithTasksByUserIdAndBoardIdAndTeamId(boardOwner, boardId, teamId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        return boardMapper.toDetailedDto(updatedBoard);
+    }
+
+    public BoardDetailsDto deleteTaskCategory(UUID boardOwner, String bId, UUID teamId, TaskCategoryRequest request) {
+
+        mongoUserService.checkUserAvailability(boardOwner);
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+
+        String catName = request.getExistingCategoryName();
+        if (catName == null || catName.isBlank())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        catName = catName.trim();
+
+        Board board = boardRepository.findBoardByIdAndOwner_UserIdAndTeamId(boardId, boardOwner, teamId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        String categoryName = catName;
+        TaskCategory taskCategory = board.getTaskCategories().stream()
+                .filter(tC -> tC.getCategoryName().equals(categoryName))
+                .findFirst()
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        int currentPosition = taskCategory.getPosition();
+        board.getTaskCategories().stream().filter(tc -> tc.getPosition() > currentPosition)
+                .forEach(TaskCategory::lowerPosition);
+
+        Set<ObjectId> tasksIds = taskCategory.getTasks();
+        board.removeTaskCategory(taskCategory);
+
+        Query tasksQuery = Query.query(
+                Criteria.where("_id").in(tasksIds)
+        );
+
+        DeleteResult result = mongoTemplate.remove(tasksQuery, Task.class);
+        if (result.getDeletedCount() != tasksIds.size())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
 
         boardRepository.save(board);
         BoardFull updatedBoard = boardAggregationRepository
