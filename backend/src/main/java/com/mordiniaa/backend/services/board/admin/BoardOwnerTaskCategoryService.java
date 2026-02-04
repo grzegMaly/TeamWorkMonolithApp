@@ -1,22 +1,70 @@
 package com.mordiniaa.backend.services.board.admin;
 
+import com.mongodb.client.result.UpdateResult;
+import com.mordiniaa.backend.dto.board.BoardDetailsDto;
+import com.mordiniaa.backend.mappers.board.BoardMapper;
+import com.mordiniaa.backend.models.board.Board;
+import com.mordiniaa.backend.models.board.TaskCategory;
+import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
+import com.mordiniaa.backend.request.board.TaskCategoryRequest;
+import com.mordiniaa.backend.services.user.MongoUserService;
+import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class BoardOwnerTaskCategoryService {
 
-    public void createTaskCategory() {
-    }
+    private final MongoUserService mongoUserService;
+    private final BoardAggregationRepository boardAggregationRepository;
+    private final MongoIdUtils mongoIdUtils;
+    private final BoardRepository boardRepository;
+    private final BoardMapper boardMapper;
+    private final MongoTemplate mongoTemplate;
 
-    public void renameTaskCategory() {
+    public BoardDetailsDto createTaskCategory(UUID boardOwner, String bId, TaskCategoryRequest request) {
 
-    }
+        mongoUserService.checkUserAvailability(boardOwner);
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
 
-    public void deleteTaskCategory() {
-    }
+        Board board = boardAggregationRepository.findFullBoardByIdAndOwner(boardId, boardOwner)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
-    public void reorderTaskCategories() {
+        String categoryName = request.getNewCategoryName().trim();
+        int newPosition = board.getHighestTaskCategoryPosition() + 1;
+
+        TaskCategory newCategory = new TaskCategory();
+        newCategory.setPosition(newPosition);
+        newCategory.setCategoryName(categoryName);
+
+        Query query = Query.query(
+                Criteria.where("_id").is(boardId)
+                        .and("owner.userId").is(boardOwner)
+                        .and("taskCategories.categoryName").ne(categoryName)
+        );
+
+        Update update = new Update()
+                .push("taskCategories", newCategory)
+                .inc("highestTaskCategoryPosition", 1);
+
+        UpdateResult result = mongoTemplate.updateFirst(query, update, Board.class);
+        if (result.getModifiedCount() == 0)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        BoardFull updatedBoard = boardAggregationRepository
+                .findBoardWithTasksByUserIdAndBoardIdAndTeamId(boardOwner, boardId, board.getTeamId())
+                .orElseThrow(RuntimeException::new);
+        return boardMapper.toDetailedDto(updatedBoard);
     }
 }
