@@ -102,4 +102,50 @@ public class BoardOwnerTaskCategoryService {
 
         return boardMapper.toDetailedDto(updatedBoard);
     }
+
+    public BoardDetailsDto reorderTaskCategories(UUID boardOwner, String bId, UUID teamId, TaskCategoryRequest request, int newPosition) {
+
+        mongoUserService.checkUserAvailability(boardOwner);
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+
+        String catName = request.getExistingCategoryName();
+        if (catName == null || catName.isBlank())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        catName = catName.trim();
+
+        Board board = boardAggregationRepository.findFullBoardByIdAndOwner(boardId, boardOwner)
+                .orElseThrow(RuntimeException::new);
+
+        if (newPosition > board.getHighestTaskCategoryPosition() || newPosition < 0)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        String categoryName = catName;
+        TaskCategory category = board.getTaskCategories()
+                .stream()
+                .filter(tC -> tC.getCategoryName().equals(categoryName))
+                .findFirst().orElse(null);
+
+        if (category == null)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        int currentPosition = category.getPosition();
+        if (currentPosition == newPosition)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        Stream<TaskCategory> categoryStream = board.getTaskCategories().stream();
+        if (newPosition > currentPosition)
+            categoryStream.filter(tc -> tc.getPosition() > currentPosition && tc.getPosition() <= newPosition)
+                    .forEach(TaskCategory::lowerPosition);
+        else
+            categoryStream.filter(tc -> tc.getPosition() < currentPosition && tc.getPosition() >= newPosition)
+                    .forEach(TaskCategory::higherPosition);
+        category.setPosition(newPosition);
+
+        boardRepository.save(board);
+        BoardFull updatedBoard = boardAggregationRepository
+                .findBoardWithTasksByUserIdAndBoardIdAndTeamId(boardOwner, boardId, teamId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        return boardMapper.toDetailedDto(updatedBoard);
+    }
 }
