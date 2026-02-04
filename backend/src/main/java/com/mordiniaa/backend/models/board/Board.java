@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.models.board;
 
+import com.mordiniaa.backend.request.board.TaskCategoryRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -73,6 +74,10 @@ public class Board implements BoardMembers, BoardTemplate {
                 .filter(bm -> bm.getUserId().equals(userId))
                 .findFirst()
                 .ifPresent(member -> members.remove(member));
+    }
+
+    public void removeTaskCategory(TaskCategory category) {
+        taskCategories.remove(category);
     }
 }
 
