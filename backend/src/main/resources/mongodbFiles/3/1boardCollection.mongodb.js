@@ -172,8 +172,13 @@ db.runCommand({
                 },
                 archived: {
                     bsonType: "bool",
-                    title: "Board Status",
+                    title: "Board Archive Status",
                     description: "Archived Status Is Required"
+                },
+                deleted: {
+                    bsonType: "bool",
+                    title: "Board Delete Status",
+                    description: "Deleted Status Is Required"
                 }
             }
         }
