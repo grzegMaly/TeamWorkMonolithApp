@@ -67,4 +67,39 @@ public class BoardOwnerTaskCategoryService {
                 .orElseThrow(RuntimeException::new);
         return boardMapper.toDetailedDto(updatedBoard);
     }
+
+    public BoardDetailsDto renameTaskCategory(UUID boardOwner, String bId, UUID teamId, TaskCategoryRequest request) {
+
+        mongoUserService.checkUserAvailability(boardOwner);
+        ObjectId boardId = mongoIdUtils.getObjectId(bId);
+
+        String newCategoryName = request.getNewCategoryName().trim();
+
+        String oldCatName = request.getExistingCategoryName();
+        if (oldCatName == null || oldCatName.isBlank())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        oldCatName = oldCatName.trim();
+
+        Query query = Query.query(
+                Criteria.where("_id").is(boardId)
+                        .and("teamId").is(teamId)
+                        .and("owner.userId").is(boardOwner)
+                        .and("taskCategories.categoryName").is(oldCatName)
+                        .and("taskCategories.categoryName").ne(newCategoryName)
+        );
+
+        Update update = new Update()
+                .set("taskCategories.$[cat].categoryName", newCategoryName)
+                .filterArray(Criteria.where("cat.categoryName").is(oldCatName));
+
+        UpdateResult result = mongoTemplate.updateFirst(query, update, Board.class);
+        if (result.getModifiedCount() == 0)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        BoardFull updatedBoard = boardAggregationRepository
+                .findBoardWithTasksByUserIdAndBoardIdAndTeamId(boardOwner, boardId, teamId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        return boardMapper.toDetailedDto(updatedBoard);
+    }
 }
