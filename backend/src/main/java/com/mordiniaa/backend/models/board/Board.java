@@ -14,9 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -42,11 +40,14 @@ public class Board implements BoardMembers, BoardTemplate {
     @Field("boardName")
     private String boardName;
 
+    @Field("highestTaskCategoryPosition")
+    private int highestTaskCategoryPosition = -1;
+
     @Field("taskCategories")
-    private List<TaskCategory> taskCategories;
+    private List<TaskCategory> taskCategories = new ArrayList<>();
 
     @Field("members")
-    private List<BoardMember> members;
+    private List<BoardMember> members = new ArrayList<>();
 
     @CreatedDate
     @Field("createdAt")
