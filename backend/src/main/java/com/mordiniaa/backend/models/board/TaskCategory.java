@@ -30,4 +30,12 @@ public class TaskCategory {
     public void deleteTaskId(ObjectId taskId) {
         tasks.remove(taskId);
     }
+
+    public void lowerPosition() {
+        position--;
+    }
+
+    public void higherPosition() {
+        position++;
+    }
 }
