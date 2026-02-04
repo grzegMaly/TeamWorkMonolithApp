@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.services.board.admin;
 
+import com.mongodb.client.result.UpdateResult;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
@@ -11,6 +12,10 @@ import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -25,6 +30,7 @@ public class BoardOwnerManagementService {
     private final BoardAggregationRepository boardAggregationRepository;
     private final BoardUtils boardUtils;
     private final TeamRepository teamRepository;
+    private final MongoTemplate mongoTemplate;
 
     public void changeBoardMemberPermissions(UUID ownerId, String bId, UUID userId, PermissionsRequest permissionsRequest) {
 
@@ -56,14 +62,17 @@ public class BoardOwnerManagementService {
         mongoUserService.checkUserAvailability(ownerId);
         ObjectId boardId = mongoIdUtils.getObjectId(bId);
 
-        Board board = boardAggregationRepository.findFullBoardByIdAndOwner(boardId, ownerId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        Query updateQuery = Query.query(
+                Criteria.where("_id").is(boardId)
+                        .and("owner.userId").is(ownerId)
+                        .and("deleted").is(false)
+                        .and("archived").ne(status)
+        );
+        Update update = new Update()
+                .set("archived", status);
 
-        if (board.isArchived() == status) {
-            return;
-        }
-
-        board.setArchived(status);
-        boardRepository.save(board);
+        UpdateResult result = mongoTemplate.updateFirst(updateQuery, update, Board.class);
+        if (result.getModifiedCount() == 0)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
     }
 }
