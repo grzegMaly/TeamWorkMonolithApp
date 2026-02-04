@@ -179,6 +179,13 @@ db.runCommand({
                     bsonType: "bool",
                     title: "Board Delete Status",
                     description: "Deleted Status Is Required"
+                },
+                highestTaskCategoryPosition: {
+                    position: {
+                            bsonType: "int",
+                            minimum: 0,
+                            description: "Position Cannot be less then 0"
+                    }
                 }
             }
         }
