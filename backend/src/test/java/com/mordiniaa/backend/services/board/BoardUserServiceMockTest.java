@@ -1,10 +1,13 @@
 package com.mordiniaa.backend.services.board;
 
+import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.dto.board.BoardShortDto;
 import com.mordiniaa.backend.mappers.board.BoardMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
 import com.mordiniaa.backend.services.user.MongoUserService;
+import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,10 +19,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -34,6 +39,9 @@ public class BoardUserServiceMockTest {
 
     @Mock
     private BoardAggregationRepositoryImpl boardAggregationRepository;
+
+    @Mock
+    private MongoIdUtils mongoIdUtils;
 
     @Mock
     private BoardMapper boardMapper;
@@ -101,5 +109,32 @@ public class BoardUserServiceMockTest {
                 .checkUserAvailability(userId);
 
         assertThrows(RuntimeException.class, () -> boardUserService.getBoardListForUser(userId, teamId));
+    }
+
+    @Test
+    @DisplayName("Get Board Details Test")
+    void getBoardDetailsTest() {
+
+        doNothing()
+                .when(mongoUserService)
+                .checkUserAvailability(userId);
+
+        ObjectId boardId = ObjectId.get();
+        when(mongoIdUtils.getObjectId(anyString()))
+                .thenReturn(boardId);
+
+        BoardFull board = mock(BoardFull.class);
+        when(boardAggregationRepository.findBoardWithTasksByUserIdAndBoardIdAndTeamId(userId, boardId, teamId))
+                .thenReturn(Optional.of(board));
+
+        BoardDetailsDto boardDetailsDto = mock(BoardDetailsDto.class);
+        when(boardMapper.toDetailedDto(board))
+                .thenReturn(boardDetailsDto);
+
+        BoardDetailsDto mockedBoard = boardUserService.getBoardDetails(userId, "", teamId);
+        assertSame(boardDetailsDto, mockedBoard);
+
+        verify(boardAggregationRepository, times(1))
+                .findBoardWithTasksByUserIdAndBoardIdAndTeamId(userId, boardId, teamId);
     }
 }
