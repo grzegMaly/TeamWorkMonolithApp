@@ -97,6 +97,20 @@ public class BUSGetBoardDetailsTest {
         taskRepository.deleteAll();
     }
 
+    @Test
+    @DisplayName("Get Board Details Board Owner Valid Test")
+    void getBoardDetailsValidTest() {
+
+        BoardDetailsDto dto = boardUserService.getBoardDetails(ownerId, board.getId().toHexString(), teamId);
+        assertNotNull(dto);
+
+        MongoUserDto ownerDto = dto.getOwner();
+        assertNotNull(ownerDto);
+        assertEquals(ownerId, ownerDto.getUserId());
+        assertEquals(owner.getUsername(), ownerDto.getUsername());
+        assertEquals(owner.getImageUrl(), ownerDto.getImageUrl());
+    }
+
     private BoardMember createBoardMember(UUID userId) {
         return new BoardMember(userId);
     }
