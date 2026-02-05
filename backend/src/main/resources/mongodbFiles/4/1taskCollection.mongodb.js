@@ -98,6 +98,11 @@ db.runCommand({
                                 title: "Comment Updated Status",
                                 description: "Comment Updated Status Is Required"
                             },
+                            commentId: {
+                                bsonType: "binData",
+                                title: "Id Of Specific Comment",
+                                description: "CommentId is Required"
+                            },
                             prevStatus: {
                                 bsonType: "string",
                                 enum: ["COMPLETED", "UNCOMPLETED"]
@@ -124,7 +129,7 @@ db.runCommand({
                                         enum: ["comment"]
                                     }
                                 },
-                                required: ["comment", "updated"]
+                                required: ["comment", "updated", "commentId"]
                             },
                             {
                                 properties: {
