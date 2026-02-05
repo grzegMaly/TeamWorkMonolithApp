@@ -1,6 +1,5 @@
 package com.mordiniaa.backend.models.board;
 
-import com.mordiniaa.backend.request.board.TaskCategoryRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +15,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -42,7 +40,7 @@ public class Board implements BoardMembers, BoardTemplate {
     private String boardName;
 
     @Field("highestTaskCategoryPosition")
-    private int highestTaskCategoryPosition = -1;
+    private int nextPosition = 0;
 
     @Field("taskCategories")
     private List<TaskCategory> taskCategories = new ArrayList<>();

@@ -44,7 +44,7 @@ public class BoardOwnerTaskCategoryService {
                 .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
         String categoryName = request.getNewCategoryName().trim();
-        int newPosition = board.getHighestTaskCategoryPosition() + 1;
+        int newPosition = board.getNextPosition();
 
         TaskCategory newCategory = new TaskCategory();
         newCategory.setPosition(newPosition);
@@ -118,7 +118,7 @@ public class BoardOwnerTaskCategoryService {
         Board board = boardAggregationRepository.findFullBoardByIdAndOwner(boardId, boardOwner)
                 .orElseThrow(RuntimeException::new);
 
-        if (newPosition > board.getHighestTaskCategoryPosition() || newPosition < 0)
+        if (newPosition >= board.getNextPosition() || newPosition < 0)
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
         String categoryName = catName;
