@@ -157,7 +157,7 @@ public class BUSGetBoardDetailsTest {
         boardMember1.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
         boardRepository.save(board);
 
-        BoardDetailsDto dto = boardUserService.getBoardDetails(ownerId, board.getId().toHexString(), teamId);
+        BoardDetailsDto dto = boardUserService.getBoardDetails(member1Id, board.getId().toHexString(), teamId);
         assertNotNull(dto);
 
         MongoUserDto ownerDto = dto.getOwner();
