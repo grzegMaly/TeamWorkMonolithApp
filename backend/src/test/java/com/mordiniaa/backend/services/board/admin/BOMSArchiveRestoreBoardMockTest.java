@@ -23,7 +23,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class BOMSArchiveBoardMockTest {
+public class BOMSArchiveRestoreBoardMockTest {
 
     @InjectMocks
     private BoardOwnerManagementService managementService;
@@ -55,5 +55,25 @@ public class BOMSArchiveBoardMockTest {
                 .thenReturn(result);
 
         assertDoesNotThrow(() -> managementService.archiveBoard(ownerId, boardId.toHexString()));
+    }
+
+    @Test
+    @DisplayName("Restore Board Test")
+    void restoreBoardTest() {
+
+        UUID ownerId = UUID.randomUUID();
+        doNothing()
+                .when(mongoUserService)
+                .checkUserAvailability(ownerId);
+
+        ObjectId boardId = ObjectId.get();
+        when(mongoIdUtils.getObjectId(anyString()))
+                .thenReturn(boardId);
+
+        UpdateResult result = UpdateResult.acknowledged(1, 1L, null);
+        when(mongoTemplate.updateFirst(any(Query.class), any(Update.class), any(Class.class)))
+                .thenReturn(result);
+
+        assertDoesNotThrow(() -> managementService.restoreBoard(ownerId, boardId.toHexString()));
     }
 }
