@@ -1,11 +1,13 @@
 package com.mordiniaa.backend.services.board;
 
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
+import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.dto.user.mongodb.MongoUserDto;
 import com.mordiniaa.backend.mappers.board.BoardMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
+import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
@@ -25,8 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -62,6 +63,9 @@ public class BUSGetBoardDetailsTest {
     private Task task4;
 
     private Board board;
+    private BoardMember ownerMember;
+    private BoardMember boardMember1;
+    private BoardMember boardMember2;
 
     @BeforeEach
     void setup() {
@@ -80,10 +84,13 @@ public class BUSGetBoardDetailsTest {
         TaskCategory taskCategory2 = createTaskCategory(1, "Category2", Instant.now().truncatedTo(ChronoUnit.MILLIS));
         taskCategory2.setTasks(Set.of(task3.getId(), task4.getId()));
 
-        board = createBoard(createBoardMember(ownerId), teamId, "BoardName");
+        ownerMember = createBoardMember(ownerId);
+        boardMember1 = createBoardMember(member1Id);
+        boardMember2 = createBoardMember(member2Id);
+        board = createBoard(ownerMember, teamId, "BoardName");
         board.setMembers(List.of(
-                createBoardMember(member1Id),
-                createBoardMember(member2Id)
+                boardMember1,
+                boardMember2
         ));
         board.setTaskCategories(List.of(taskCategory1, taskCategory2));
         board.setNextPosition(2);
@@ -99,7 +106,10 @@ public class BUSGetBoardDetailsTest {
 
     @Test
     @DisplayName("Get Board Details Board Owner Valid Test")
-    void getBoardDetailsValidTest() {
+    void getBoardDetailsBoardOwnerValidTest() {
+
+        ownerMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        boardRepository.save(board);
 
         BoardDetailsDto dto = boardUserService.getBoardDetails(ownerId, board.getId().toHexString(), teamId);
         assertNotNull(dto);
@@ -109,6 +119,34 @@ public class BUSGetBoardDetailsTest {
         assertEquals(ownerId, ownerDto.getUserId());
         assertEquals(owner.getUsername(), ownerDto.getUsername());
         assertEquals(owner.getImageUrl(), ownerDto.getImageUrl());
+
+        List<MongoUserDto> members = dto.getMembers();
+        assertFalse(members.isEmpty());
+        MongoUserDto userDto1 = members.stream().filter(m -> m.getUserId().equals(member1Id))
+                .findFirst().orElse(null);
+        assertNotNull(userDto1);
+        assertEquals(member1.getUsername(), userDto1.getUsername());
+        assertEquals(member1.getImageUrl(), userDto1.getImageUrl());
+
+        MongoUserDto userDto2 = members.stream().filter(m -> m.getUserId().equals(member2Id))
+                .findFirst().orElse(null);
+        assertNotNull(userDto2);
+        assertEquals(member2.getUsername(), userDto2.getUsername());
+        assertEquals(member2.getImageUrl(), userDto2.getImageUrl());
+
+        List<BoardDetailsDto.TaskCategoryDTO> categoryDTOs = dto.getTaskCategories();
+        assertFalse(categoryDTOs.isEmpty());
+
+        TaskShortDto taskDto = categoryDTOs.stream()
+                .flatMap(taskCategoryDTO -> taskCategoryDTO.getTasks()
+                        .stream().filter(taskShortDto -> taskShortDto.getId().equals(task1.getId().toHexString())))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(taskDto);
+        assertEquals(task1.getId().toHexString(), taskDto.getId());
+        assertEquals(task1.getTitle(), taskDto.getTitle());
+        assertEquals(task1.getDescription(), taskDto.getDescription());
     }
 
     private BoardMember createBoardMember(UUID userId) {
