@@ -4,11 +4,14 @@ import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.dto.board.BoardShortDto;
 import com.mordiniaa.backend.mappers.board.BoardMapper;
 import com.mordiniaa.backend.models.board.Board;
+import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.services.user.UserService;
+import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
@@ -26,6 +29,8 @@ public class BoardUserService {
     private final BoardAggregationRepositoryImpl boardAggregationRepositoryImpl;
     private final BoardMapper boardMapper;
     private final MongoIdUtils mongoIdUtils;
+    private final BoardRepository boardRepository;
+    private final BoardUtils boardUtils;
 
     public List<BoardShortDto> getBoardListForUser(UUID userId, UUID teamId) {
 
@@ -41,6 +46,13 @@ public class BoardUserService {
 
         mongoUserService.checkUserAvailability(userId);
         ObjectId boardId = mongoIdUtils.getObjectId(bId);
+
+        BoardMembersOnly b = boardAggregationRepositoryImpl.findBoardMembers(boardId, userId, teamId)
+                .orElseThrow(RuntimeException::new);
+
+        BoardMember currentMember = boardUtils.getBoardMember(b, userId);
+        if (!currentMember.canViewBoard())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
 
         BoardFull board = boardAggregationRepositoryImpl.findBoardWithTasksByUserIdAndBoardIdAndTeamId(userId, boardId, teamId)
                 .orElseThrow(RuntimeException::new);
