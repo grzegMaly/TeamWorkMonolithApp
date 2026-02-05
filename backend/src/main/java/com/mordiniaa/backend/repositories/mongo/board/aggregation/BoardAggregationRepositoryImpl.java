@@ -139,7 +139,7 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
         LookupOperation ownerLookup = LookupOperation.newLookup()
                 .from("users")
                 .localField("owner.userId")
-                .foreignField("_userId")
+                .foreignField("userId")
                 .as("owner");
         UnwindOperation ownerUnwind = Aggregation.unwind("owner");
 
