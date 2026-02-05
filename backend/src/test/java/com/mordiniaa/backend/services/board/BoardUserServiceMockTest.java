@@ -91,4 +91,15 @@ public class BoardUserServiceMockTest {
         verify(mongoUserService, times(1)).checkUserAvailability(userId);
         verify(boardAggregationRepository, times(1)).findAllBoardsForUserByUserIdAndTeamId(userId, teamId);
     }
+
+    @Test
+    @DisplayName("Get Board List For User Throws Exception")
+    void getBoardListForUserThrowsException() {
+
+        doThrow(RuntimeException.class)
+                .when(mongoUserService)
+                .checkUserAvailability(userId);
+
+        assertThrows(RuntimeException.class, () -> boardUserService.getBoardListForUser(userId, teamId));
+    }
 }
