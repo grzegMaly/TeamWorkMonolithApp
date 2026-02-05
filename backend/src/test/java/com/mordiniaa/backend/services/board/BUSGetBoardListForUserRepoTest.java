@@ -35,12 +35,6 @@ public class BUSGetBoardListForUserRepoTest {
     private BoardUserService boardUserService;
 
     @Autowired
-    private BoardMapper boardMapper;
-
-    @Autowired
-    private BoardAggregationRepositoryImpl boardAggregationRepository;
-
-    @Autowired
     private BoardRepository boardRepository;
 
     @Autowired
