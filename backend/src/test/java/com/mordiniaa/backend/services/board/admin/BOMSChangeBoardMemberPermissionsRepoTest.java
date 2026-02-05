@@ -10,6 +10,7 @@ import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.request.board.PermissionsRequest;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -135,6 +136,19 @@ public class BOMSChangeBoardMemberPermissionsRepoTest {
                         ownerId,
                         board.getId().toHexString(),
                         UUID.randomUUID(),
+                        new PermissionsRequest())
+        );
+    }
+
+    @Test
+    @DisplayName("Change User Permissions Board Not Found Test")
+    void changeUserPermissionBoardNotFoundTest() {
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerManagementService.changeBoardMemberPermissions(
+                        ownerId,
+                        ObjectId.get().toHexString(),
+                        memberId,
                         new PermissionsRequest())
         );
     }
