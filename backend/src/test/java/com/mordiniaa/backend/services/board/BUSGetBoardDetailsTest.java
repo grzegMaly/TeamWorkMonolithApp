@@ -211,6 +211,21 @@ public class BUSGetBoardDetailsTest {
                 () -> boardUserService.getBoardDetails(member1Id, board.getId().toHexString(), teamId));
     }
 
+    @Test
+    @DisplayName("Get Board Details User Not Board Member Test")
+    void getBoardDetailsUserNotBoardMemberTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation newUser = new UserRepresentation();
+        newUser.setUserId(userId);
+        newUser.setImageUrl("ImageUrl");
+        newUser.setUsername("Username");
+        userRepository.save(newUser);
+
+        assertThrows(RuntimeException.class,
+                () -> boardUserService.getBoardDetails(userId, board.getId().toHexString(), teamId));
+    }
+
     private BoardMember createBoardMember(UUID userId) {
         return new BoardMember(userId);
     }
