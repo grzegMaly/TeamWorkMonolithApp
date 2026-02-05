@@ -44,6 +44,26 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
     }
 
     @Override
+    public Optional<BoardMembersOnly> findBoardMembers(ObjectId boardId, UUID userId, UUID teamId) {
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                match(Criteria.where("_id").is(boardId)),
+                match(new Criteria().orOperator(
+                        Criteria.where("owner.userId").is(userId),
+                        Criteria.where("members.userId").is(userId)
+                )),
+                match(Criteria.where("teamId").is(teamId)),
+                project("owner", "members", "boardName", "createdAt", "updatedAt")
+        );
+
+        return mongoTemplate
+                .aggregate(aggregation, "boards", BoardMembersOnly.class)
+                .getMappedResults()
+                .stream()
+                .findFirst();
+    }
+
+    @Override
     public Optional<BoardMembersTasksOnly> findBoardForTaskWithCategory(ObjectId boardId, UUID userId, ObjectId taskId) {
 
         Aggregation aggr = Aggregation.newAggregation(

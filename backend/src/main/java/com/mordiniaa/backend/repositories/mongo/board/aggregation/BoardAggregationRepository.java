@@ -15,6 +15,8 @@ public interface BoardAggregationRepository {
 
     Optional<BoardMembersOnly> findBoardMembersForTask(ObjectId boardId, UUID userId, ObjectId taskId);
 
+    Optional<BoardMembersOnly> findBoardMembers(ObjectId boardId, UUID userId, UUID teamId);
+
     Optional<BoardMembersTasksOnly> findBoardForTaskWithCategory(ObjectId boardId, UUID userId, ObjectId taskId);
 
     Optional<BoardWithTaskCategories> findBoardForTaskWithCategories(ObjectId boardId, UUID userId, ObjectId taskId);
