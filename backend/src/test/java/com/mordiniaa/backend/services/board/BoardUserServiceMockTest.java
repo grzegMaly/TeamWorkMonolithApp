@@ -168,4 +168,23 @@ public class BoardUserServiceMockTest {
         verifyNoMoreInteractions(boardAggregationRepository);
         verifyNoMoreInteractions(boardMapper);
     }
+
+    @Test
+    @DisplayName("Get Board Details Throws Exception Test")
+    void getBoardDetailsThrowsExceptionTest3() {
+
+        doNothing()
+                .when(mongoUserService)
+                .checkUserAvailability(userId);
+
+        when(mongoIdUtils.getObjectId(anyString()))
+                .thenReturn(ObjectId.get());
+
+        doThrow(RuntimeException.class)
+                .when(boardAggregationRepository)
+                .findBoardWithTasksByUserIdAndBoardIdAndTeamId(eq(userId), any(ObjectId.class), eq(teamId));
+
+        assertThrows(RuntimeException.class, () -> boardUserService.getBoardDetails(userId, "", teamId));
+        verifyNoMoreInteractions(boardMapper);
+    }
 }
