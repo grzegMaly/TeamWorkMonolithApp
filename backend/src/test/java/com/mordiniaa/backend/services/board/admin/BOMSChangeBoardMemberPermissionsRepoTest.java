@@ -125,4 +125,17 @@ public class BOMSChangeBoardMemberPermissionsRepoTest {
                         new PermissionsRequest())
         );
     }
+
+    @Test
+    @DisplayName("Change User Permissions User Not Found Test")
+    void changeUserPermissionUserNotFoundTest() {
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerManagementService.changeBoardMemberPermissions(
+                        ownerId,
+                        board.getId().toHexString(),
+                        UUID.randomUUID(),
+                        new PermissionsRequest())
+        );
+    }
 }
