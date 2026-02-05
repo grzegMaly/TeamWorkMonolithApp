@@ -110,4 +110,19 @@ public class BOMSChangeBoardMemberPermissionsRepoTest {
         assertTrue(permissionsRequest.getTaskPermissions().containsAll(updatedMember.getTaskPermissions()));
         assertTrue(permissionsRequest.getBoardPermissions().containsAll(updatedMember.getBoardPermissions()));
     }
+
+    @Test
+    @DisplayName("Change User Permissions User Deleted Test")
+    void changeUserPermissionUserDeletedTest() {
+
+        memberUser.setDeleted(true);
+        userRepository.save(memberUser);
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerManagementService.changeBoardMemberPermissions(
+                        ownerId,
+                        board.getId().toHexString(),
+                        memberId,
+                        new PermissionsRequest())
+        );
+    }
 }
