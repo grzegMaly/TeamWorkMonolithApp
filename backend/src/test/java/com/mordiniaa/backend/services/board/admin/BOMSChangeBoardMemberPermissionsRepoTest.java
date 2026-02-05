@@ -81,4 +81,33 @@ public class BOMSChangeBoardMemberPermissionsRepoTest {
         userRepository.deleteAll();
         boardRepository.deleteAll();
     }
+
+    @Test
+    @DisplayName("Change Board Member Permissions Valid Test")
+    void changeBoardMemberPermissionsValidTest() {
+
+        PermissionsRequest permissionsRequest = new PermissionsRequest();
+        permissionsRequest.setCategoryPermissions(Set.of(CategoryPermissions.values()));
+        permissionsRequest.setTaskPermissions(Set.of(TaskPermission.values()));
+        permissionsRequest.setCommentPermissions(Set.of(CommentPermission.values()));
+        permissionsRequest.setBoardPermissions(Set.of(BoardPermission.values()));
+
+        assertDoesNotThrow(() -> boardOwnerManagementService.changeBoardMemberPermissions(
+                ownerId,
+                board.getId().toHexString(),
+                memberId,
+                permissionsRequest
+        ));
+
+        Board updatedBoard = boardRepository.findById(board.getId())
+                .orElseThrow(RuntimeException::new);
+
+        BoardMember updatedMember = updatedBoard.getMembers().stream().filter(bm -> bm.getUserId().equals(memberId))
+                .findFirst().orElseThrow();
+
+        assertTrue(permissionsRequest.getCategoryPermissions().containsAll(updatedMember.getCategoryPermissions()));
+        assertTrue(permissionsRequest.getCommentPermissions().containsAll(updatedMember.getCommentPermissions()));
+        assertTrue(permissionsRequest.getTaskPermissions().containsAll(updatedMember.getTaskPermissions()));
+        assertTrue(permissionsRequest.getBoardPermissions().containsAll(updatedMember.getBoardPermissions()));
+    }
 }
