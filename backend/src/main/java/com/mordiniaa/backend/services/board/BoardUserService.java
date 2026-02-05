@@ -22,9 +22,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BoardUserService {
 
-    private final UserService userService;
     private final MongoUserService mongoUserService;
-    private final BoardRepository boardRepository;
     private final BoardAggregationRepositoryImpl boardAggregationRepositoryImpl;
     private final BoardMapper boardMapper;
     private final MongoIdUtils mongoIdUtils;
