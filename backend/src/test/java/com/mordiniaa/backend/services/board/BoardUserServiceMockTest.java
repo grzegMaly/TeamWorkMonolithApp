@@ -151,4 +151,21 @@ public class BoardUserServiceMockTest {
         verifyNoMoreInteractions(boardAggregationRepository);
         verifyNoMoreInteractions(boardMapper);
     }
+
+    @Test
+    @DisplayName("Get Board Details Throws Exception Test")
+    void getBoardDetailsThrowsExceptionTest2() {
+
+        doNothing()
+                .when(mongoUserService)
+                .checkUserAvailability(userId);
+
+        doThrow(RuntimeException.class)
+                .when(mongoIdUtils)
+                .getObjectId(anyString());
+
+        assertThrows(RuntimeException.class, () -> boardUserService.getBoardDetails(userId, "", teamId));
+        verifyNoMoreInteractions(boardAggregationRepository);
+        verifyNoMoreInteractions(boardMapper);
+    }
 }
