@@ -13,6 +13,7 @@ import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -224,6 +225,15 @@ public class BUSGetBoardDetailsTest {
 
         assertThrows(RuntimeException.class,
                 () -> boardUserService.getBoardDetails(userId, board.getId().toHexString(), teamId));
+    }
+
+    @Test
+    @DisplayName("Get Board Details Board Not Found Test")
+    void getBoardDetailsBoardNotFoundTest() {
+
+        String boardId = ObjectId.get().toHexString();
+        assertThrows(RuntimeException.class,
+                () -> boardUserService.getBoardDetails(member1Id, boardId, teamId));
     }
 
     private BoardMember createBoardMember(UUID userId) {
