@@ -51,4 +51,39 @@ public class BOMSChangeBoardMemberPermissionsMockTest {
 
     @Mock
     private BoardRepository boardRepository;
+
+    @Test
+    @DisplayName("Change Board Member Permissions Test")
+    void changeBoardMemberPermissionsTest() {
+
+        UUID ownerId = UUID.randomUUID();
+        UUID memberId = UUID.randomUUID();
+
+        doNothing()
+                .when(mongoUserService)
+                .checkUserAvailability(ownerId, memberId);
+
+        ObjectId boardId = ObjectId.get();
+        when(mongoIdUtils.getObjectId(anyString()))
+                .thenReturn(boardId);
+
+        Board board = mock(Board.class);
+        when(boardAggregationRepository.findFullBoardByIdAndOwnerAndExistingMember(boardId, ownerId, memberId))
+                .thenReturn(Optional.of(board));
+
+        BoardMember member = new BoardMember(memberId);
+        when(boardUtils.getBoardMember(board, memberId))
+                .thenReturn(member);
+
+        when(boardRepository.save(board))
+                .thenReturn(null);
+
+        PermissionsRequest permissionsRequest = new PermissionsRequest();
+        permissionsRequest.setBoardPermissions(Set.of(BoardPermission.values()));
+        permissionsRequest.setCommentPermissions(Set.of(CommentPermission.values()));
+        permissionsRequest.setTaskPermissions(Set.of(TaskPermission.values()));
+        permissionsRequest.setCategoryPermissions(Set.of(CategoryPermissions.values()));
+
+        assertDoesNotThrow(() -> boardOwnerManagementService.changeBoardMemberPermissions(ownerId, boardId.toHexString(), memberId, permissionsRequest));
+    }
 }
