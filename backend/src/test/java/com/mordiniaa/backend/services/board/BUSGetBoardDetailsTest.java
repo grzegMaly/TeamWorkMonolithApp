@@ -201,6 +201,16 @@ public class BUSGetBoardDetailsTest {
                 () -> boardUserService.getBoardDetails(member1Id, board.getId().toHexString(), teamId));
     }
 
+    @Test
+    @DisplayName("Get Board Details User Deleted Test")
+    void getBoardDetailsUserDeletedTest() {
+
+        member1.setDeleted(true);
+        userRepository.save(member1);
+        assertThrows(RuntimeException.class,
+                () -> boardUserService.getBoardDetails(member1Id, board.getId().toHexString(), teamId));
+    }
+
     private BoardMember createBoardMember(UUID userId) {
         return new BoardMember(userId);
     }
