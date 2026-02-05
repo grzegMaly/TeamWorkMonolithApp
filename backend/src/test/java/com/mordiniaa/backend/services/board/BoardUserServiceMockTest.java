@@ -137,4 +137,18 @@ public class BoardUserServiceMockTest {
         verify(boardAggregationRepository, times(1))
                 .findBoardWithTasksByUserIdAndBoardIdAndTeamId(userId, boardId, teamId);
     }
+
+    @Test
+    @DisplayName("Get Board Details Throws Exception Test")
+    void getBoardDetailsThrowsExceptionTest1() {
+
+        doThrow(RuntimeException.class)
+                .when(mongoUserService)
+                .checkUserAvailability(userId);
+
+        assertThrows(RuntimeException.class, () -> boardUserService.getBoardDetails(userId, "", teamId));
+        verifyNoMoreInteractions(mongoIdUtils);
+        verifyNoMoreInteractions(boardAggregationRepository);
+        verifyNoMoreInteractions(boardMapper);
+    }
 }
