@@ -29,7 +29,6 @@ public class BoardOwnerManagementService {
     private final BoardRepository boardRepository;
     private final BoardAggregationRepository boardAggregationRepository;
     private final BoardUtils boardUtils;
-    private final TeamRepository teamRepository;
     private final MongoTemplate mongoTemplate;
 
     public void changeBoardMemberPermissions(UUID ownerId, String bId, UUID userId, PermissionsRequest permissionsRequest) {
