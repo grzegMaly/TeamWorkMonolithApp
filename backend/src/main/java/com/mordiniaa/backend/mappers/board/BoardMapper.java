@@ -57,7 +57,7 @@ public class BoardMapper {
                                         shortDto.setCreatedBy(task.getCreatedBy());
                                         shortDto.setPositionInCategory(task.getPositionInCategory());
                                         shortDto.setTitle(task.getTitle());
-                                        shortDto.setDeadline(task.getDeadline());
+                                        shortDto.setDescription(task.getDescription());
                                         shortDto.setTaskStatus(task.getTaskStatus());
                                         shortDto.setAssignedTo(task.getAssignedTo());
                                         shortDto.setDeadline(task.getDeadline());
