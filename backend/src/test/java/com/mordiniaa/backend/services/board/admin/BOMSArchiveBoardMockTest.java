@@ -1,7 +1,6 @@
 package com.mordiniaa.backend.services.board.admin;
 
 import com.mongodb.client.result.UpdateResult;
-import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
@@ -37,4 +36,24 @@ public class BOMSArchiveBoardMockTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Test
+    @DisplayName("Archive Board Test")
+    void archiveBoardTest() {
+
+        UUID ownerId = UUID.randomUUID();
+        doNothing()
+                .when(mongoUserService)
+                .checkUserAvailability(ownerId);
+
+        ObjectId boardId = ObjectId.get();
+        when(mongoIdUtils.getObjectId(anyString()))
+                .thenReturn(boardId);
+
+        UpdateResult result = UpdateResult.acknowledged(1, 1L, null);
+        when(mongoTemplate.updateFirst(any(Query.class), any(Update.class), any(Class.class)))
+                .thenReturn(result);
+
+        assertDoesNotThrow(() -> managementService.archiveBoard(ownerId, boardId.toHexString()));
+    }
 }
