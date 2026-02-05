@@ -183,4 +183,37 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                 .stream()
                 .findFirst();
     }
+
+    @Override
+    public Optional<Board> findFullBoardByIdAndOwnerAndExistingMember(ObjectId boardId, UUID ownerId, UUID userId) {
+        Aggregation aggregation = Aggregation.newAggregation(
+                match(
+                        new Criteria().andOperator(
+                                Criteria.where("_id").is(boardId),
+                                Criteria.where("owner.userId").is(ownerId),
+                                Criteria.where("members.userId").is(userId)
+                        )
+                )
+        );
+
+        return mongoTemplate.aggregate(aggregation, "boards", Board.class)
+                .getMappedResults()
+                .stream()
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Board> findFullBoardByIdAndOwner(ObjectId boardId, UUID ownerId) {
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                match(new Criteria().andOperator(
+                                Criteria.where("_id").is(boardId),
+                                Criteria.where("owner.userId").is(ownerId)
+                        )
+                )
+        );
+        return mongoTemplate.aggregate(aggregation, "boards", Board.class)
+                .getMappedResults()
+                .stream().findFirst();
+    }
 }

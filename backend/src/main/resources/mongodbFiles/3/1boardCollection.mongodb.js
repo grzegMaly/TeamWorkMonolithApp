@@ -169,6 +169,21 @@ db.runCommand({
                 },
                 updatedAt: {
                     bsonType: "date"
+                },
+                archived: {
+                    bsonType: "bool",
+                    title: "Board Archive Status",
+                    description: "Archived Status Is Required"
+                },
+                deleted: {
+                    bsonType: "bool",
+                    title: "Board Delete Status",
+                    description: "Deleted Status Is Required"
+                },
+                highestTaskCategoryPosition: {
+                    bsonType: "int",
+                    minimum: 0,
+                    description: "Position Cannot be less then 0"
                 }
             }
         }

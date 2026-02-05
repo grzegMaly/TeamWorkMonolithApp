@@ -38,4 +38,6 @@ public interface BoardRepository extends MongoRepository<Board, ObjectId> {
                     """
     })
     Optional<Board> getBoardByIdWithCategoryAndBoardMemberOrOwner(ObjectId objectId, String categoryName, UUID userId);
+
+    Optional<Board> findBoardByIdAndOwner_UserIdAndTeamId(ObjectId id, UUID ownerUserId, UUID teamId);
 }

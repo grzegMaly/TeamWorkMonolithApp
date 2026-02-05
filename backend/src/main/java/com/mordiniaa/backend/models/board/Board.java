@@ -14,8 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -40,11 +39,14 @@ public class Board implements BoardMembers, BoardTemplate {
     @Field("boardName")
     private String boardName;
 
+    @Field("highestTaskCategoryPosition")
+    private int nextPosition = 0;
+
     @Field("taskCategories")
-    private List<TaskCategory> taskCategories;
+    private List<TaskCategory> taskCategories = new ArrayList<>();
 
     @Field("members")
-    private List<BoardMember> members;
+    private List<BoardMember> members = new ArrayList<>();
 
     @CreatedDate
     @Field("createdAt")
@@ -53,5 +55,27 @@ public class Board implements BoardMembers, BoardTemplate {
     @LastModifiedDate
     @Field("updatedAt")
     private Instant updatedAt;
+
+    @Field("archived")
+    private boolean archived = false;
+
+    @Field("deleted")
+    private boolean deleted = false;
+
+    public void addMember(BoardMember member) {
+        if (!members.contains(member))
+            members.add(member);
+    }
+
+    public void removeMember(UUID userId) {
+        members.stream()
+                .filter(bm -> bm.getUserId().equals(userId))
+                .findFirst()
+                .ifPresent(member -> members.remove(member));
+    }
+
+    public void removeTaskCategory(TaskCategory category) {
+        taskCategories.remove(category);
+    }
 }
 
