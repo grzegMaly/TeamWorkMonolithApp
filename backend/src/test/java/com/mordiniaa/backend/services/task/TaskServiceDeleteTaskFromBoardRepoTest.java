@@ -1,11 +1,5 @@
 package com.mordiniaa.backend.services.task;
 
-import com.mordiniaa.backend.mappers.task.TaskMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCategoryChangeDtoMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskStatusChangeDtoMapper;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
@@ -19,13 +13,8 @@ import com.mordiniaa.backend.models.task.activity.TaskStatusChange;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
-import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
-import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
-import com.mordiniaa.backend.services.user.MongoUserService;
-import com.mordiniaa.backend.utils.BoardUtils;
-import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -192,10 +181,9 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
     }
 
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
-        TaskComment taskComment = new TaskComment();
+        TaskComment taskComment = new TaskComment(userId);
         taskComment.setCreatedAt(time);
         taskComment.setComment(comment);
-        taskComment.setUser(userId);
         return taskComment;
     }
 

@@ -259,10 +259,9 @@ public class TaskServiceGetTaskByIdRepoTest {
     }
 
     private TaskComment getTaskComment(UUID userId, String comment, Instant time) {
-        TaskComment taskComment = new TaskComment();
+        TaskComment taskComment = new TaskComment(userId);
         taskComment.setCreatedAt(time);
         taskComment.setComment(comment);
-        taskComment.setUser(userId);
         return taskComment;
     }
 
