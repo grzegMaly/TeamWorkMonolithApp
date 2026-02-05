@@ -52,18 +52,19 @@ public class BUSGetBoardListForUserRepoTest {
     private final UUID ownerId = UUID.randomUUID();
     private final UUID teamId = UUID.randomUUID();
 
+    UserRepresentation user;
+
     private Board board1;
     private Board board2;
-    @Autowired
-    private MongoUserService mongoUserService;
 
     @BeforeEach
     void setup() {
-        UserRepresentation user = new UserRepresentation();
+
+        user = new UserRepresentation();
         user.setUserId(ownerId);
         user.setUsername("Username");
         user.setImageUrl("https://random123.com");
-        userRepresentationRepository.save(user);
+        user = userRepresentationRepository.save(user);
 
         board1 = new Board();
         board1.setBoardName("Board 1");
@@ -103,6 +104,15 @@ public class BUSGetBoardListForUserRepoTest {
     @Test
     @DisplayName("Get Board List For User Invalid Test")
     void getBoardListForUserInvalidTest() {
+        assertThrows(RuntimeException.class, () -> boardUserService.getBoardListForUser(UUID.randomUUID(), teamId));
+    }
+
+    @Test
+    @DisplayName("Get Board List For User Invalid Test")
+    void getBoardListForUserInvalidTest2() {
+
+        user.setDeleted(true);
+        userRepresentationRepository.save(user);
         assertThrows(RuntimeException.class, () -> boardUserService.getBoardListForUser(UUID.randomUUID(), teamId));
     }
 }
