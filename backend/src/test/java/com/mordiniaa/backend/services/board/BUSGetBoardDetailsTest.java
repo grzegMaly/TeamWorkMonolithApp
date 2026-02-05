@@ -194,6 +194,13 @@ public class BUSGetBoardDetailsTest {
         assertEquals(task1.getDescription(), taskDto.getDescription());
     }
 
+    @Test
+    @DisplayName("Get Board Details User Without Permission Test")
+    void getBoardDetailsUserWithoutPermissionTest() {
+        assertThrows(RuntimeException.class,
+                () -> boardUserService.getBoardDetails(member1Id, board.getId().toHexString(), teamId));
+    }
+
     private BoardMember createBoardMember(UUID userId) {
         return new BoardMember(userId);
     }
