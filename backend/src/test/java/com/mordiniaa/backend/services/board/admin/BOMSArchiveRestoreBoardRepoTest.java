@@ -35,7 +35,6 @@ public class BOMSArchiveRestoreBoardRepoTest {
     private final UUID teamId = UUID.randomUUID();
 
     private UserRepresentation user;
-    private BoardMember ownerMember;
 
     private Board board;
 
@@ -48,7 +47,7 @@ public class BOMSArchiveRestoreBoardRepoTest {
         user.setImageUrl("imageUrl");
         user = userRepository.save(user);
 
-        ownerMember = new BoardMember(ownerId);
+        BoardMember ownerMember = new BoardMember(ownerId);
         board = new Board();
         board.setBoardName("BoardName");
         board.setTeamId(teamId);
@@ -129,5 +128,18 @@ public class BOMSArchiveRestoreBoardRepoTest {
         newUser.setImageUrl("imageUrl");
         userRepository.save(newUser);
         assertThrows(RuntimeException.class, () -> managementService.archiveBoard(userId, board.getId().toHexString()));
+    }
+
+    @Test
+    @DisplayName("Restore Board Valid Test")
+    void restoreBoardValidTest() {
+
+        board.setArchived(true);
+        boardRepository.save(board);
+        assertDoesNotThrow(() -> managementService.restoreBoard(ownerId, board.getId().toHexString()));
+        Board updatedBoard = boardRepository.findById(board.getId())
+                .orElseThrow();
+
+        assertFalse(updatedBoard.isArchived());
     }
 }
