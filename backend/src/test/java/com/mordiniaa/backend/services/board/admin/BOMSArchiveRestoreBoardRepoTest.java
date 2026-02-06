@@ -186,4 +186,13 @@ public class BOMSArchiveRestoreBoardRepoTest {
         boardRepository.save(board);
         assertThrows(RuntimeException.class, () -> managementService.restoreBoard(ownerId, board.getId().toHexString()));
     }
+
+    @Test
+    @DisplayName("Restore Board Board Deleted Test")
+    void restoreBoardBoardDeletedTest() {
+
+        board.setDeleted(true);
+        boardRepository.save(board);
+        assertThrows(RuntimeException.class, () -> managementService.restoreBoard(ownerId, board.getId().toHexString()));
+    }
 }
