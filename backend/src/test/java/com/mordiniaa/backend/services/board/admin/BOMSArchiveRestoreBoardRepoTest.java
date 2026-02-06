@@ -166,4 +166,15 @@ public class BOMSArchiveRestoreBoardRepoTest {
         UUID userId = UUID.randomUUID();
         assertThrows(RuntimeException.class, () -> managementService.restoreBoard(userId, board.getId().toHexString()));
     }
+
+    @Test
+    @DisplayName("Restore Board Board Not Found Test")
+    void restoreBoardBoardNotFoundTest() {
+
+        board.setArchived(true);
+        boardRepository.save(board);
+
+        String boardId = ObjectId.get().toHexString();
+        assertThrows(RuntimeException.class, () -> managementService.restoreBoard(ownerId, boardId));
+    }
 }
