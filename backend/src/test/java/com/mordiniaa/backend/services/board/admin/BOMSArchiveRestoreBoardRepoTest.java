@@ -108,4 +108,13 @@ public class BOMSArchiveRestoreBoardRepoTest {
         boardRepository.save(board);
         assertThrows(RuntimeException.class, () -> managementService.archiveBoard(ownerId, board.getId().toHexString()));
     }
+
+    @Test
+    @DisplayName("Archive Board Board Deleted Test")
+    void archiveBoardBoardDeletedTest() {
+
+        board.setDeleted(true);
+        boardRepository.save(board);
+        assertThrows(RuntimeException.class, () -> managementService.archiveBoard(ownerId, board.getId().toHexString()));
+    }
 }
