@@ -177,4 +177,13 @@ public class BOMSArchiveRestoreBoardRepoTest {
         String boardId = ObjectId.get().toHexString();
         assertThrows(RuntimeException.class, () -> managementService.restoreBoard(ownerId, boardId));
     }
+
+    @Test
+    @DisplayName("Restore Board Board Already Restored Test")
+    void restoreBoardBoardAlreadyArchivedTest() {
+
+        board.setArchived(false);
+        boardRepository.save(board);
+        assertThrows(RuntimeException.class, () -> managementService.restoreBoard(ownerId, board.getId().toHexString()));
+    }
 }
