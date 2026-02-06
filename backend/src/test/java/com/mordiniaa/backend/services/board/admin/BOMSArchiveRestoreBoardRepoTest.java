@@ -15,8 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -72,5 +71,15 @@ public class BOMSArchiveRestoreBoardRepoTest {
                 .orElseThrow();
 
         assertTrue(updatedBoard.isArchived());
+    }
+
+    @Test
+    @DisplayName("Archive Board User Not Active Test")
+    void archiveBoardUserNotActiveTest() {
+
+        user.setDeleted(true);
+        userRepository.save(user);
+
+        assertThrows(RuntimeException.class, () -> managementService.archiveBoard(ownerId, board.getId().toHexString()));
     }
 }
