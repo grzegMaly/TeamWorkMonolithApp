@@ -5,6 +5,7 @@ import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -89,5 +90,13 @@ public class BOMSArchiveRestoreBoardRepoTest {
 
         UUID userId = UUID.randomUUID();
         assertThrows(RuntimeException.class, () -> managementService.archiveBoard(userId, board.getId().toHexString()));
+    }
+
+    @Test
+    @DisplayName("Archive Board Board Not Found Test")
+    void archiveBoardBoardNotFoundTest() {
+
+        String boardId = ObjectId.get().toHexString();
+        assertThrows(RuntimeException.class, () -> managementService.archiveBoard(ownerId, boardId));
     }
 }
