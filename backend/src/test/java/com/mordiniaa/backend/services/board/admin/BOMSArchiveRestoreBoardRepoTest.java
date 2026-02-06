@@ -117,4 +117,17 @@ public class BOMSArchiveRestoreBoardRepoTest {
         boardRepository.save(board);
         assertThrows(RuntimeException.class, () -> managementService.archiveBoard(ownerId, board.getId().toHexString()));
     }
+
+    @Test
+    @DisplayName("Archive Board User Not Board Owner Test")
+    void archiveBoardUserNotBoardOwnerTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation newUser = new UserRepresentation();
+        newUser.setUserId(userId);
+        newUser.setUsername("Username");
+        newUser.setImageUrl("imageUrl");
+        userRepository.save(newUser);
+        assertThrows(RuntimeException.class, () -> managementService.archiveBoard(userId, board.getId().toHexString()));
+    }
 }
