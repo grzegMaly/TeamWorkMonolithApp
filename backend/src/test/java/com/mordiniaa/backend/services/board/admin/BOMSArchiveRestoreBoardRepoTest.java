@@ -82,4 +82,12 @@ public class BOMSArchiveRestoreBoardRepoTest {
 
         assertThrows(RuntimeException.class, () -> managementService.archiveBoard(ownerId, board.getId().toHexString()));
     }
+
+    @Test
+    @DisplayName("Archive Board User Not Found Test")
+    void archiveBoardUserNotFoundTest() {
+
+        UUID userId = UUID.randomUUID();
+        assertThrows(RuntimeException.class, () -> managementService.archiveBoard(userId, board.getId().toHexString()));
+    }
 }
