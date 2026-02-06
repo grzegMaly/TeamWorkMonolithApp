@@ -195,4 +195,20 @@ public class BOMSArchiveRestoreBoardRepoTest {
         boardRepository.save(board);
         assertThrows(RuntimeException.class, () -> managementService.restoreBoard(ownerId, board.getId().toHexString()));
     }
+
+    @Test
+    @DisplayName("Restore Board User Not Board Owner Test")
+    void restoreBoardUserNotBoardOwnerTest() {
+
+        board.setArchived(true);
+        boardRepository.save(board);
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation newUser = new UserRepresentation();
+        newUser.setUserId(userId);
+        newUser.setUsername("Username");
+        newUser.setImageUrl("imageUrl");
+        userRepository.save(newUser);
+        assertThrows(RuntimeException.class, () -> managementService.restoreBoard(userId, board.getId().toHexString()));
+    }
 }
