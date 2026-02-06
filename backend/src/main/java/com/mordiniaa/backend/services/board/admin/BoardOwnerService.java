@@ -82,7 +82,6 @@ public class BoardOwnerService {
 
         BoardMember newMember = new BoardMember(userId);
         newMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
-        newMember.setCommentPermissions(Set.of(CommentPermission.COMMENT_TASK, CommentPermission.DELETE_OWN_COMMENT));
 
         board.addMember(newMember);
         boardRepository.save(board);
