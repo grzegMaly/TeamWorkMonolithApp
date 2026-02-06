@@ -62,4 +62,15 @@ public class BOMSArchiveRestoreBoardRepoTest {
         userRepository.deleteAll();
         boardRepository.deleteAll();
     }
+
+    @Test
+    @DisplayName("Archive Board Valid Test")
+    void archiveBoardValidTest() {
+
+        assertDoesNotThrow(() -> managementService.archiveBoard(ownerId, board.getId().toHexString()));
+        Board updatedBoard = boardRepository.findById(board.getId())
+                .orElseThrow();
+
+        assertTrue(updatedBoard.isArchived());
+    }
 }
