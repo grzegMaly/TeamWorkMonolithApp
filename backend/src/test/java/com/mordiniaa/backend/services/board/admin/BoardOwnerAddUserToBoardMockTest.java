@@ -46,4 +46,47 @@ public class BoardOwnerAddUserToBoardMockTest {
 
     @Mock
     private MongoIdUtils mongoIdUtils;
+
+    @Test
+    void addUserToBoard() {
+
+        UUID ownerId = UUID.randomUUID();
+        doNothing()
+                .when(mongoUserService)
+                .checkUserAvailability(eq(ownerId), any(UUID.class));
+
+        ObjectId boardId = ObjectId.get();
+        when(mongoIdUtils.getObjectId(anyString()))
+                .thenReturn(boardId);
+
+        Board board = mock(Board.class);
+        when(boardAggregationRepository.findFullBoardByIdAndOwner(boardId, ownerId))
+                .thenReturn(Optional.of(board));
+
+        UUID teamId = UUID.randomUUID();
+        when(board.getTeamId())
+                .thenReturn(teamId);
+
+        when(teamRepository.existsUserInTeam(eq(teamId), any(UUID.class)))
+                .thenReturn(true);
+
+        Board savedBoard = mock(Board.class);
+        when(boardRepository.save(board))
+                .thenReturn(savedBoard);
+
+        BoardFull boardFull = mock(BoardFull.class);
+        when(boardAggregationRepository.findBoardWithTasksByUserIdAndBoardIdAndTeamId(
+                        ownerId,
+                        boardId,
+                        teamId
+                )
+        ).thenReturn(Optional.of(boardFull));
+
+        BoardDetailsDto boardDetailsDto = mock(BoardDetailsDto.class);
+        when(boardMapper.toDetailedDto(boardFull))
+                .thenReturn(boardDetailsDto);
+
+        BoardDetailsDto result = boardOwnerService.addUserToBoard(ownerId, UUID.randomUUID(), boardId.toHexString());
+        assertSame(result, boardDetailsDto);
+    }
 }
