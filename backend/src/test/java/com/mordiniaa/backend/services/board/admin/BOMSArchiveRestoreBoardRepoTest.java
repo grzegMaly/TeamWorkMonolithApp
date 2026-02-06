@@ -142,4 +142,17 @@ public class BOMSArchiveRestoreBoardRepoTest {
 
         assertFalse(updatedBoard.isArchived());
     }
+
+    @Test
+    @DisplayName("Restore Board User Not Active Test")
+    void restoreBoardUserNotActiveTest() {
+
+        board.setArchived(true);
+        boardRepository.save(board);
+
+        user.setDeleted(true);
+        userRepository.save(user);
+
+        assertThrows(RuntimeException.class, () -> managementService.restoreBoard(ownerId, board.getId().toHexString()));
+    }
 }
