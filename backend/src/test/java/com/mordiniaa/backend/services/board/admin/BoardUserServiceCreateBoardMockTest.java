@@ -44,4 +44,45 @@ public class BoardUserServiceCreateBoardMockTest {
 
     @Mock
     private BoardAggregationRepositoryImpl boardAggregationRepository;
+
+    @Test
+    void createBoardTest() {
+
+        doNothing()
+                .when(mongoUserService)
+                .checkUserAvailability(any(UUID.class));
+
+        UUID userId = UUID.randomUUID();
+        UUID teamId = UUID.randomUUID();
+
+        when(teamRepository.existsTeamByTeamIdAndManager_UserId(teamId, userId))
+                .thenReturn(true);
+
+        ObjectId boardId = ObjectId.get();
+        Board board = new Board();
+        board.setId(boardId);
+
+        when(boardRepository.save(any(Board.class)))
+                .thenReturn(board);
+
+        BoardFull boardFull = mock(BoardFull.class);
+        when(boardAggregationRepository.findBoardWithTasksByUserIdAndBoardIdAndTeamId(
+                userId,
+                boardId,
+                teamId
+        )).thenReturn(Optional.of(boardFull));
+
+        BoardDetailsDto boardDetailsDto = mock(BoardDetailsDto.class);
+        when(boardMapper.toDetailedDto(boardFull))
+                .thenReturn(boardDetailsDto);
+
+        String boardName = "BoardName";
+        BoardCreationRequest boardCreationRequest = new BoardCreationRequest();
+        boardCreationRequest.setTeamId(teamId);
+        boardCreationRequest.setBoardName(boardName);
+
+        BoardDetailsDto result = boardOwnerService.createBoard(userId, boardCreationRequest);
+
+        assertSame(boardDetailsDto, result);
+    }
 }
