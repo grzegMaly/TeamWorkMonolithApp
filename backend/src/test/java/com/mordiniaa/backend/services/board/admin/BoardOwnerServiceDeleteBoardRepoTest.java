@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -128,6 +129,29 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
         assertThrows(RuntimeException.class,
                 () -> boardOwnerService.deleteBoard(
                         boardMember.getUserId(),
+                        board.getId().toHexString()
+                ));
+
+        board = boardRepository.findById(board.getId())
+                .orElseThrow();
+        assertFalse(board.isDeleted());
+        assertFalse(board.isArchived());
+    }
+
+    @Test
+    @DisplayName("Delete Board User Not Found Test")
+    void deleteBoardUserNotFoundTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation newUser = new UserRepresentation();
+        newUser.setUserId(userId);
+        newUser.setImageUrl("Image");
+        newUser.setUsername("Username");
+        userRepresentationRepository.save(newUser);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.deleteBoard(
+                        userId,
                         board.getId().toHexString()
                 ));
 
