@@ -75,7 +75,8 @@ public class Board implements BoardMembers, BoardTemplate {
     }
 
     public void removeTaskCategory(TaskCategory category) {
-        taskCategories.remove(category);
+        if (taskCategories.remove(category))
+            nextPosition--;
     }
 }
 
