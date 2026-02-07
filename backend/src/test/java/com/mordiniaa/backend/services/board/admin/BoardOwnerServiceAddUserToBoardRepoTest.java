@@ -168,4 +168,17 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         assertThrows(RuntimeException.class,
                 () -> boardOwnerService.addUserToBoard(ownerUser.getUserId(), userId, board.getId().toHexString()));
     }
+
+    @Test
+    @DisplayName("Add User To Board User Not Found Test")
+    void addUserToBoardUserNotFoundTest() {
+
+        UUID userId = UUID.randomUUID();
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.addUserToBoard(
+                        ownerUser.getUserId(),
+                        userId,
+                        board.getId().toHexString()
+                ));
+    }
 }
