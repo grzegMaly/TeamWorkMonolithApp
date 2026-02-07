@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.services.board.admin;
 
+import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.team.Team;
@@ -13,12 +14,13 @@ import com.mordiniaa.backend.repositories.mysql.RoleRepository;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.board.TaskCategoryRequest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -47,6 +49,8 @@ public class BOTCSRenameTaskCategoryRepoTest {
     private Board board;
 
     private Team team;
+
+    private String categoryName = "New Category";
 
     private UserRepresentation userRepresentation;
 
@@ -85,7 +89,7 @@ public class BOTCSRenameTaskCategoryRepoTest {
         board = boardRepository.save(board);
 
         TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
-        taskCategoryRequest.setNewCategoryName("New Category");
+        taskCategoryRequest.setNewCategoryName(categoryName);
         boardOwnerTaskCategoryService.createTaskCategory(owner.getUserId(), board.getId().toHexString(), taskCategoryRequest);
     }
 
@@ -95,5 +99,26 @@ public class BOTCSRenameTaskCategoryRepoTest {
         userRepository.deleteAll();
         userRepresentationRepository.deleteAll();
         boardRepository.deleteAll();
+    }
+
+    @Test
+    @Order(1)
+    @DisplayName("Rename Task Category Valid Test")
+    void renameTaskCategoryValidTest() {
+
+        TaskCategoryRequest renameRequest = new TaskCategoryRequest();
+        renameRequest.setNewCategoryName("New Name");
+        renameRequest.setExistingCategoryName(categoryName);
+
+        BoardDetailsDto boardDetailsDto = boardOwnerTaskCategoryService.renameTaskCategory(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                team.getTeamId(),
+                renameRequest
+        );
+
+        assertNotNull(boardDetailsDto);
+        assertEquals(1, boardDetailsDto.getTaskCategories().size());
+        assertEquals(renameRequest.getNewCategoryName(), boardDetailsDto.getTaskCategories().getFirst().getCategoryName());
     }
 }
