@@ -120,4 +120,20 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
         assertTrue(board.isDeleted());
         assertTrue(board.isArchived());
     }
+
+    @Test
+    @DisplayName("Delete Board User Not Owner Test")
+    void deleteBoardUserNotOwnerTest() {
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.deleteBoard(
+                        boardMember.getUserId(),
+                        board.getId().toHexString()
+                ));
+
+        board = boardRepository.findById(board.getId())
+                .orElseThrow();
+        assertFalse(board.isDeleted());
+        assertFalse(board.isArchived());
+    }
 }
