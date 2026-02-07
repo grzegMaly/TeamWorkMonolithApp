@@ -33,17 +33,19 @@ public class BoardOwnerServiceCreateBoardRepoTest {
 
     @Autowired
     private UserRepresentationRepository userRepresentationRepository;
+
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     private UserRepresentation ownerUser;
 
     private Team team;
-
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
 
     @BeforeEach
     void setup() {
