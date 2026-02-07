@@ -15,10 +15,7 @@ import com.mordiniaa.backend.repositories.mysql.RoleRepository;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.board.TaskCategoryRequest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -99,6 +96,7 @@ public class BOTCSCreateTaskCategoryRepoTest {
     }
 
     @Test
+    @Order(1)
     @DisplayName("Create Task Category Valid Test")
     void createTaskCategoryValidTest() {
 
@@ -146,5 +144,35 @@ public class BOTCSCreateTaskCategoryRepoTest {
         board = boardRepository.findById(board.getId())
                 .orElseThrow();
         assertEquals(2, board.getNextPosition());
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Create Task Category Category Already Exists Test")
+    void createTaskCategoryCategoryAlreadyExistsTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setNewCategoryName("New Category");
+
+        BoardDetailsDto boardDetailsDto = boardOwnerTaskCategoryService.createTaskCategory(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                taskCategoryRequest
+        );
+
+        assertNotNull(boardDetailsDto);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.createTaskCategory(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        taskCategoryRequest
+                ));
+
+        board = boardRepository.findById(board.getId())
+                .orElseThrow();
+
+        assertEquals(1, board.getNextPosition());
+        assertEquals(1, board.getTaskCategories().size());
     }
 }
