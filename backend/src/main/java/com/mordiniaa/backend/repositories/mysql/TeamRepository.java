@@ -12,6 +12,6 @@ import java.util.UUID;
 public interface TeamRepository extends JpaRepository<Team, UUID> {
     boolean existsTeamByTeamIdAndManager_UserId(UUID teamId, UUID managerUserId);
 
-    @Query("select count(u) > 0 from Team t join t.teamMembers u where t.teamId = :teamid and u.userId = :userId")
+    @Query("select count(u) > 0 from Team t join t.teamMembers u where t.teamId = :teamId and u.userId = :userId")
     boolean existsUserInTeam(UUID teamId, UUID userId);
 }
