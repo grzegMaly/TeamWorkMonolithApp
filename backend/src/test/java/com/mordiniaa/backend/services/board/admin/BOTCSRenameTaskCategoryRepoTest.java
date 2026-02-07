@@ -138,4 +138,21 @@ public class BOTCSRenameTaskCategoryRepoTest {
                         taskCategoryRequest
                 ));
     }
+
+    @Test
+    @Order(3)
+    @DisplayName("Rename Category Name Existing Category Empty Test")
+    void renameCategoryNameNewCategoryEmptyTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setNewCategoryName("New Name");
+        taskCategoryRequest.setExistingCategoryName("    ");
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.renameTaskCategory(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest
+                ));
+    }
 }
