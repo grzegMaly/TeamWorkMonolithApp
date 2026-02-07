@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
@@ -171,6 +173,30 @@ public class BOTCSRenameTaskCategoryRepoTest {
         assertThrows(RuntimeException.class,
                 () -> boardOwnerTaskCategoryService.renameTaskCategory(
                         owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest
+                ));
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Rename Task Category User Not Board Member Test")
+    void renameTaskCategoryUserNotBoardMemberTest() {
+
+        UserRepresentation newUser = new UserRepresentation();
+        userRepresentation.setUsername("New Name");
+        userRepresentation.setUserId(UUID.randomUUID());
+        userRepresentation.setImageUrl("IMAGE");
+        userRepresentationRepository.save(newUser);
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setNewCategoryName("New Name");
+        taskCategoryRequest.setExistingCategoryName(categoryName);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.renameTaskCategory(
+                        newUser.getUserId(),
                         board.getId().toHexString(),
                         team.getTeamId(),
                         taskCategoryRequest
