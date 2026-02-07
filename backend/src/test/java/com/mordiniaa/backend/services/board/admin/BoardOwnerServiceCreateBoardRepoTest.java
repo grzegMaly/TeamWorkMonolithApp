@@ -102,4 +102,31 @@ public class BoardOwnerServiceCreateBoardRepoTest {
         assertThrows(RuntimeException.class,
                 () -> boardOwnerService.createBoard(ownerUser.getUserId(), new BoardCreationRequest()));
     }
+
+    @Test
+    @DisplayName("Create Board User Not Board Manager Test")
+    void createBoardUserNotBoardManagerTest() {
+
+        BoardCreationRequest boardCreationRequest = new BoardCreationRequest();
+        boardCreationRequest.setBoardName("BoardName");
+        boardCreationRequest.setTeamId(team.getTeamId());
+
+        User newUser = new User();
+        newUser.setPassword("SuperSecret");
+        newUser.setRole(roleRepository.getReferenceById(1));
+        newUser.setUsername("Username");
+        newUser.setEmail("email@gmail.com");
+        newUser.setFirstName("FirstName");
+        newUser.setLastName("LastName");
+        userRepository.save(newUser);
+
+        UserRepresentation userRepresentation = new UserRepresentation();
+        userRepresentation.setUserId(newUser.getUserId());
+        userRepresentation.setImageUrl("ImageURL");
+        userRepresentation.setUsername(newUser.getUsername());
+        userRepresentationRepository.save(userRepresentation);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.createBoard(newUser.getUserId(), boardCreationRequest));
+    }
 }
