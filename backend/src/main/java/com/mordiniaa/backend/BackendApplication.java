@@ -8,8 +8,6 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication
-@EnableMongoAuditing(auditorAwareRef = "mongoAuditor")
-@EnableJpaAuditing(auditorAwareRef = "mysqlAuditor")
 @EnableJpaRepositories(basePackages = "com.mordiniaa.backend.repositories.mysql")
 @EnableMongoRepositories(basePackages = "com.mordiniaa.backend.repositories.mongo")
 public class BackendApplication {
