@@ -160,4 +160,20 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
         assertFalse(board.isDeleted());
         assertFalse(board.isArchived());
     }
+
+    @Test
+    @DisplayName("Delete Board Board Not Found Test")
+    void deleteBoardBoardNotFoundTest() {
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.deleteBoard(
+                        boardMember.getUserId(),
+                        ObjectId.get().toHexString()
+                ));
+
+        board = boardRepository.findById(board.getId())
+                .orElseThrow();
+        assertFalse(board.isDeleted());
+        assertFalse(board.isArchived());
+    }
 }
