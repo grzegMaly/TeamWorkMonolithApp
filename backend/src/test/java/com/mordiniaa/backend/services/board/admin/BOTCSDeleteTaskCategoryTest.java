@@ -35,6 +35,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -243,6 +244,28 @@ public class BOTCSDeleteTaskCategoryTest {
         assertThrows(RuntimeException.class,
                 () -> boardOwnerTaskCategoryService.deleteTaskCategory(
                         owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest
+                ));
+    }
+
+    @Test
+    @DisplayName("Delete Task Category User Not Board Owner Test")
+    void deleteTaskCategoryUserNotBoardOwnerTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName(categoryName2);
+
+        UserRepresentation user = new UserRepresentation();
+        user.setUserId(UUID.randomUUID());
+        user.setImageUrl("IMAGE");
+        user.setUsername("User");
+        userRepresentationRepository.save(user);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.deleteTaskCategory(
+                        user.getUserId(),
                         board.getId().toHexString(),
                         team.getTeamId(),
                         taskCategoryRequest
