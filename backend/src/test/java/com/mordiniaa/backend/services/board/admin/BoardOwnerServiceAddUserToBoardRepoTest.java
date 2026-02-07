@@ -95,4 +95,41 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         teamRepository.deleteAll();
         userRepository.deleteAll();
     }
+
+    @Test
+    @DisplayName("Add User To Board Test")
+    void addUserToBoardTest() {
+
+        User newUser = new User();
+        newUser.setRole(roleRepository.getReferenceById(1));
+        newUser.setUsername("Username2");
+        newUser.setPassword("SuperSecretPassword");
+        newUser.setFirstName("First");
+        newUser.setLastName("Last");
+        newUser.setEmail("emailEmail@gmail.com");
+        newUser = userRepository.save(newUser);
+
+        team.getTeamMembers().add(newUser);
+        teamRepository.save(team);
+
+        UserRepresentation userRepresentation = new UserRepresentation();
+        userRepresentation.setUsername(newUser.getUsername());
+        userRepresentation.setUserId(newUser.getUserId());
+        userRepresentation.setImageUrl("Image2");
+        userRepresentationRepository.save(userRepresentation);
+
+        BoardDetailsDto boardDetailsDto = boardOwnerService.addUserToBoard(
+                ownerUser.getUserId(),
+                userRepresentation.getUserId(),
+                board.getId().toHexString()
+        );
+
+        assertNotNull(boardDetailsDto);
+        assertFalse(boardDetailsDto.getMembers().isEmpty());
+
+        MongoUserDto userDto = boardDetailsDto.getMembers().stream().filter(bm -> bm.getUserId().equals(userRepresentation.getUserId()))
+                .findFirst().orElseThrow();
+        assertEquals(userRepresentation.getImageUrl(), userDto.getImageUrl());
+        assertEquals(userRepresentation.getUsername(), userDto.getUsername());
+    }
 }
