@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -191,6 +192,28 @@ public class BOTCSCreateTaskCategoryRepoTest {
         assertThrows(RuntimeException.class,
                 () -> boardOwnerTaskCategoryService.createTaskCategory(
                         owner.getUserId(),
+                        board.getId().toHexString(),
+                        taskCategoryRequest
+                ));
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Create Task Category User Not Board Owner Test")
+    void createTaskCategoryUserNotBoardOwnerTest() {
+
+        UserRepresentation newUser = new UserRepresentation();
+        newUser.setUserId(UUID.randomUUID());
+        newUser.setImageUrl("IMAGE");
+        newUser.setUsername("Username2");
+        userRepresentationRepository.save(newUser);
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setNewCategoryName("New Category");
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.createTaskCategory(
+                        newUser.getUserId(),
                         board.getId().toHexString(),
                         taskCategoryRequest
                 ));
