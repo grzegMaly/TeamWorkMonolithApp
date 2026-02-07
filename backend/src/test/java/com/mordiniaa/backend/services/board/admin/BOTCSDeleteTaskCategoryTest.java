@@ -271,4 +271,20 @@ public class BOTCSDeleteTaskCategoryTest {
                         taskCategoryRequest
                 ));
     }
+
+    @Test
+    @DisplayName("Delete Task Category Not Found Test")
+    void deleteTaskCategoryNotFoundTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName("New Name");
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.deleteTaskCategory(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest
+                ));
+    }
 }
