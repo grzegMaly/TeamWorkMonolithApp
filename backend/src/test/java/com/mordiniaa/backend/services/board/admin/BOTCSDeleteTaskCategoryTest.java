@@ -232,4 +232,20 @@ public class BOTCSDeleteTaskCategoryTest {
                         taskCategoryRequest
                 ));
     }
+
+    @Test
+    @DisplayName("Delete Task Category Existing Category Empty")
+    void deleteTaskCategoryExistingCategoryEmpty() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName("      ");
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.deleteTaskCategory(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest
+                ));
+    }
 }
