@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -143,6 +144,25 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
         assertThrows(RuntimeException.class,
                 () -> boardOwnerService.removeUserFromBoard(
                         ownerUser.getUserId(),
+                        boardMember.getUserId(),
+                        board.getId().toHexString()
+                ));
+    }
+
+    @Test
+    @DisplayName("Remove User From Board User Not Board Owner Test")
+    void removeUserFromBoardUserNotBoardOwnerTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation newUser = new UserRepresentation();
+        newUser.setUsername("New Username");
+        newUser.setImageUrl("Image");
+        newUser.setUserId(userId);
+        userRepresentationRepository.save(newUser);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.removeUserFromBoard(
+                        userId,
                         boardMember.getUserId(),
                         board.getId().toHexString()
                 ));
