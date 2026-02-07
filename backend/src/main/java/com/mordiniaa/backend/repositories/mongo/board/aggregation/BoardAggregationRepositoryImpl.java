@@ -189,8 +189,9 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                 .first("members").as("members")
                 .first("teamId").as("teamId")
                 .first("boardName").as("boardName")
-                .push(ConditionalOperators.ifNull("taskCategories")
-                        .then(Collections.emptyList())
+                .push(
+                        ConditionalOperators.ifNull("taskCategories")
+                                .then(Collections.emptyList())
                 ).as("taskCategories")
                 .first("createdAt").as("createdAt")
                 .first("updatedAt").as("updatedAt");
