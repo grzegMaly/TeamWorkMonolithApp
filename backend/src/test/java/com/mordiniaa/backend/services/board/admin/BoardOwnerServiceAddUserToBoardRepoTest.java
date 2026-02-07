@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
@@ -131,5 +133,21 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
                 .findFirst().orElseThrow();
         assertEquals(userRepresentation.getImageUrl(), userDto.getImageUrl());
         assertEquals(userRepresentation.getUsername(), userDto.getUsername());
+    }
+
+    @Test
+    @DisplayName("Add User To Board User Inactive Test")
+    void addUserToBoardUserInactiveTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation newUser = new UserRepresentation();
+        newUser.setDeleted(true);
+        newUser.setUserId(userId);
+        newUser.setUsername("Username");
+        newUser.setImageUrl("ImageURL");
+        userRepresentationRepository.save(newUser);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.addUserToBoard(ownerUser.getUserId(), userId, board.getId().toHexString()));
     }
 }
