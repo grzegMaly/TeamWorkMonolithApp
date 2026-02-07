@@ -1,11 +1,14 @@
 package com.mordiniaa.backend.services.board.admin;
 
+import com.mordiniaa.backend.dto.board.BoardDetailsDto;
+import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.models.board.permissions.CategoryPermissions;
 import com.mordiniaa.backend.models.board.permissions.CommentPermission;
 import com.mordiniaa.backend.models.board.permissions.TaskPermission;
+import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.team.Team;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.models.user.mysql.AppRole;
@@ -22,6 +25,7 @@ import com.mordiniaa.backend.request.task.CreateTaskRequest;
 import com.mordiniaa.backend.services.task.TaskService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,11 +33,15 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
-public class BOTCSDeleteTaskCategory {
+public class BOTCSDeleteTaskCategoryTest {
 
     @Autowired
     private BoardOwnerTaskCategoryService boardOwnerTaskCategoryService;
@@ -170,5 +178,39 @@ public class BOTCSDeleteTaskCategory {
         userRepository.deleteAll();
         userRepresentationRepository.deleteAll();
         boardRepository.deleteAll();
+        taskRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("Delete Task Category Valid Test")
+    void deleteTaskCategoryValidTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName(categoryName1);
+
+        BoardDetailsDto dto = boardOwnerTaskCategoryService.deleteTaskCategory(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                team.getTeamId(),
+                taskCategoryRequest
+        );
+
+        assertNotNull(dto);
+        assertEquals(1, dto.getTaskCategories().size());
+
+        BoardDetailsDto.TaskCategoryDTO categoryDTO = dto.getTaskCategories().getFirst();
+        assertEquals(0, categoryDTO.getPosition());
+
+        Set<String> taskNames = dto.getTaskCategories().getFirst().getTasks()
+                .stream().map(TaskShortDto::getTitle).collect(Collectors.toSet());
+        assertTrue(taskNames.containsAll(Set.of("Title3", "Title4")));
+
+        List<Task> tasks = taskRepository.findAll();
+        assertEquals(2, tasks.size());
+
+        board = boardRepository.findById(board.getId())
+                .orElseThrow();
+
+        assertEquals(1, board.getNextPosition());
     }
 }
