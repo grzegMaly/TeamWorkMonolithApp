@@ -14,6 +14,7 @@ import com.mordiniaa.backend.repositories.mysql.RoleRepository;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.board.BoardCreationRequest;
+import net.bytebuddy.description.modifier.EnumerationState;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -222,5 +223,23 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
 
         assertThrows(RuntimeException.class,
                 () -> boardOwnerService.addUserToBoard(ownerUser.getUserId(), newUR.getUserId(), board.getId().toHexString()));
+    }
+
+    @Test
+    @DisplayName("Add User To Board User Not Board Owner Test")
+    void addUserToBoardUserNotBoardOwnerTest() {
+
+        UserRepresentation newUser = new UserRepresentation();
+        newUser.setUserId(UUID.randomUUID());
+        newUser.setUsername("New Username");
+        newUser.setImageUrl("ImageURL");
+        userRepresentationRepository.save(newUser);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.addUserToBoard(
+                        ownerUser.getUserId(),
+                        newUser.getUserId(),
+                        board.getId().toHexString()
+                ));
     }
 }
