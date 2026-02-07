@@ -3,6 +3,7 @@ package com.mordiniaa.backend.services.board.admin;
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
+import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.team.Team;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.models.user.mysql.AppRole;
@@ -20,7 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -240,5 +243,40 @@ public class BOTCSRenameTaskCategoryRepoTest {
                         team.getTeamId(),
                         taskCategoryRequest
                 ));
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Rename Task Category Name Already Exists Test")
+    void renameTaskCategoryNameAlreadyExistsTest() {
+
+        TaskCategoryRequest newNameRequest = new TaskCategoryRequest();
+        newNameRequest.setNewCategoryName("New Name");
+        BoardDetailsDto boardDetailsDto = boardOwnerTaskCategoryService.createTaskCategory(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                newNameRequest
+        );
+        assertNotNull(boardDetailsDto);
+        assertEquals(2, boardDetailsDto.getTaskCategories().size());
+
+        TaskCategoryRequest renameRequest = new TaskCategoryRequest();
+        renameRequest.setExistingCategoryName(categoryName);
+        renameRequest.setNewCategoryName(newNameRequest.getNewCategoryName());
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.renameTaskCategory(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        renameRequest
+                ));
+
+        board = boardRepository.findById(board.getId())
+                .orElseThrow();
+        Set<String> names = board.getTaskCategories().stream().map(TaskCategory::getCategoryName)
+                .collect(Collectors.toSet());
+
+        assertTrue(names.containsAll(Set.of(newNameRequest.getNewCategoryName(), renameRequest.getExistingCategoryName())));
     }
 }
