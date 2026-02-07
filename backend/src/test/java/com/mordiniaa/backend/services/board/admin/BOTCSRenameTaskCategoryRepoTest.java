@@ -155,4 +155,25 @@ public class BOTCSRenameTaskCategoryRepoTest {
                         taskCategoryRequest
                 ));
     }
+
+    @Test
+    @Order(4)
+    @DisplayName("Rename Category Name User Not Active Test")
+    void renameCategoryNameUserNotActiveTest() {
+
+        userRepresentation.setDeleted(true);
+        userRepresentationRepository.save(userRepresentation);
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setNewCategoryName("New Name");
+        taskCategoryRequest.setExistingCategoryName(categoryName);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.renameTaskCategory(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest
+                ));
+    }
 }
