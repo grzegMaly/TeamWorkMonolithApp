@@ -14,6 +14,7 @@ import com.mordiniaa.backend.repositories.mysql.RoleRepository;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.board.TaskCategoryRequest;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -218,6 +219,25 @@ public class BOTCSRenameTaskCategoryRepoTest {
                         owner.getUserId(),
                         board.getId().toHexString(),
                         teamId,
+                        taskCategoryRequest
+                ));
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Rename Task Category Board Not Found")
+    void renameTaskCategoryBoardNotFoundTest() {
+
+        ObjectId boardId = ObjectId.get();
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setNewCategoryName("New Name");
+        taskCategoryRequest.setExistingCategoryName(categoryName);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.renameTaskCategory(
+                        owner.getUserId(),
+                        boardId.toHexString(),
+                        team.getTeamId(),
                         taskCategoryRequest
                 ));
     }
