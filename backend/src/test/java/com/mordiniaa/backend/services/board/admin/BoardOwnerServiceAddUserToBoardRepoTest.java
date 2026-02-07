@@ -181,4 +181,23 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
                         board.getId().toHexString()
                 ));
     }
+
+    @Test
+    @DisplayName("Add User To Board User Not Board Member Test")
+    void addUserToBoardUserNotBoarMemberTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation newUser = new UserRepresentation();
+        newUser.setUsername("Username");
+        newUser.setImageUrl("ImageURL");
+        newUser.setUserId(userId);
+        userRepresentationRepository.save(newUser);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.addUserToBoard(
+                        ownerUser.getUserId(),
+                        userId,
+                        board.getId().toHexString()
+                ));
+    }
 }
