@@ -1,9 +1,6 @@
 package com.mordiniaa.backend.services.board.admin;
 
 import com.mongodb.client.result.UpdateResult;
-import com.mordiniaa.backend.mappers.board.BoardMapper;
-import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
-import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
@@ -33,4 +30,27 @@ public class BoardOwnerServiceDeleteBoardMockTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    @Test
+    void deleteBoardTest() {
+
+        UUID boardOwner = UUID.randomUUID();
+
+        doNothing()
+                .when(mongoUserService)
+                .checkUserAvailability(boardOwner);
+
+        ObjectId boardId = ObjectId.get();
+        when(mongoIdUtils.getObjectId(anyString()))
+                .thenReturn(boardId);
+
+        UpdateResult updateResult = UpdateResult.acknowledged(1, 1L, null);
+        when(mongoTemplate.updateFirst(
+                any(),
+                any(),
+                any(Class.class)
+        )).thenReturn(updateResult);
+
+        assertDoesNotThrow(() -> boardOwnerService.deleteBoard(boardOwner, boardId.toHexString()));
+    }
 }
