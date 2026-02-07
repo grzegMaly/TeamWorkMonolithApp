@@ -83,11 +83,13 @@ public class BoardOwnerTaskCategoryService {
         oldCatName = oldCatName.trim();
 
         Query query = Query.query(
-                Criteria.where("_id").is(boardId)
-                        .and("teamId").is(teamId)
-                        .and("owner.userId").is(boardOwner)
-                        .and("taskCategories.categoryName").is(oldCatName)
-                        .and("taskCategories.categoryName").ne(newCategoryName)
+                new Criteria().andOperator(
+                        Criteria.where("_id").is(boardId),
+                        Criteria.where("teamId").is(teamId),
+                        Criteria.where("owner.userId").is(boardOwner),
+                        Criteria.where("taskCategories.categoryName").is(oldCatName),
+                        Criteria.where("taskCategories.categoryName").ne(newCategoryName)
+                )
         );
 
         Update update = new Update()
