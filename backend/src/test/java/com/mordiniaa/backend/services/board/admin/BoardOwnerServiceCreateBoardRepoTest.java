@@ -17,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -93,5 +91,15 @@ public class BoardOwnerServiceCreateBoardRepoTest {
 
         assertEquals(boardCreationRequest.getBoardName(), boardDetailsDto.getBoardName());
         assertEquals(ownerUser.getUserId(), boardDetailsDto.getOwner().getUserId());
+    }
+
+    @Test
+    @DisplayName("Create Board User Inactive Test")
+    void createBoardUserInactiveTest() {
+
+        ownerUser.setDeleted(true);
+        userRepresentationRepository.save(ownerUser);
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.createBoard(ownerUser.getUserId(), new BoardCreationRequest()));
     }
 }
