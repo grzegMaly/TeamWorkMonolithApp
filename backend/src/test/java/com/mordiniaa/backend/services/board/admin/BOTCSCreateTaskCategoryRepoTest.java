@@ -3,7 +3,6 @@ package com.mordiniaa.backend.services.board.admin;
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
-import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.team.Team;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.models.user.mysql.AppRole;
