@@ -4,9 +4,13 @@ import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.dto.board.BoardShortDto;
 import com.mordiniaa.backend.mappers.board.BoardMapper;
 import com.mordiniaa.backend.models.board.Board;
+import com.mordiniaa.backend.models.board.BoardMember;
+import com.mordiniaa.backend.models.board.permissions.BoardPermission;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
+import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import com.mordiniaa.backend.services.user.MongoUserService;
+import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.DisplayName;
@@ -45,6 +49,9 @@ public class BoardUserServiceMockTest {
 
     @Mock
     private BoardMapper boardMapper;
+
+    @Mock
+    private BoardUtils boardUtils;
 
     private final UUID userId = UUID.randomUUID();
     private final UUID teamId = UUID.randomUUID();
@@ -123,6 +130,15 @@ public class BoardUserServiceMockTest {
         when(mongoIdUtils.getObjectId(anyString()))
                 .thenReturn(boardId);
 
+        BoardMembersOnly boardMembersOnly = mock(BoardMembersOnly.class);
+        when(boardAggregationRepository.findBoardMembers(boardId, userId, teamId))
+                .thenReturn(Optional.of(boardMembersOnly));
+
+        BoardMember boardMember = new BoardMember(userId);
+        boardMember.setBoardPermissions(Set.of(BoardPermission.VIEW_BOARD));
+        when(boardUtils.getBoardMember(boardMembersOnly, userId))
+                .thenReturn(boardMember);
+
         BoardFull board = mock(BoardFull.class);
         when(boardAggregationRepository.findBoardWithTasksByUserIdAndBoardIdAndTeamId(userId, boardId, teamId))
                 .thenReturn(Optional.of(board));
@@ -177,12 +193,12 @@ public class BoardUserServiceMockTest {
                 .when(mongoUserService)
                 .checkUserAvailability(userId);
 
+        ObjectId boardId = ObjectId.get();
         when(mongoIdUtils.getObjectId(anyString()))
-                .thenReturn(ObjectId.get());
+                .thenReturn(boardId);
 
-        doThrow(RuntimeException.class)
-                .when(boardAggregationRepository)
-                .findBoardWithTasksByUserIdAndBoardIdAndTeamId(eq(userId), any(ObjectId.class), eq(teamId));
+        when(boardAggregationRepository.findBoardMembers(boardId, userId, teamId))
+                .thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> boardUserService.getBoardDetails(userId, "", teamId));
         verifyNoMoreInteractions(boardMapper);
