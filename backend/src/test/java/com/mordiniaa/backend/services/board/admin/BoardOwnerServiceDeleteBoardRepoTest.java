@@ -14,12 +14,15 @@ import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.board.BoardCreationRequest;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -102,5 +105,19 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
 
         board = boardRepository.findById(boardId)
                 .orElseThrow();
+    }
+
+    @Test
+    @DisplayName("Delete Board Valid Test")
+    void deleteBoardValidTest() {
+        assertDoesNotThrow(() -> boardOwnerService.deleteBoard(
+                ownerUser.getUserId(),
+                board.getId().toHexString()
+        ));
+
+        board = boardRepository.findById(board.getId())
+                .orElseThrow();
+        assertTrue(board.isDeleted());
+        assertTrue(board.isArchived());
     }
 }
