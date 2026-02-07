@@ -200,4 +200,27 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
                         board.getId().toHexString()
                 ));
     }
+
+    @Test
+    @DisplayName("Add User To Board User Not Team Member Test")
+    void addUserToBoardUserNotTeamMemberTest() {
+
+        User user = new User();
+        user.setPassword("SuperSecretPassword");
+        user.setUsername("New Username");
+        user.setFirstName("LastName");
+        user.setLastName("FirstName"); // Hehe
+        user.setRole(roleRepository.getReferenceById(1));
+        user.setEmail("newEmail@gmail.com");
+        user = userRepository.save(user);
+
+        UserRepresentation newUR = new UserRepresentation();
+        newUR.setUserId(user.getUserId());
+        newUR.setImageUrl("ImageURL");
+        newUR.setUsername(user.getUsername());
+        userRepresentationRepository.save(newUR);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.addUserToBoard(ownerUser.getUserId(), newUR.getUserId(), board.getId().toHexString()));
+    }
 }
