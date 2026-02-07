@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -146,6 +147,23 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         newUser.setUsername("Username");
         newUser.setImageUrl("ImageURL");
         userRepresentationRepository.save(newUser);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerService.addUserToBoard(ownerUser.getUserId(), userId, board.getId().toHexString()));
+    }
+
+    @Test
+    @DisplayName("Add User To Board Owner Inactive Test")
+    void addUserToBoardOwnerInactiveTest() {
+
+        UUID userId = UUID.randomUUID();
+        UserRepresentation newUser = new UserRepresentation();
+        newUser.setUserId(userId);
+        newUser.setUsername("Username");
+        newUser.setImageUrl("ImageURL");
+
+        ownerUser.setDeleted(true);
+        userRepresentationRepository.saveAll(List.of(ownerUser, newUser));
 
         assertThrows(RuntimeException.class,
                 () -> boardOwnerService.addUserToBoard(ownerUser.getUserId(), userId, board.getId().toHexString()));
