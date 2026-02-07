@@ -19,8 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -120,5 +119,23 @@ public class BOTCSRenameTaskCategoryRepoTest {
         assertNotNull(boardDetailsDto);
         assertEquals(1, boardDetailsDto.getTaskCategories().size());
         assertEquals(renameRequest.getNewCategoryName(), boardDetailsDto.getTaskCategories().getFirst().getCategoryName());
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("Rename Task Category Same Name Test")
+    void renameTaskCategorySameNameTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setNewCategoryName(categoryName);
+        taskCategoryRequest.setExistingCategoryName(categoryName);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.renameTaskCategory(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest
+                ));
     }
 }
