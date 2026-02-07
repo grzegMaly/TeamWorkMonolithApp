@@ -213,4 +213,23 @@ public class BOTCSDeleteTaskCategoryTest {
 
         assertEquals(1, board.getNextPosition());
     }
+
+    @Test
+    @DisplayName("Delete Task Category User Not Active Test")
+    void deleteTaskCategoryUserNotActiveTest() {
+
+        userRepresentation.setDeleted(true);
+        userRepresentationRepository.save(userRepresentation);
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName(categoryName1);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.deleteTaskCategory(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest
+                ));
+    }
 }
