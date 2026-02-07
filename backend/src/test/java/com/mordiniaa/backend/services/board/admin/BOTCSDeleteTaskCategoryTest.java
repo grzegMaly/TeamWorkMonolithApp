@@ -287,4 +287,35 @@ public class BOTCSDeleteTaskCategoryTest {
                         taskCategoryRequest
                 ));
     }
+
+    @Test
+    @DisplayName("Delete Task Category Not Containing Tasks Test")
+    void deleteTaskCategoryNotContainingTasksTest() {
+
+        String taskName = "New Task Name";
+        TaskCategoryRequest creationRequest = new TaskCategoryRequest();
+        creationRequest.setNewCategoryName(taskName);
+
+        boardOwnerTaskCategoryService.createTaskCategory(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                creationRequest
+        );
+
+        TaskCategoryRequest deletionRequest = new TaskCategoryRequest();
+        deletionRequest.setExistingCategoryName(taskName);
+
+        BoardDetailsDto dto = boardOwnerTaskCategoryService.deleteTaskCategory(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                team.getTeamId(),
+                deletionRequest
+        );
+
+        Set<String> names = dto.getTaskCategories().stream()
+                .map(BoardDetailsDto.TaskCategoryDTO::getCategoryName)
+                .collect(Collectors.toSet());
+
+        assertFalse(names.contains(taskName));
+    }
 }
