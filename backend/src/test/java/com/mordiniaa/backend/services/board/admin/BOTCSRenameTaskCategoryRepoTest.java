@@ -202,4 +202,23 @@ public class BOTCSRenameTaskCategoryRepoTest {
                         taskCategoryRequest
                 ));
     }
+
+    @Test
+    @Order(6)
+    @DisplayName("Rename Task Category Team Not Found Test")
+    void renameTaskCategoryTeamNotFoundTest() {
+        UUID teamId = UUID.randomUUID();
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setNewCategoryName("New Name");
+        taskCategoryRequest.setExistingCategoryName(categoryName);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.renameTaskCategory(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        teamId,
+                        taskCategoryRequest
+                ));
+    }
 }
