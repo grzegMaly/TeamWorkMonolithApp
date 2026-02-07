@@ -176,7 +176,11 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                         .forField("$taskCategories.tasks")
                 )
                 .pipeline(Aggregation.match(
-                        Criteria.expr(() -> new Document("$in", List.of("$_id", "$$taskIds")))
+                        Criteria.expr(() -> new Document("$cond", List.of(
+                                new Document("$isArray", "$$taskIds"),
+                                new Document("$in", List.of("$_id", "$$taskIds")),
+                                false
+                        )))
                 ))
                 .as("taskCategories.tasks");
 
@@ -185,7 +189,10 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                 .first("members").as("members")
                 .first("teamId").as("teamId")
                 .first("boardName").as("boardName")
-                .push("taskCategories").as("taskCategories")
+                .push(
+                        ConditionalOperators.ifNull("taskCategories")
+                                .then(Collections.emptyList())
+                ).as("taskCategories")
                 .first("createdAt").as("createdAt")
                 .first("updatedAt").as("updatedAt");
 
@@ -194,7 +201,7 @@ public class BoardAggregationRepositoryImpl implements BoardAggregationRepositor
                 ownerLookup,
                 ownerUnwind,
                 membersLookup,
-                unwind("taskCategories"),
+                unwind("taskCategories", true),
                 tasksLookup,
                 group
         );
