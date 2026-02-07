@@ -52,6 +52,8 @@ public class BOTCSCreateTaskCategoryRepoTest {
 
     private Team team;
 
+    private UserRepresentation userRepresentation;
+
     @BeforeEach
     void setup() {
 
@@ -67,7 +69,7 @@ public class BOTCSCreateTaskCategoryRepoTest {
         user.setRole(roleRepository.getReferenceById(1));
         user = userRepository.save(user);
 
-        UserRepresentation userRepresentation = new UserRepresentation();
+        userRepresentation = new UserRepresentation();
         userRepresentation.setUserId(user.getUserId());
         userRepresentation.setUsername(user.getUsername());
         userRepresentation.setImageUrl("IMAGE");
@@ -174,5 +176,23 @@ public class BOTCSCreateTaskCategoryRepoTest {
 
         assertEquals(1, board.getNextPosition());
         assertEquals(1, board.getTaskCategories().size());
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Create Task Category User Not Active Test")
+    void createTaskCategoryUserNotActiveTest() {
+
+        userRepresentation.setDeleted(true);
+        userRepresentationRepository.save(userRepresentation);
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setNewCategoryName("New Category");
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.createTaskCategory(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        taskCategoryRequest
+                ));
     }
 }
