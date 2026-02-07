@@ -1,17 +1,13 @@
 package com.mordiniaa.backend.models.user.mysql;
 
+import com.mordiniaa.backend.models.BaseEntity;
 import com.mordiniaa.backend.models.team.Team;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -22,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity(name = "User")
 @Table(name = "users")
-public class User {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -56,20 +52,4 @@ public class User {
 
     @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
     private Set<Team> ownedTeams = new HashSet<>();
-
-    @CreatedBy
-    @Column(name = "created_by", updatable = false, nullable = false, length = 20)
-    private String createdBy;
-
-    @LastModifiedBy
-    @Column(name = "updated_by", length = 20)
-    private String updatedBy;
-
-    @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }
