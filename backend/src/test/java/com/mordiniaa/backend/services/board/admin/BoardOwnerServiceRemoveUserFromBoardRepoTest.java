@@ -118,4 +118,19 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
         teamRepository.deleteAll();
         userRepository.deleteAll();
     }
+
+    @Test
+    @DisplayName("Remove User From Board Valid Test")
+    void removeUserFromBoardValidTest() {
+
+        BoardDetailsDto dto = boardOwnerService.removeUserFromBoard(
+                ownerUser.getUserId(),
+                boardMember.getUserId(),
+                board.getId().toHexString()
+        );
+
+        assertNotNull(dto);
+        assertFalse(dto.getMembers().stream().map(MongoUserDto::getUserId).collect(Collectors.toSet())
+                .contains(boardMember.getUserId()));
+    }
 }
