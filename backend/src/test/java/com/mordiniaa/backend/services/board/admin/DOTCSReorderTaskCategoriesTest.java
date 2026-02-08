@@ -243,6 +243,23 @@ public class DOTCSReorderTaskCategoriesTest {
         assertEquals(2, taskCategoryDTO2.getPosition());
     }
 
+    @Test
+    @DisplayName("Same Position Invalid Test")
+    void samePositionInvalidTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName(categoryName2);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.reorderTaskCategories(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest,
+                        1
+                ));
+    }
+
     private BoardDetailsDto.TaskCategoryDTO getTaskCategory(BoardDetailsDto dto, String categoryName) {
         return dto.getTaskCategories().stream()
                 .filter(tc -> tc.getCategoryName().equals(categoryName))
