@@ -48,4 +48,8 @@ public class Team extends BaseEntity {
     public Team(String teamName) {
         this.teamName = teamName;
     }
+
+    public void removeManager() {
+        this.manager = null;
+    }
 }
