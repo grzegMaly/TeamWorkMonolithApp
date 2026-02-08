@@ -52,4 +52,8 @@ public class Team extends BaseEntity {
     public void removeManager() {
         this.manager = null;
     }
+
+    public void deactivate() {
+        this.active = false;
+    }
 }
