@@ -174,4 +174,42 @@ public class DOTCSReorderTaskCategoriesTest {
                 .findFirst().orElseThrow();
         assertEquals(2, dtoName2.getPosition());
     }
+
+    @Test
+    @DisplayName("From Middle Up Test")
+    void fromMiddleUpTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName(categoryName2);
+
+        BoardDetailsDto dto = boardOwnerTaskCategoryService.reorderTaskCategories(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                team.getTeamId(),
+                taskCategoryRequest,
+                3
+        );
+
+        assertNotNull(dto);
+
+        BoardDetailsDto.TaskCategoryDTO category2Dto = dto.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName2))
+                .findFirst().orElseThrow();
+        assertEquals(3, category2Dto.getPosition());
+
+        BoardDetailsDto.TaskCategoryDTO category1Dto = dto.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName1))
+                .findFirst().orElseThrow();
+        assertEquals(0, category1Dto.getPosition());
+
+        BoardDetailsDto.TaskCategoryDTO category3Dto = dto.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName3))
+                .findFirst().orElseThrow();
+        assertEquals(1, category3Dto.getPosition());
+
+        BoardDetailsDto.TaskCategoryDTO category4Dto = dto.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName4))
+                .findFirst().orElseThrow();
+        assertEquals(2, category4Dto.getPosition());
+    }
 }
