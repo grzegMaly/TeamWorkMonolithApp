@@ -353,6 +353,23 @@ public class DOTCSReorderTaskCategoriesTest {
                 ));
     }
 
+    @Test
+    @DisplayName("Rename Task Category User Not Found Test")
+    void renameTaskCategoryUserNotFoundTest() {
+
+        TaskCategoryRequest categoryRequest = new TaskCategoryRequest();
+        categoryRequest.setExistingCategoryName(categoryName2);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.reorderTaskCategories(
+                        UUID.randomUUID(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        categoryRequest,
+                        3
+                ));
+    }
+
     private BoardDetailsDto.TaskCategoryDTO getTaskCategory(BoardDetailsDto dto, String categoryName) {
         return dto.getTaskCategories().stream()
                 .filter(tc -> tc.getCategoryName().equals(categoryName))
