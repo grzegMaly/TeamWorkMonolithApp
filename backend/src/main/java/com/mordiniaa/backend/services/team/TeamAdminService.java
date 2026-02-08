@@ -74,9 +74,16 @@ public class TeamAdminService {
         teamRepository.save(team);
     }
 
+    @Transactional
     //    @PreAuthorize("hasRole('ADMIN')") TODO: In Future
-    public void archiveTeam() {
+    public void archiveTeam(UUID teamId) {
 
+        Team team = teamService.getTeam(teamId);
+        if (!team.isActive())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        team.deactivate();
+        teamRepository.save(team);
     }
 
     //    @PreAuthorize("hasRole('ADMIN')") TODO: In Future
