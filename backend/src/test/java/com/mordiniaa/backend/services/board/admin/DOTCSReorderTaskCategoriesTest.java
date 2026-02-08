@@ -212,4 +212,34 @@ public class DOTCSReorderTaskCategoriesTest {
                 .findFirst().orElseThrow();
         assertEquals(2, category4Dto.getPosition());
     }
+
+    @Test
+    @DisplayName("Switch Up Test")
+    void switchUpTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName(categoryName2);
+
+        BoardDetailsDto dto = boardOwnerTaskCategoryService.reorderTaskCategories(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                team.getTeamId(),
+                taskCategoryRequest,
+                2
+        );
+
+        assertNotNull(dto);
+
+        BoardDetailsDto.TaskCategoryDTO taskCategoryDTO2 = dto.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName2))
+                .findFirst().orElseThrow();
+
+        assertEquals(2, taskCategoryDTO2.getPosition());
+
+        BoardDetailsDto.TaskCategoryDTO taskCategoryDTO3 = dto.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName3))
+                .findFirst().orElseThrow();
+
+        assertEquals(1, taskCategoryDTO3.getPosition());
+    }
 }
