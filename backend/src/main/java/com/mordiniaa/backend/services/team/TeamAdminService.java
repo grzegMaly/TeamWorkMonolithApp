@@ -6,6 +6,7 @@ import com.mordiniaa.backend.models.user.mysql.User;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.team.TeamCreationRequest;
+import com.mordiniaa.backend.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ public class TeamAdminService {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
+    private final TeamService teamService;
 
     //Protected On Method Lvl For ADMIN
     @Transactional
@@ -39,14 +42,12 @@ public class TeamAdminService {
     //    @PreAuthorize("hasRole('ADMIN')") TODO: In Future
     public void assignManagerToTeam(UUID userId, UUID teamId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        User user = userService.getUser(userId);
 
         if (!user.getRole().getAppRole().equals(AppRole.ROLE_MANAGER))
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        Team team = teamRepository.findById(teamId)
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        Team team = teamService.getTeam(teamId);
 
         if (team.getManager() != null) {
             User manager = team.getManager();
@@ -61,9 +62,16 @@ public class TeamAdminService {
         teamRepository.save(team);
     }
 
+    @Transactional
     //    @PreAuthorize("hasRole('ADMIN')") TODO: In Future
-    public void removeManagerFromTeam() {
+    public void removeManagerFromTeam(UUID teamId) {
 
+        Team team = teamService.getTeam(teamId);
+        if (team.getManager() == null)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        team.removeManager();
+        teamRepository.save(team);
     }
 
     //    @PreAuthorize("hasRole('ADMIN')") TODO: In Future
