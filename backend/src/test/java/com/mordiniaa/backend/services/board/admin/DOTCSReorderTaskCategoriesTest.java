@@ -54,10 +54,10 @@ public class DOTCSReorderTaskCategoriesTest {
 
     private Team team;
 
-    private String categoryName1 = "New Category1";
-    private String categoryName2 = "New Category2";
-    private String categoryName3 = "New Category3";
-    private String categoryName4 = "New Category4";
+    private final String categoryName1 = "New Category1";
+    private final String categoryName2 = "New Category2";
+    private final String categoryName3 = "New Category3";
+    private final String categoryName4 = "New Category4";
 
     private UserRepresentation userRepresentation;
 
@@ -138,5 +138,40 @@ public class DOTCSReorderTaskCategoriesTest {
                 .filter(tc -> tc.getCategoryName().equals(categoryName2))
                 .findFirst().orElseThrow();
         assertEquals(0, dtoName2.getPosition());
+    }
+
+    @Test
+    @DisplayName("Move Category Down Valid Test")
+    void moveCategoryDownValidTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName(categoryName4);
+
+        BoardDetailsDto dto = boardOwnerTaskCategoryService.reorderTaskCategories(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                team.getTeamId(),
+                taskCategoryRequest,
+                0
+        );
+
+        assertNotNull(dto);
+
+        assertFalse(dto.getTaskCategories().isEmpty());
+        List<BoardDetailsDto.TaskCategoryDTO> categoryDTOS = dto.getTaskCategories();
+        BoardDetailsDto.TaskCategoryDTO dtoName4 = categoryDTOS.stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName4))
+                .findFirst().orElseThrow();
+        assertEquals(0, dtoName4.getPosition());
+
+        BoardDetailsDto.TaskCategoryDTO dtoName3 = categoryDTOS.stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName3))
+                .findFirst().orElseThrow();
+        assertEquals(3, dtoName3.getPosition());
+
+        BoardDetailsDto.TaskCategoryDTO dtoName2 = categoryDTOS.stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName2))
+                .findFirst().orElseThrow();
+        assertEquals(2, dtoName2.getPosition());
     }
 }
