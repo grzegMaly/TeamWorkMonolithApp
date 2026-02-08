@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.services.board.admin;
 
+import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.team.Team;
@@ -15,6 +16,7 @@ import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.board.TaskCategoryRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,9 +24,11 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @ActiveProfiles("test")
 @SpringBootTest
-public class DOTCSReorderTaskCategories {
+public class DOTCSReorderTaskCategoriesTest {
 
     @Autowired
     private BoardOwnerTaskCategoryService boardOwnerTaskCategoryService;
@@ -107,7 +111,32 @@ public class DOTCSReorderTaskCategories {
     }
 
     @Test
-    void start() {
+    @DisplayName("Move Category Up Valid Test")
+    void moveCategoryUpValidTest() {
 
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName(categoryName1);
+
+        BoardDetailsDto dto = boardOwnerTaskCategoryService.reorderTaskCategories(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                team.getTeamId(),
+                taskCategoryRequest,
+                3
+        );
+
+        assertNotNull(dto);
+
+        assertFalse(dto.getTaskCategories().isEmpty());
+        List<BoardDetailsDto.TaskCategoryDTO> categoryDTOS = dto.getTaskCategories();
+        BoardDetailsDto.TaskCategoryDTO dtoName1 = categoryDTOS.stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName1))
+                .findFirst().orElseThrow();
+        assertEquals(3, dtoName1.getPosition());
+
+        BoardDetailsDto.TaskCategoryDTO dtoName2 = categoryDTOS.stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName2))
+                .findFirst().orElseThrow();
+        assertEquals(0, dtoName2.getPosition());
     }
 }
