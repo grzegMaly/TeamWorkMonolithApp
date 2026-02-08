@@ -260,6 +260,41 @@ public class DOTCSReorderTaskCategoriesTest {
                 ));
     }
 
+    @Test
+    @DisplayName("Position Out Of Bounds")
+    void positionOutOfBounds() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName(categoryName2);
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.reorderTaskCategories(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest,
+                        999
+                ));
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.reorderTaskCategories(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest,
+                        4
+                ));
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.reorderTaskCategories(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest,
+                        -1
+                ));
+    }
+
     private BoardDetailsDto.TaskCategoryDTO getTaskCategory(BoardDetailsDto dto, String categoryName) {
         return dto.getTaskCategories().stream()
                 .filter(tc -> tc.getCategoryName().equals(categoryName))
