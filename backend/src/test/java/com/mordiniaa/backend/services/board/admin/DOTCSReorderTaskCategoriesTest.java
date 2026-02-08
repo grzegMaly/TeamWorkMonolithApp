@@ -295,6 +295,23 @@ public class DOTCSReorderTaskCategoriesTest {
                 ));
     }
 
+    @Test
+    @DisplayName("Rename Task Category Category Empty Test")
+    void renameTaskCategoryCategoryEmptyTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName("      ");
+
+        assertThrows(RuntimeException.class,
+                () -> boardOwnerTaskCategoryService.reorderTaskCategories(
+                        owner.getUserId(),
+                        board.getId().toHexString(),
+                        team.getTeamId(),
+                        taskCategoryRequest,
+                        2
+                ));
+    }
+
     private BoardDetailsDto.TaskCategoryDTO getTaskCategory(BoardDetailsDto dto, String categoryName) {
         return dto.getTaskCategories().stream()
                 .filter(tc -> tc.getCategoryName().equals(categoryName))
