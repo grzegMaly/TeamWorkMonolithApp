@@ -128,15 +128,11 @@ public class DOTCSReorderTaskCategoriesTest {
         assertNotNull(dto);
 
         assertFalse(dto.getTaskCategories().isEmpty());
-        List<BoardDetailsDto.TaskCategoryDTO> categoryDTOS = dto.getTaskCategories();
-        BoardDetailsDto.TaskCategoryDTO dtoName1 = categoryDTOS.stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName1))
-                .findFirst().orElseThrow();
+
+        BoardDetailsDto.TaskCategoryDTO dtoName1 = getTaskCategory(dto, categoryName1);
         assertEquals(3, dtoName1.getPosition());
 
-        BoardDetailsDto.TaskCategoryDTO dtoName2 = categoryDTOS.stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName2))
-                .findFirst().orElseThrow();
+        BoardDetailsDto.TaskCategoryDTO dtoName2 = getTaskCategory(dto, categoryName2);
         assertEquals(0, dtoName2.getPosition());
     }
 
@@ -158,20 +154,14 @@ public class DOTCSReorderTaskCategoriesTest {
         assertNotNull(dto);
 
         assertFalse(dto.getTaskCategories().isEmpty());
-        List<BoardDetailsDto.TaskCategoryDTO> categoryDTOS = dto.getTaskCategories();
-        BoardDetailsDto.TaskCategoryDTO dtoName4 = categoryDTOS.stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName4))
-                .findFirst().orElseThrow();
+
+        BoardDetailsDto.TaskCategoryDTO dtoName4 = getTaskCategory(dto, categoryName4);
         assertEquals(0, dtoName4.getPosition());
 
-        BoardDetailsDto.TaskCategoryDTO dtoName3 = categoryDTOS.stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName3))
-                .findFirst().orElseThrow();
+        BoardDetailsDto.TaskCategoryDTO dtoName3 = getTaskCategory(dto, categoryName3);
         assertEquals(3, dtoName3.getPosition());
 
-        BoardDetailsDto.TaskCategoryDTO dtoName2 = categoryDTOS.stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName2))
-                .findFirst().orElseThrow();
+        BoardDetailsDto.TaskCategoryDTO dtoName2 = getTaskCategory(dto, categoryName2);
         assertEquals(2, dtoName2.getPosition());
     }
 
@@ -192,24 +182,16 @@ public class DOTCSReorderTaskCategoriesTest {
 
         assertNotNull(dto);
 
-        BoardDetailsDto.TaskCategoryDTO category2Dto = dto.getTaskCategories().stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName2))
-                .findFirst().orElseThrow();
+        BoardDetailsDto.TaskCategoryDTO category2Dto = getTaskCategory(dto, categoryName2);
         assertEquals(3, category2Dto.getPosition());
 
-        BoardDetailsDto.TaskCategoryDTO category1Dto = dto.getTaskCategories().stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName1))
-                .findFirst().orElseThrow();
+        BoardDetailsDto.TaskCategoryDTO category1Dto = getTaskCategory(dto, categoryName1);
         assertEquals(0, category1Dto.getPosition());
 
-        BoardDetailsDto.TaskCategoryDTO category3Dto = dto.getTaskCategories().stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName3))
-                .findFirst().orElseThrow();
+        BoardDetailsDto.TaskCategoryDTO category3Dto = getTaskCategory(dto, categoryName3);
         assertEquals(1, category3Dto.getPosition());
 
-        BoardDetailsDto.TaskCategoryDTO category4Dto = dto.getTaskCategories().stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName4))
-                .findFirst().orElseThrow();
+        BoardDetailsDto.TaskCategoryDTO category4Dto = getTaskCategory(dto, categoryName4);
         assertEquals(2, category4Dto.getPosition());
     }
 
@@ -230,16 +212,40 @@ public class DOTCSReorderTaskCategoriesTest {
 
         assertNotNull(dto);
 
-        BoardDetailsDto.TaskCategoryDTO taskCategoryDTO2 = dto.getTaskCategories().stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName2))
-                .findFirst().orElseThrow();
-
+        BoardDetailsDto.TaskCategoryDTO taskCategoryDTO2 = getTaskCategory(dto, categoryName2);
         assertEquals(2, taskCategoryDTO2.getPosition());
 
-        BoardDetailsDto.TaskCategoryDTO taskCategoryDTO3 = dto.getTaskCategories().stream()
-                .filter(tc -> tc.getCategoryName().equals(categoryName3))
-                .findFirst().orElseThrow();
-
+        BoardDetailsDto.TaskCategoryDTO taskCategoryDTO3 = getTaskCategory(dto, categoryName3);
         assertEquals(1, taskCategoryDTO3.getPosition());
+    }
+
+    @Test
+    @DisplayName("Switch Down Test")
+    void switchDownTest() {
+
+        TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
+        taskCategoryRequest.setExistingCategoryName(categoryName3);
+
+        BoardDetailsDto dto = boardOwnerTaskCategoryService.reorderTaskCategories(
+                owner.getUserId(),
+                board.getId().toHexString(),
+                team.getTeamId(),
+                taskCategoryRequest,
+                1
+        );
+
+        assertNotNull(dto);
+
+        BoardDetailsDto.TaskCategoryDTO taskCategoryDTO3 = getTaskCategory(dto, categoryName3);
+        assertEquals(1, taskCategoryDTO3.getPosition());
+
+        BoardDetailsDto.TaskCategoryDTO taskCategoryDTO2 = getTaskCategory(dto, categoryName2);
+        assertEquals(2, taskCategoryDTO2.getPosition());
+    }
+
+    private BoardDetailsDto.TaskCategoryDTO getTaskCategory(BoardDetailsDto dto, String categoryName) {
+        return dto.getTaskCategories().stream()
+                .filter(tc -> tc.getCategoryName().equals(categoryName))
+                .findFirst().orElseThrow();
     }
 }
