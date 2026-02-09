@@ -56,4 +56,12 @@ public class Team extends BaseEntity {
     public void deactivate() {
         this.active = false;
     }
+
+    public void addMember(User user) {
+        this.teamMembers.add(user);
+    }
+
+    public void removeMember(User user) {
+        this.teamMembers.remove(user);
+    }
 }
