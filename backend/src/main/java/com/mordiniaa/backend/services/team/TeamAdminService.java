@@ -86,13 +86,39 @@ public class TeamAdminService {
         teamRepository.save(team);
     }
 
+    @Transactional
     //    @PreAuthorize("hasRole('ADMIN')") TODO: In Future
-    public void addToTeam() {
+    public void addToTeam(UUID userId, UUID teamId) {
 
+        Team team = teamService.getTeam(teamId);
+        User manager = team.getManager();
+        if (manager != null && manager.getUserId().equals(userId))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        boolean isMember = team.getTeamMembers().stream()
+                .anyMatch(user -> user.getUserId().equals(userId));
+        if (isMember)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        User user = userService.getUser(userId);
+        team.addMember(user);
+
+        teamRepository.save(team);
     }
 
+    @Transactional
     //    @PreAuthorize("hasRole('ADMIN')") TODO: In Future
-    public void removeFromTeam() {
+    public void removeFromTeam(UUID userId, UUID teamId) {
 
+        Team team = teamService.getTeam(teamId);
+        User manager = team.getManager();
+        if (manager != null && manager.getUserId().equals(userId))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        User user = team.getTeamMembers().stream().filter(member -> member.getUserId().equals(userId))
+                .findFirst().orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        team.removeMember(user);
+
+        teamRepository.save(team);
     }
 }
