@@ -4,7 +4,7 @@ import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.dto.board.BoardShortDto;
 import com.mordiniaa.backend.dto.task.TaskShortDto;
 import com.mordiniaa.backend.dto.user.UserDto;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
+import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.board.BoardTemplate;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,14 +18,14 @@ import java.util.concurrent.Executor;
 public class BoardMapper {
 
     private final Executor boardMapperExecutor;
-    private final UserRepresentationMapper userRepresentationMapper;
+    private final UserMapper userMapper;
 
     public BoardMapper(
             @Qualifier("boardMapperExecutor") Executor boardMapperExecutor,
-            UserRepresentationMapper userRepresentationMapper
+            UserMapper userMapper
     ) {
         this.boardMapperExecutor = boardMapperExecutor;
-        this.userRepresentationMapper = userRepresentationMapper;
+        this.userMapper = userMapper;
     }
 
     public BoardShortDto toShortDto(BoardTemplate board) {
@@ -81,7 +81,7 @@ public class BoardMapper {
                         }).toList()
                 , boardMapperExecutor);
 
-        UserDto owner = userRepresentationMapper.toDto(board.getOwner());
+        UserDto owner = userMapper.toDto(board.getOwner());
         dto.setOwner(owner);
 
         CompletableFuture.allOf(categoriesFuture, usersFuture).join();
