@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.models.user.mongodb;
 
+import com.mordiniaa.backend.models.user.DbUser;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Document("users")
 @TypeAlias("user")
-public class UserRepresentation {
+public class UserRepresentation implements DbUser {
 
     @Id
     private ObjectId id;
