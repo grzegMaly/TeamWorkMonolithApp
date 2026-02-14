@@ -3,7 +3,7 @@ package com.mordiniaa.backend.mappers.board;
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.dto.board.BoardShortDto;
 import com.mordiniaa.backend.dto.task.TaskShortDto;
-import com.mordiniaa.backend.dto.user.mongodb.MongoUserDto;
+import com.mordiniaa.backend.dto.user.UserDto;
 import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
 import com.mordiniaa.backend.models.board.BoardTemplate;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
@@ -69,10 +69,10 @@ public class BoardMapper {
                         }).toList()
                 , boardMapperExecutor);
 
-        CompletableFuture<List<MongoUserDto>> usersFuture = CompletableFuture
+        CompletableFuture<List<UserDto>> usersFuture = CompletableFuture
                 .supplyAsync(() -> board.getMembers().stream()
                         .map(member -> {
-                            MongoUserDto userDto = new MongoUserDto();
+                            UserDto userDto = new UserDto();
 
                             userDto.setUsername(member.getUsername());
                             userDto.setUserId(member.getUserId());
@@ -81,7 +81,7 @@ public class BoardMapper {
                         }).toList()
                 , boardMapperExecutor);
 
-        MongoUserDto owner = userRepresentationMapper.toDto(board.getOwner());
+        UserDto owner = userRepresentationMapper.toDto(board.getOwner());
         dto.setOwner(owner);
 
         CompletableFuture.allOf(categoriesFuture, usersFuture).join();
