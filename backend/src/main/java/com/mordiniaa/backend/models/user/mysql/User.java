@@ -2,6 +2,7 @@ package com.mordiniaa.backend.models.user.mysql;
 
 import com.mordiniaa.backend.models.BaseEntity;
 import com.mordiniaa.backend.models.team.Team;
+import com.mordiniaa.backend.models.user.DbUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity(name = "User")
 @Table(name = "users")
-public class User extends BaseEntity {
+public class User extends BaseEntity implements DbUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,6 +40,9 @@ public class User extends BaseEntity {
 
     @Column(name = "password", nullable = false, length = 60)
     private String password;
+
+    @Column(name = "imageUrl", nullable = false)
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "role_id", referencedColumnName = "role_id", nullable = false)
