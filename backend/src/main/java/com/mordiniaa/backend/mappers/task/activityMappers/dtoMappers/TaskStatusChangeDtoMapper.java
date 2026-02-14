@@ -1,7 +1,7 @@
 package com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers;
 
 import com.mordiniaa.backend.dto.task.activity.TaskStatusChangeDto;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
+import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.task.activity.TaskStatusChange;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import org.springframework.stereotype.Component;
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class TaskStatusChangeDtoMapper extends AbstractActivityDtoMapper<TaskStatusChange, TaskStatusChangeDto> {
 
-    public TaskStatusChangeDtoMapper(UserRepresentationMapper userRepresentationMapper) {
-        super(userRepresentationMapper);
+    public TaskStatusChangeDtoMapper(UserMapper userMapper) {
+        super(userMapper);
     }
 
     @Override
