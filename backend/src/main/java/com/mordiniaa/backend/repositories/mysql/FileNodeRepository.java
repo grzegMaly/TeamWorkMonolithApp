@@ -74,4 +74,13 @@ public interface FileNodeRepository extends JpaRepository<FileNode, UUID> {
             where fn.deleted = true and (fn.parentId is null or parent.deleted = false)
             """)
     List<FileNodeUserMeta> findFileNodesByDeletedTrue();
+
+    List<FileNode> findFileNodesByParentIdAndUserStorage_UserId(UUID parentId, UUID userStorageUserId);
+
+    @Query("""
+            select fn
+            from FileNode fn
+            where fn.id in :ids and fn.userStorage.userId = :userId and fn.nodeType = 'DIRECTORY' and fn.deleted = false
+            """)
+    List<FileNodeBreadcrumb> getFileNodeBreadcrumbs(Set<UUID> ids, UUID userId);
 }
