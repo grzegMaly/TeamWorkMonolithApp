@@ -40,4 +40,17 @@ public class CloudStorageServiceUtils {
                     .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
         }
     }
+
+    public Set<UUID> collectParentChain(FileNode parent, UUID userId) {
+        Set<UUID> ids = new HashSet<>();
+
+        FileNode current = parent;
+        while (current != null) {
+            ids.add(current.getId());
+            current = current.getParentId() == null
+                    ? null
+                    : fileNodeRepository.findDirByIdAndOwnerId(current.getParentId(), userId).orElse(null);
+        }
+        return ids;
+    }
 }
