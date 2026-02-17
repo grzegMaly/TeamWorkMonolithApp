@@ -27,4 +27,14 @@ public interface FileNodeRepository extends JpaRepository<FileNode, UUID> {
             where fn.deleted = false and fn.id = :id and fn.userStorage.userId = :userId
             """)
     Optional<FileNode> findNodeByIdAndUserId(UUID id, UUID userId);
+
+    @Query("""
+            select fn.id as id,
+            fn.parentId as parentId,
+            fn.storageKey storageKey,
+            fn.nodeType as nodeType
+            from FileNode fn
+            where fn.id = :parentId and fn.userStorage.userId = :userId and fn.deleted = false
+            """)
+    Optional<FileNodeBaseMeta> findParentMetaProjection(UUID parentId, UUID userId);
 }
