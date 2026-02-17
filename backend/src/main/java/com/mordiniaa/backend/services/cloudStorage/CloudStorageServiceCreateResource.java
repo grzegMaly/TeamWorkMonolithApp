@@ -45,4 +45,65 @@ public class CloudStorageServiceCreateResource {
         dirNode.setStorageKey(null);
         fileNodeRepository.save(dirNode);
     }
+
+    @Transactional
+    public void uploadFile(UUID userId, UUID parentId, MultipartFile file) {
+
+        if (file.isEmpty())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        if (file.getOriginalFilename() == null || cloudStorageServiceUtils.containsPathSeparator(file.getOriginalFilename()))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        UserStorage userStorage = cloudStorageServiceUtils.getOrCreateUserStorage(userId);
+
+        long fileSize = file.getSize();
+        long usedSize = fileSize + userStorage.getUsedBytes();
+
+        if (usedSize > userStorage.getQuotaBytes())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        FileNode parent = fileNodeService.getDirectory(parentId, userId);
+        if (parent != null && !parent.getNodeType().equals(NodeType.DIRECTORY))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        String storageKey = buildStorageKey();
+
+        try {
+            storageProvider.upload(
+                    storageKey,
+                    file.getInputStream(),
+                    fileSize
+            );
+        } catch (IOException ex) {
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        userStorage.setUsedBytes(usedSize);
+
+        FileNode fileNode = new FileNode(NodeType.FILE);
+        fileNode.setName(file.getOriginalFilename());
+        fileNode.setUserStorage(userStorage);
+        if (parent != null) {
+            fileNode.setParentId(parent.getId());
+            fileNode.setMaterializedPath(parent);
+        }
+        fileNode.setStorageKey(storageKey);
+        fileNode.setSize(fileSize);
+
+        Set<UUID> ids = cloudStorageServiceUtils.collectParentChain(parent, userId);
+
+        try {
+            fileNodeRepository.save(fileNode);
+            userStorageRepository.save(userStorage);
+            fileNodeRepository.increaseTreeSize(ids, userId, fileSize);
+        } catch (Exception ex) {
+            storageProvider.delete(storageKey);
+            throw ex;
+        }
+    }
+
+    private String buildStorageKey() {
+        return UUID.randomUUID().toString();
+    }
 }
