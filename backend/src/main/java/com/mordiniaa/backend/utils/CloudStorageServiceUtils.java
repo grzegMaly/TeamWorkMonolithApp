@@ -53,4 +53,9 @@ public class CloudStorageServiceUtils {
         }
         return ids;
     }
+
+    public FileNodeBaseMeta getBaseFileProjection(UUID parentId, UUID userId) {
+        return fileNodeRepository.findParentMetaProjection(parentId, userId)
+                .orElse(null);
+    }
 }
