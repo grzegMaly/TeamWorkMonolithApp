@@ -48,4 +48,44 @@ public class CloudStorageServiceDeleteResource {
             fileNodeRepository.decreaseTreeSize(ids, userId, resourceSize);
         }
     }
+
+    @Transactional
+    @Scheduled(cron = "0 0 */5 * * *")
+    public void fullDelete() {
+
+        List<FileNodeUserMeta> deletedNodes = fileNodeRepository
+                .findFileNodesByDeletedTrue();
+
+        List<String> keysToDelete = new ArrayList<>();
+        Set<UUID> idsToDelete = new HashSet<>();
+
+        for (FileNodeUserMeta meta : deletedNodes) {
+            idsToDelete.add(meta.getId());
+            if (!meta.getNodeType().equals(NodeType.DIRECTORY) && meta.getStorageKey() != null) {
+                keysToDelete.add(meta.getStorageKey());
+                continue;
+            }
+
+            Queue<UUID> idsQueue = new ArrayDeque<>();
+            idsQueue.add(meta.getId());
+
+            UUID userId = meta.getUserId();
+            while (!idsQueue.isEmpty()) {
+
+                UUID currentId = idsQueue.poll();
+                List<FileNodeBaseMeta> childrenMeta = fileNodeRepository.findNodesByParentIdAndUserId(currentId, userId);
+                for (FileNodeBaseMeta node : childrenMeta) {
+                    idsToDelete.add(node.getId());
+                    if (!node.getNodeType().equals(NodeType.DIRECTORY)) {
+                        keysToDelete.add(node.getStorageKey());
+                    } else {
+                        idsQueue.add(node.getId());
+                    }
+                }
+            }
+        }
+
+        keysToDelete.forEach(storageProvider::delete);
+        fileNodeRepository.deleteAllById(idsToDelete);
+    }
 }
