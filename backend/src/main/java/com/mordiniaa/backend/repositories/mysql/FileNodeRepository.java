@@ -20,4 +20,11 @@ public interface FileNodeRepository extends JpaRepository<FileNode, UUID> {
             where fn.deleted = false and fn.id = :id and fn.userStorage.userId = :userId and fn.nodeType = 'DIRECTORY' or fn.nodeType = 'ROOT'
             """)
     Optional<FileNode> findDirByIdAndOwnerId(UUID id, UUID userId);
+
+    @Query("""
+            select fn
+            from FileNode fn
+            where fn.deleted = false and fn.id = :id and fn.userStorage.userId = :userId
+            """)
+    Optional<FileNode> findNodeByIdAndUserId(UUID id, UUID userId);
 }
