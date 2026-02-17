@@ -55,4 +55,12 @@ public interface FileNodeRepository extends JpaRepository<FileNode, UUID> {
             where fn.id in :dirIds and fn.userStorage.userId = :userId and fn.deleted = false
             """)
     void increaseTreeSize(Set<UUID> dirIds, UUID userId, long delta);
+
+    @Modifying
+    @Query("""
+            update FileNode fn
+            set fn.subTreeSize = fn.subTreeSize - :delta
+            where fn.id in :dirIds and fn.userStorage.userId = :userId and fn.deleted = false
+            """)
+    void decreaseTreeSize(Set<UUID> dirIds, UUID userId, long delta);
 }
