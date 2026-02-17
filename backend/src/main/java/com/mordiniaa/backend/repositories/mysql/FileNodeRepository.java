@@ -63,4 +63,15 @@ public interface FileNodeRepository extends JpaRepository<FileNode, UUID> {
             where fn.id in :dirIds and fn.userStorage.userId = :userId and fn.deleted = false
             """)
     void decreaseTreeSize(Set<UUID> dirIds, UUID userId, long delta);
+
+    @Query("""
+            select fn.id as id,
+                   fn.storageKey as storageKey,
+                   fn.nodeType as nodeType,
+                   fn.userStorage.userId as userId
+            from FileNode fn
+            left join FileNode parent on fn.parentId = parent.id
+            where fn.deleted = true and (fn.parentId is null or parent.deleted = false)
+            """)
+    List<FileNodeUserMeta> findFileNodesByDeletedTrue();
 }
