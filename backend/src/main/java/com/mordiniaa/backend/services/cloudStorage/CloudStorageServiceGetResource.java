@@ -74,4 +74,68 @@ public class CloudStorageServiceGetResource {
                 .map(node -> fileNodeMapper.toDto(node, path))
                 .toList();
     }
+
+    public ResponseEntity<StreamingResponseBody> downloadResource(UUID userId, UUID resourceId) {
+
+        FileNode node = fileNodeRepository.findNodeByIdAndUserId(resourceId, userId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        if (node.getNodeType().equals(NodeType.ROOT))
+            throw new RuntimeException();
+
+        StreamingResponseBody streamingResponseBody;
+        if (node.getNodeType().equals(NodeType.FILE))
+            streamingResponseBody = handleFileDownload(node);
+        else
+            streamingResponseBody = handleDirDownload(node, userId);
+
+        String fileName = node.getNodeType().equals(NodeType.FILE)
+                ? node.getName()
+                : node.getName() + ".zip";
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + fileName + "\""
+                )
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(streamingResponseBody);
+    }
+
+    private StreamingResponseBody handleFileDownload(FileNode fileNode) {
+        String storageKey = fileNode.getStorageKey();
+        return outputStream -> {
+            try (InputStream in = storageProvider.downloadFile(storageKey)) {
+                in.transferTo(outputStream);
+            }
+        };
+    }
+
+    private StreamingResponseBody handleDirDownload(FileNode fileNode, UUID userId) {
+
+        Map<String, Object> tree = new HashMap<>();
+
+        fillTree(fileNode.getId(), tree, userId);
+
+        Map.Entry<String, Map<String, Object>> treeRoot = new AbstractMap.SimpleEntry<>(
+                fileNode.getName(),
+                tree
+        );
+
+        return storageProvider.downloadDir(treeRoot);
+    }
+
+    private void fillTree(UUID branchId, Map<String, Object> tree, UUID userId) {
+
+        List<FileNodeStorageKey> subNodes = fileNodeRepository.getSubNodeProjections(branchId, userId);
+        for (FileNodeStorageKey node : subNodes) {
+            if (node.getNodeType().equals(NodeType.FILE)) {
+                tree.put(node.getName(), node);
+            } else {
+                Map<String, Object> subTree = new HashMap<>();
+                fillTree(node.getId(), subTree, userId);
+                tree.put(node.getName(), subTree);
+            }
+        }
+    }
 }
