@@ -42,4 +42,36 @@ public class CloudStorageServiceGetResource {
                 .map(node -> fileNodeMapper.toDto(node, "/"))
                 .toList();
     }
+
+    public List<FileNodeDto> getResourceList(UUID userId, UUID dirId) {
+
+        FileNode requestedDir = fileNodeRepository.findDirByIdAndOwnerId(dirId, userId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        List<UUID> ids = Arrays.stream(requestedDir.getMaterializedPath().split("/"))
+                .filter(s -> !s.isBlank())
+                .map(UUID::fromString)
+                .toList();
+
+
+        Map<UUID, FileNodeBreadcrumb> breadcrumbs = fileNodeRepository.getFileNodeBreadcrumbs(new HashSet<>(ids), userId)
+                .stream()
+                .collect(Collectors.toMap(
+                        FileNodeBreadcrumb::getId,
+                        Function.identity()
+                ));
+
+        StringBuilder sb = new StringBuilder();
+        for (UUID id : ids) {
+            FileNodeBreadcrumb node = breadcrumbs.get(id);
+            if (node != null)
+                sb.append("/").append(node.getName());
+        }
+
+        String path = sb.toString();
+        return fileNodeRepository.findFileNodesByParentIdAndUserStorage_UserId(requestedDir.getId(), userId)
+                .stream()
+                .map(node -> fileNodeMapper.toDto(node, path))
+                .toList();
+    }
 }
