@@ -24,4 +24,20 @@ public class CloudStorageServiceUtils {
     public boolean containsPathSeparator(String filename) {
         return filename.contains("/") || filename.contains("\\");
     }
+
+    @Transactional
+    public UserStorage getOrCreateUserStorage(UUID userId) {
+        return userStorageRepository.findById(userId)
+                .orElseGet(() -> createNewStorageSafely(userId));
+    }
+
+    @Transactional
+    public UserStorage createNewStorageSafely(UUID userId) {
+        try {
+            return userStorageRepository.save(new UserStorage(userId));
+        } catch (DataIntegrityViolationException exception) {
+            return userStorageRepository.findById(userId)
+                    .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+        }
+    }
 }
