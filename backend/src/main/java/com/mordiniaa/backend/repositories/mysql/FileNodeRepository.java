@@ -83,4 +83,14 @@ public interface FileNodeRepository extends JpaRepository<FileNode, UUID> {
             where fn.id in :ids and fn.userStorage.userId = :userId and fn.nodeType = 'DIRECTORY' and fn.deleted = false
             """)
     List<FileNodeBreadcrumb> getFileNodeBreadcrumbs(Set<UUID> ids, UUID userId);
+
+    @Query("""
+            select fn.id as id,
+            fn.nodeType as nodeType,
+            fn.name as name,
+            fn.storageKey as storageKey
+            from FileNode fn
+            where fn.parentId = :nodeId and fn.deleted = false and fn.userStorage.userId = :userId and fn.nodeType != 'ROOT'
+            """)
+    List<FileNodeStorageKey> getSubNodeProjections(UUID nodeId, UUID userId);
 }
