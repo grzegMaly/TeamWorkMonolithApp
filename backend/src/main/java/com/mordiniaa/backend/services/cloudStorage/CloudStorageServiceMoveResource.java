@@ -61,4 +61,30 @@ public class CloudStorageServiceMoveResource {
         source.setMaterializedPath(target);
         fileNodeRepository.save(source);
     }
+
+    @Transactional
+    public void moveResourceDown(UUID from, UUID to, UUID userId) {
+
+        if (Objects.equals(from, to))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        FileNode source = fileNodeRepository.findNodeByIdAndUserId(from, userId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        FileNode target = fileNodeRepository.findDirByIdAndOwnerId(to, userId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        if (!Objects.equals(source.getParentId(), target.getParentId()))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        long sourceSize = source.getNodeType().equals(NodeType.DIRECTORY)
+                ? source.getSubTreeSize()
+                : source.getSize();
+
+        source.setParentId(target.getId());
+        source.setMaterializedPath(target);
+
+        fileNodeRepository.increaseTreeSize(Set.of(target.getId()), userId, sourceSize);
+        fileNodeRepository.save(source);
+    }
 }
