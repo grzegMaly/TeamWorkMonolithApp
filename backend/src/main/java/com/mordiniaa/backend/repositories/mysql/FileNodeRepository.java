@@ -47,4 +47,12 @@ public interface FileNodeRepository extends JpaRepository<FileNode, UUID> {
             where fn.parentId = :currentId and fn.userStorage.userId = :userId
             """)
     List<FileNodeBaseMeta> findNodesByParentIdAndUserId(UUID currentId, UUID userId);
+
+    @Modifying
+    @Query("""
+            update FileNode fn
+            set fn.subTreeSize = fn.subTreeSize + :delta
+            where fn.id in :dirIds and fn.userStorage.userId = :userId and fn.deleted = false
+            """)
+    void increaseTreeSize(Set<UUID> dirIds, UUID userId, long delta);
 }
