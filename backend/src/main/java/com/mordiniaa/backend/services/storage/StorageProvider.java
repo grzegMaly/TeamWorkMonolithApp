@@ -9,7 +9,9 @@ import java.util.Map;
 
 public interface StorageProvider {
 
-    void upload(String resourceName, String storageKey, InputStream stream, long size) throws IOException;
+    void upload(String resourceName, String storageKey, InputStream stream) throws IOException;
+
+    void uploadImage(String resourceName, String storageKey, String ext, int maxWidth, int maxHeight, InputStream stream) throws IOException;
 
     void delete(String resourceName, String storageKey);
 
