@@ -1,8 +1,8 @@
 package com.mordiniaa.backend.utils;
 
-import com.mordiniaa.backend.models.file.FileNode;
-import com.mordiniaa.backend.models.file.FileNodeBaseMeta;
-import com.mordiniaa.backend.models.file.UserStorage;
+import com.mordiniaa.backend.models.file.cloudStorage.FileNode;
+import com.mordiniaa.backend.models.file.cloudStorage.FileNodeBaseMeta;
+import com.mordiniaa.backend.models.file.cloudStorage.UserStorage;
 import com.mordiniaa.backend.repositories.mysql.FileNodeRepository;
 import com.mordiniaa.backend.repositories.mysql.UserStorageRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class CloudStorageServiceUtils {
 
     @Transactional
     public UserStorage getOrCreateUserStorage(UUID userId) {
-        return userStorageRepository.findById(userId)
+        return userStorageRepository.findUserStorageByUserId(userId)
                 .orElseGet(() -> createNewStorageSafely(userId));
     }
 
