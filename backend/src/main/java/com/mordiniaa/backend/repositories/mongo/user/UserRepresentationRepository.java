@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepresentationRepository extends MongoRepository<UserRepresentation, ObjectId> {
@@ -13,4 +14,6 @@ public interface UserRepresentationRepository extends MongoRepository<UserRepres
     boolean existsUserRepresentationByUserIdAndDeletedFalse(UUID userId);
 
     List<UserRepresentation> findAllByUserIdIn(Collection<UUID> userIds);
+
+    Optional<UserRepresentation> findByUserId(UUID userId);
 }
