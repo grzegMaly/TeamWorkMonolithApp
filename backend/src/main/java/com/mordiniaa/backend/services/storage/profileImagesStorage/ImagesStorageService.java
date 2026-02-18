@@ -47,7 +47,7 @@ public class ImagesStorageService {
 
     public ResponseEntity<StreamingResponseBody> getProfileImage(String key) {
 
-        if (key == null || key.equals(defaultImageKey))
+        if (defaultImageKey.equals(key))
             return defaultImage();
 
         ObjectId objectId = mongoIdUtils.getObjectId(key);
@@ -83,14 +83,24 @@ public class ImagesStorageService {
             imageMetadataRepository.deleteById(metadata.getId());
 
         String originalName = file.getOriginalFilename();
-        String ext = getFileExtension(mimetype);
-        String storedName = cloudStorageServiceUtils.buildStorageKey().concat(ext.isEmpty() ? "" : ".".concat(ext));
-        String imageKey = user.getImageKey();
+        String ext = switch (getFileExtension(mimetype)) {
+            case "jpeg", "jpg" -> "jpg";
+            default -> "png";
+        };
+        String storedName = cloudStorageServiceUtils.buildStorageKey().concat(".".concat(ext));
         String profileImagesPath = profileImages.getPath();
 
         try {
-            addImage(profileImagesPath, storedName, ext, profileImages.getProfileWidth(), profileImages.getProfileHeight(), file);
-            if (metadata != null && imageKey != null && !imageKey.equals("defaultProfileImage")) {
+            addImage(
+                    profileImagesPath,
+                    storedName,
+                    ext,
+                    profileImages.getProfileWidth(),
+                    profileImages.getProfileHeight(),
+                    file
+            );
+
+            if (metadata != null) {
                 storageProvider.delete(
                         profileImagesPath,
                         metadata.getStoredName()
@@ -135,7 +145,7 @@ public class ImagesStorageService {
                         storedName
                 );
             }
-            throw new RuntimeException(); //TODO: Change In Exceptions Section
+            throw new RuntimeException(e); //TODO: Change In Exceptions Section
         }
     }
 
@@ -170,7 +180,7 @@ public class ImagesStorageService {
 
         ClassPathResource resource = new ClassPathResource(defaultImagePath);
 
-        if (resource.exists())
+        if (!resource.exists())
             throw new RuntimeException("Default avatar not found in resources"); // TODO: Change In Exceptions Section
 
         StreamingResponseBody body = os -> {
