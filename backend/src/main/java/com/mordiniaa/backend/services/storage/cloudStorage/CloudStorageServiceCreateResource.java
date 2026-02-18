@@ -70,14 +70,13 @@ public class CloudStorageServiceCreateResource {
         if (parent != null && !parent.getNodeType().equals(NodeType.DIRECTORY))
             throw new RuntimeException(); // TODO: Change In Exceptions Section
 
-        String storageKey = buildStorageKey();
+        String storageKey = cloudStorageServiceUtils.buildStorageKey();
 
         try {
             storageProvider.upload(
                     storageProperties.getCloudStorage().getPath(),
                     storageKey,
-                    file.getInputStream(),
-                    fileSize
+                    file.getInputStream()
             );
         } catch (IOException ex) {
             throw new RuntimeException(); // TODO: Change In Exceptions Section
@@ -108,9 +107,5 @@ public class CloudStorageServiceCreateResource {
             );
             throw ex;
         }
-    }
-
-    private String buildStorageKey() {
-        return UUID.randomUUID().toString();
     }
 }
