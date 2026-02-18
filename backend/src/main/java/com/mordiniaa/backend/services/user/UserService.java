@@ -5,6 +5,7 @@ import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepositor
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class UserService {
                 .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
     }
 
-    public void addProfileImage() {
+    public void addProfileImage(UUID userId, MultipartFile file) {
 
     }
 
