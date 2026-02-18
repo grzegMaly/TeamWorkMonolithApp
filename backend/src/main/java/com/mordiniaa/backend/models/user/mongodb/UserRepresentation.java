@@ -30,8 +30,8 @@ public class UserRepresentation implements DbUser {
     @Field("username")
     private String username;
 
-    @Field("imageUrl")
-    private String imageUrl;
+    @Field("imageKey")
+    private String imageKey;
 
     @Field("deleted")
     private boolean deleted = false;

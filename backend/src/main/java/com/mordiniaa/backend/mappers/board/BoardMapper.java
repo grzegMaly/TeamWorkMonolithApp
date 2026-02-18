@@ -76,7 +76,7 @@ public class BoardMapper {
 
                             userDto.setUsername(member.getUsername());
                             userDto.setUserId(member.getUserId());
-                            userDto.setImageUrl(member.getImageUrl());
+                            userDto.setImageUrl(member.getImageKey());
                             return userDto;
                         }).toList()
                 , boardMapperExecutor);

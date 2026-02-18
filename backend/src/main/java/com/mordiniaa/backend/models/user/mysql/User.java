@@ -41,8 +41,8 @@ public class User extends BaseEntity implements DbUser {
     @Column(name = "password", nullable = false, length = 60)
     private String password;
 
-    @Column(name = "imageUrl", nullable = false)
-    private String imageUrl;
+    @Column(name = "image_key", nullable = false)
+    private String imageKey;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "role_id", referencedColumnName = "role_id", nullable = false)

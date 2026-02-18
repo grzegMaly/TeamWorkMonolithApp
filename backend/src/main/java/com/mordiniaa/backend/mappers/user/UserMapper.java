@@ -11,7 +11,7 @@ public class UserMapper {
         return UserDto.builder()
                 .userId(dbUser.getUserId())
                 .username(dbUser.getUsername())
-                .imageUrl(dbUser.getImageUrl())
+                .imageUrl(dbUser.getImageKey())
                 .build();
     }
 }

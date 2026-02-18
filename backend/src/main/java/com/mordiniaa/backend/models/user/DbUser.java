@@ -8,5 +8,5 @@ public interface DbUser {
 
     String getUsername();
 
-    String getImageUrl();
+    String getImageKey();
 }
