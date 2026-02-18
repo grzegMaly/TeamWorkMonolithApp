@@ -81,6 +81,56 @@ public class ImagesStorageService {
                 .body(body);
     }
 
+    public void addProfileImage(DbUser user, MultipartFile file) {
+
+        StorageProperties.ProfileImages profileImages = storageProperties.getProfileImages();
+        String mimetype = baseImageValidation(file, profileImages.getMimeTypes());
+
+        ImageMetadata metadata = imageMetadataRepository.findImageMetadataByOwnerId(user.getUserId())
+                .orElse(null);
+        if (metadata != null)
+            imageMetadataRepository.deleteById(metadata.getId());
+
+        String originalName = file.getOriginalFilename();
+        String ext = getFileExtension(mimetype);
+        String storedName = cloudStorageServiceUtils.buildStorageKey().concat(ext.isEmpty() ? "" : ".".concat(ext));
+        String imageKey = user.getImageKey();
+        String profileImagesPath = profileImages.getPath();
+
+        try {
+            addImage(profileImagesPath, storedName, ext, profileImages.getProfileWidth(), profileImages.getProfileHeight(), file);
+            if (metadata != null && imageKey != null && !imageKey.equals("defaultProfileImage")) {
+                storageProvider.delete(
+                        profileImagesPath,
+                        metadata.getStoredName()
+                );
+            }
+        } catch (Exception e) {
+            if (metadata != null) {
+                imageMetadataRepository.save(metadata);
+            }
+            throw new RuntimeException(e);
+        }
+
+        ImageMetadata savedMeta = imageMetadataRepository.save(ImageMetadata.builder()
+                .originalName(originalName)
+                .storedName(storedName)
+                .ownerId(user.getUserId())
+                .mimeType(file.getContentType())
+                .size(file.getSize())
+                .build()
+        );
+
+        Query query = Query.query(
+                Criteria.where("userId").is(user.getUserId())
+        );
+        Update update = new Update()
+                .set("imageKey", savedMeta.getId().toHexString());
+        mongoTemplate.updateFirst(query, update, UserRepository.class);
+
+        userRepository.updateImageKeyByUserId(savedMeta.getId().toHexString(), user.getUserId());
+    }
+
     public void addImage(String profileImagesPath, String storedName, String ext, int width, int height, MultipartFile file) {
 
         boolean uploaded = false;
@@ -103,5 +153,24 @@ public class ImagesStorageService {
             }
             throw new RuntimeException(); //TODO: Change In Exceptions Section
         }
+    }
+
+    private String baseImageValidation(MultipartFile file, List<String> mimeTypes) {
+        if (file.isEmpty())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        String mimetype = file.getContentType();
+        if (mimetype == null || !mimeTypes.contains(mimetype))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        String originalName = file.getOriginalFilename();
+        if (originalName == null || cloudStorageServiceUtils.containsPathSeparator(originalName))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        return mimetype;
+    }
+
+    private String getFileExtension(String mimetype) {
+        return mimetype.split("/")[1];
     }
 }
