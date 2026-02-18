@@ -1,7 +1,6 @@
 package com.mordiniaa.backend.services.user;
 
 import com.mordiniaa.backend.config.StorageProperties;
-import com.mordiniaa.backend.models.file.imageStorage.ImageMetadata;
 import com.mordiniaa.backend.models.user.DbUser;
 import com.mordiniaa.backend.models.user.mysql.User;
 import com.mordiniaa.backend.repositories.mongo.ImageMetadataRepository;
@@ -12,13 +11,9 @@ import com.mordiniaa.backend.services.storage.profileImagesStorage.ImagesStorage
 import com.mordiniaa.backend.utils.CloudStorageServiceUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
 import java.util.UUID;
 
 @Service
@@ -49,7 +44,12 @@ public class UserService {
         imagesStorageService.addProfileImage(user, file);
     }
 
-    public void setDefaultProfileImage() {
+    public void setDefaultProfileImage(UUID userId) {
 
+        mongoUserService.checkUserAvailability(userId);
+        DbUser user = userRepresentationRepository.findByUserId(userId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        imagesStorageService.setDefaultImage(user);
     }
 }
