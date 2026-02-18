@@ -72,24 +72,6 @@ public class ImagesStorageService {
                 .body(body);
     }
 
-    private ResponseEntity<StreamingResponseBody> defaultImage() {
-
-        ClassPathResource resource = new ClassPathResource(defaultImagePath);
-
-        if (resource.exists())
-            throw new RuntimeException("Default avatar not found in resources"); // TODO: Change In Exceptions Section
-
-        StreamingResponseBody body = os -> {
-            try (InputStream in = resource.getInputStream()) {
-                in.transferTo(os);
-            }
-        };
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_PNG)
-                .body(body);
-    }
-
     public void addProfileImage(DbUser user, MultipartFile file) {
 
         StorageProperties.ProfileImages profileImages = storageProperties.getProfileImages();
@@ -157,25 +139,6 @@ public class ImagesStorageService {
         }
     }
 
-    private String baseImageValidation(MultipartFile file, List<String> mimeTypes) {
-        if (file.isEmpty())
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        String mimetype = file.getContentType();
-        if (mimetype == null || !mimeTypes.contains(mimetype))
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        String originalName = file.getOriginalFilename();
-        if (originalName == null || cloudStorageServiceUtils.containsPathSeparator(originalName))
-            throw new RuntimeException(); // TODO: Change In Exceptions Section
-
-        return mimetype;
-    }
-
-    private String getFileExtension(String mimetype) {
-        return mimetype.split("/")[1];
-    }
-
     public void setDefaultImage(DbUser user) {
 
         ImageMetadata metadata = imageMetadataRepository.findImageMetadataByOwnerId(user.getUserId())
@@ -201,5 +164,42 @@ public class ImagesStorageService {
 
         mongoTemplate.updateFirst(query, update, UserRepresentation.class);
         userRepository.updateImageKeyByUserId(imageKey, userId);
+    }
+
+    private ResponseEntity<StreamingResponseBody> defaultImage() {
+
+        ClassPathResource resource = new ClassPathResource(defaultImagePath);
+
+        if (resource.exists())
+            throw new RuntimeException("Default avatar not found in resources"); // TODO: Change In Exceptions Section
+
+        StreamingResponseBody body = os -> {
+            try (InputStream in = resource.getInputStream()) {
+                in.transferTo(os);
+            }
+        };
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .body(body);
+    }
+
+    private String getFileExtension(String mimetype) {
+        return mimetype.split("/")[1];
+    }
+
+    private String baseImageValidation(MultipartFile file, List<String> mimeTypes) {
+        if (file.isEmpty())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        String mimetype = file.getContentType();
+        if (mimetype == null || !mimeTypes.contains(mimetype))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        String originalName = file.getOriginalFilename();
+        if (originalName == null || cloudStorageServiceUtils.containsPathSeparator(originalName))
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        return mimetype;
     }
 }
