@@ -25,3 +25,12 @@ spring:
     multipart:
       max-file-size: -1
       max-request-size: -1
+
+storage:
+  profileImages:
+    path: ${PROFILE_IMAGES_ROOT:./profile_images_storage}
+    mimeTypes:
+      - image/jpeg
+      - image/png
+  cloudStorage:
+    path: ${STORAGE_ROOT:./files_storage}
