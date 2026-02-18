@@ -4,10 +4,17 @@ import com.mordiniaa.backend.models.file.cloudStorage.FileNodeStorageKey;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.util.AbstractMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -16,13 +23,46 @@ import java.util.zip.ZipOutputStream;
 public class LocalStorageProvider implements StorageProvider {
 
     @Override
-    public void upload(String resourcePath, String storageKey, InputStream stream, long size) throws IOException {
+    public void upload(String resourcePath, String storageKey, InputStream stream) throws IOException {
 
         Path resource = Paths.get(resourcePath);
         Files.createDirectories(resource);
 
         Path target = resource.resolve(storageKey);
         Files.copy(stream, target, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    public void uploadImage(String resourceName, String storageKey, String ext, int maxWidth, int maxHeight, InputStream stream) throws IOException {
+
+        ImageInputStream iis = ImageIO.createImageInputStream(stream);
+        Iterator<ImageReader> readers = ImageIO.getImageReaders(iis);
+
+        if (!readers.hasNext())
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        ImageReader reader = readers.next();
+        reader.setInput(iis, true, true);
+
+        int width = reader.getWidth(0);
+        int height = reader.getHeight(0);
+
+        if (width > maxWidth || height > maxHeight) {
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        BufferedImage image = reader.read(0);
+
+        if (image == null) {
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ImageIO.write(image, ext, out);
+
+        byte[] safeBytes = out.toByteArray();
+        ByteArrayInputStream in = new ByteArrayInputStream(safeBytes);
+        upload(resourceName, storageKey, in);
     }
 
     @Override
