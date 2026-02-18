@@ -9,4 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface UserStorageRepository extends JpaRepository<UserStorage, UUID> {
+    Optional<UserStorage> findUserStorageByUserId(UUID userId);
 }
