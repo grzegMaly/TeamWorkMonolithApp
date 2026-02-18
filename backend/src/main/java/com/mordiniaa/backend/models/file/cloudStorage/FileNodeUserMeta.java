@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.models.file;
+package com.mordiniaa.backend.models.file.cloudStorage;
 
 import java.util.UUID;
 

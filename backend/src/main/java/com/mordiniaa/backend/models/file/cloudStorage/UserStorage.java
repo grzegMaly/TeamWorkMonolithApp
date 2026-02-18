@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.models.file;
+package com.mordiniaa.backend.models.file.cloudStorage;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,17 +13,18 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(indexes = @Index(name = "fx_user_id", columnList = "user_id", unique = true))
 public class UserStorage {
 
     @Version
     private long version;
 
     @Id
-    @Column(nullable = false, unique = true, name = "user_id")
-    private UUID userId;
-
-    @Column(unique = true)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID resourceId;
+
+    @Column(name = "user_id", unique = true, nullable = false)
+    private UUID userId;
 
     private Long usedBytes = 0L;
     private Long quotaBytes = 50_000_000_000L;

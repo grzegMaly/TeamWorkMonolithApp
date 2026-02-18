@@ -1,11 +1,10 @@
-package com.mordiniaa.backend.models.file;
+package com.mordiniaa.backend.models.file.cloudStorage;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.StringJoiner;
 import java.util.UUID;
 
 @Entity
