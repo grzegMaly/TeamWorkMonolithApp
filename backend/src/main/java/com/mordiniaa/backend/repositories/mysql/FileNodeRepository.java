@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.repositories.mysql;
 
-import com.mordiniaa.backend.models.file.*;
+import com.mordiniaa.backend.models.file.cloudStorage.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
