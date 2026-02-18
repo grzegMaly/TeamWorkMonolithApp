@@ -176,6 +176,22 @@ public class ImagesStorageService {
         return mimetype.split("/")[1];
     }
 
+    public void setDefaultImage(DbUser user) {
+
+        ImageMetadata metadata = imageMetadataRepository.findImageMetadataByOwnerId(user.getUserId())
+                .orElse(null);
+
+        if (metadata != null) {
+            String storageName = metadata.getStoredName();
+            storageProvider.delete(storageProperties.getProfileImages().getPath(), storageName);
+        }
+
+        updateUserImageKey(user.getUserId(), defaultImageKey);
+
+        if (metadata != null)
+            imageMetadataRepository.deleteById(metadata.getId());
+    }
+
     private void updateUserImageKey(UUID userId, String imageKey) {
         Query query = Query.query(
                 Criteria.where("userId").is(userId)
