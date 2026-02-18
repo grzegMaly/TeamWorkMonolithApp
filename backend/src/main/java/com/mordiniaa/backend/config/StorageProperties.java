@@ -22,6 +22,8 @@ public class StorageProperties {
     public static class ProfileImages {
         private String path;
         private List<String> mimeTypes;
+        private int profileWidth;
+        private int profileHeight;
     }
 
     @Getter
