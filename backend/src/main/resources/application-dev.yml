@@ -34,5 +34,7 @@ storage:
       - image/png
     profileWidth: 512
     profileHeight: 512
+    defaultImageKey: defaultProfileImage
+    defaultImagePath: static/images/defaultProfileImage.png
   cloudStorage:
     path: ${STORAGE_ROOT:./files_storage}
