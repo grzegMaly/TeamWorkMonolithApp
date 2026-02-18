@@ -32,5 +32,7 @@ storage:
     mimeTypes:
       - image/jpeg
       - image/png
+    profileWidth: 512
+    profileHeight: 512
   cloudStorage:
     path: ${STORAGE_ROOT:./files_storage}
