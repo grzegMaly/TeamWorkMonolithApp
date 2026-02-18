@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.dto.file;
 
-import com.mordiniaa.backend.models.file.NodeType;
+import com.mordiniaa.backend.models.file.cloudStorage.NodeType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

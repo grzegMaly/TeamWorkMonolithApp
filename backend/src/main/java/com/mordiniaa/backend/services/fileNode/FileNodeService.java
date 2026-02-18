@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.services.fileNode;
 
-import com.mordiniaa.backend.models.file.FileNode;
+import com.mordiniaa.backend.models.file.cloudStorage.FileNode;
 import com.mordiniaa.backend.repositories.mysql.FileNodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

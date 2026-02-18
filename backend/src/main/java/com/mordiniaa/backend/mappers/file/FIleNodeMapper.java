@@ -1,8 +1,8 @@
 package com.mordiniaa.backend.mappers.file;
 
 import com.mordiniaa.backend.dto.file.FileNodeDto;
-import com.mordiniaa.backend.models.file.FileNode;
-import com.mordiniaa.backend.models.file.NodeType;
+import com.mordiniaa.backend.models.file.cloudStorage.FileNode;
+import com.mordiniaa.backend.models.file.cloudStorage.NodeType;
 import org.springframework.stereotype.Component;
 
 @Component
