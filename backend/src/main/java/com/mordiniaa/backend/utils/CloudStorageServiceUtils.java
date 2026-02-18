@@ -58,4 +58,8 @@ public class CloudStorageServiceUtils {
         return fileNodeRepository.findParentMetaProjection(parentId, userId)
                 .orElse(null);
     }
+
+    public String buildStorageKey() {
+        return UUID.randomUUID().toString();
+    }
 }
