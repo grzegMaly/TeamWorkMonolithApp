@@ -7,11 +7,14 @@ import com.mordiniaa.backend.events.user.events.UserUsernameChangedEvent;
 import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.user.mysql.*;
 import com.mordiniaa.backend.repositories.mysql.AddressRepository;
+import com.mordiniaa.backend.repositories.mysql.ContactRepository;
 import com.mordiniaa.backend.repositories.mysql.RoleRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.user.AddressRequest;
+import com.mordiniaa.backend.request.user.ContactDataRequest;
 import com.mordiniaa.backend.request.user.CreateUserRequest;
 import com.mordiniaa.backend.request.user.patch.PatchUserAddressRequest;
+import com.mordiniaa.backend.request.user.patch.PatchUserContactDataRequest;
 import com.mordiniaa.backend.request.user.patch.PatchUserDataRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,6 +37,7 @@ public class UserAdminService {
     private final MongoUserService mongoUserService;
     private final UserService userService;
     private final AddressRepository addressRepository;
+    private final ContactRepository contactRepository;
 
     @Transactional
     public UserDto createUser(CreateUserRequest request) {
@@ -61,11 +65,6 @@ public class UserAdminService {
         if (addr != null) {
             Address address = new Address();
             setupFullAddress(address, addr);
-            address.setCity(addr.getCity().trim());
-            address.setDistrict(addr.getDistrict().trim());
-            address.setCountry(addr.getCountry().trim());
-            address.setStreet(addr.getStreet().trim());
-            address.setZipCode(addr.getZipCode().trim());
             address.setUser(newUser);
             newUser.addAddress(address);
         }
@@ -74,9 +73,7 @@ public class UserAdminService {
         var contactData = request.getContactData();
         if (contactData != null) {
             Contact contact = new Contact();
-            contact.setEmail(contactData.getEmail().trim());
-            contact.setCountryCallingCode(contactData.getCountryCallingCode().trim());
-            contact.setPhoneNumber(contactData.getPhoneNumber().trim());
+            setupFullContactData(contact, contactData);
             contact.setUser(newUser);
             newUser.setContact(contact);
         }
@@ -134,7 +131,7 @@ public class UserAdminService {
             return;
         }
 
-        address = addressRepository.findByIdAndUser_UserId(addressId, userId)
+        address = addressRepository.findByIdAndUser(addressId, user)
                 .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
 
         if (request.getCountry() != null) address.setCountry(request.getCountry());
@@ -146,9 +143,30 @@ public class UserAdminService {
         addressRepository.save(address);
     }
 
-    public void updateUserContactData(UUID userId) {
+    @Transactional
+    public void updateUserContactData(UUID userId, Long contactDataId, PatchUserContactDataRequest request) {
 
         mongoUserService.checkUserAvailability(userId);
+
+        User user = userService.getUser(userId);
+        Contact contact;
+
+        if (contactDataId == null) {
+            contact = new Contact();
+            setupFullContactData(contact, request);
+            contact.setUser(user);
+            contactRepository.save(contact);
+            return;
+        }
+
+        contact = contactRepository.findByIdAndUser(contactDataId, user)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        if (request.getCountryCallingCode() != null) contact.setCountryCallingCode(request.getCountryCallingCode());
+        if (request.getEmail() != null) contact.setEmail(request.getEmail());
+        if (request.getPhoneNumber() != null) contact.setPhoneNumber(request.getPhoneNumber());
+
+        contactRepository.save(contact);
     }
 
     public void deactivateUser(UUID userId) {
@@ -178,5 +196,14 @@ public class UserAdminService {
         address.setCity(r.getCity().trim());
         address.setZipCode(r.getZipCode().trim());
         address.setDistrict(r.getDistrict().trim());
+    }
+
+    private void setupFullContactData(Contact contact, ContactDataRequest r) {
+
+        if (r.getCountryCallingCode() == null || r.getEmail() == null || r.getPhoneNumber() == null)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        contact.setEmail(r.getEmail().trim());
+        contact.setCountryCallingCode(r.getCountryCallingCode().trim());
+        contact.setPhoneNumber(r.getPhoneNumber().trim());
     }
 }
