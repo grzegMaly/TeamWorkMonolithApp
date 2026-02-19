@@ -18,7 +18,6 @@ public class UserStorageEventListener {
     private final CloudStorageServiceUtils cloudStorageServiceUtils;
 
     @Async
-    @Transactional
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(UserCreatedEvent event) {
 
