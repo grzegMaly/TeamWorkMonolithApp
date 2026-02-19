@@ -5,7 +5,7 @@ import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCategoryChangeDtoMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
 import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskStatusChangeDtoMapper;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
+import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.task.TaskStatus;
@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
         TaskCommentDtoMapper.class,
         TaskStatusChangeDtoMapper.class,
         TaskCategoryChangeDtoMapper.class,
-        UserRepresentationMapper.class
+        UserMapper.class
 })
 public class TaskMapperToDtoTest {
 
@@ -105,17 +105,17 @@ public class TaskMapperToDtoTest {
         userRepresentation1 = new UserRepresentation();
         userRepresentation1.setUserId(user1Id);
         userRepresentation1.setUsername(user1Name);
-        userRepresentation1.setImageUrl(imageUrl1);
+        userRepresentation1.setImageKey(imageUrl1);
 
         userRepresentation2 = new UserRepresentation();
         userRepresentation2.setUserId(user2Id);
         userRepresentation2.setUsername(user2Name);
-        userRepresentation2.setImageUrl(imageUrl2);
+        userRepresentation2.setImageKey(imageUrl2);
 
         userRepresentation3 = new UserRepresentation();
         userRepresentation3.setUserId(user3Id);
         userRepresentation3.setUsername(user3Name);
-        userRepresentation3.setImageUrl(imageUrl3);
+        userRepresentation3.setImageKey(imageUrl3);
 
         //--------------------------------------------------------------------
 
