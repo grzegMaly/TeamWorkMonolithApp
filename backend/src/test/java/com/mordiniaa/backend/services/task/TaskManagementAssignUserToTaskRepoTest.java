@@ -1,10 +1,6 @@
 package com.mordiniaa.backend.services.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
-import com.mordiniaa.backend.mappers.task.TaskMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
@@ -14,19 +10,12 @@ import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
-import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
-import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
 import com.mordiniaa.backend.request.task.AssignUsersRequest;
-import com.mordiniaa.backend.services.user.MongoUserService;
-import com.mordiniaa.backend.utils.BoardUtils;
-import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -94,19 +83,19 @@ public class TaskManagementAssignUserToTaskRepoTest {
         ownerTemplate.setUserId(ownerId);
         ownerTemplate.setUsername("Owner");
         ownerTemplate.setDeleted(false);
-        ownerTemplate.setImageUrl("http:random123.com");
+        ownerTemplate.setImageKey("http:random123.com");
 
         user1Template = new UserRepresentation();
         user1Template.setUserId(member1Id);
         user1Template.setUsername("Member 1");
         user1Template.setDeleted(false);
-        user1Template.setImageUrl("http:random123.com");
+        user1Template.setImageKey("http:random123.com");
 
         user2Template = new UserRepresentation();
         user2Template.setUserId(member2Id);
         user2Template.setUsername("Member 2");
         user2Template.setDeleted(false);
-        user2Template.setImageUrl("http:random123.com");
+        user2Template.setImageKey("http:random123.com");
 
         taskCategory1 = new TaskCategory();
         taskCategory1.setCategoryName("Dev");
@@ -237,7 +226,7 @@ public class TaskManagementAssignUserToTaskRepoTest {
         UserRepresentation user = new UserRepresentation();
         user.setUserId(userId);
         user.setUsername("Username");
-        user.setImageUrl("https://random123.com");
+        user.setImageKey("https://random123.com");
         userRepresentationRepository.save(user);
 
         BoardMember boardMember = new BoardMember(userId);
@@ -463,7 +452,7 @@ public class TaskManagementAssignUserToTaskRepoTest {
         UserRepresentation user = new UserRepresentation();
         user.setUserId(userId);
         user.setUsername("Username");
-        user.setImageUrl("https://random123.com");
+        user.setImageKey("https://random123.com");
         userRepresentationRepository.save(user);
 
         BoardMember member = new BoardMember(userId);
