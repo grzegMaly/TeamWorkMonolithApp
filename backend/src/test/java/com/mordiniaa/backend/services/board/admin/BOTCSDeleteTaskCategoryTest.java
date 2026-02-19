@@ -96,7 +96,7 @@ public class BOTCSDeleteTaskCategoryTest {
         userRepresentation = new UserRepresentation();
         userRepresentation.setUserId(user.getUserId());
         userRepresentation.setUsername(user.getUsername());
-        userRepresentation.setImageUrl("IMAGE");
+        userRepresentation.setImageKey("IMAGE");
         userRepresentationRepository.save(userRepresentation);
 
         team = new Team();
@@ -259,7 +259,7 @@ public class BOTCSDeleteTaskCategoryTest {
 
         UserRepresentation user = new UserRepresentation();
         user.setUserId(UUID.randomUUID());
-        user.setImageUrl("IMAGE");
+        user.setImageKey("IMAGE");
         user.setUsername("User");
         userRepresentationRepository.save(user);
 
