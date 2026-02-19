@@ -47,17 +47,20 @@ public class BoardOwnerServiceCreateBoardRepoTest {
 
     private Team team;
 
+    private Role role;
+
     @BeforeEach
     void setup() {
 
-        Role managerRole = new Role(AppRole.ROLE_MANAGER);
-        managerRole = roleRepository.save(managerRole);
+        role = roleRepository.findRoleByAppRole(AppRole.ROLE_MANAGER)
+                .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_MANAGER)));
 
         User user = new User();
         user.setUsername("Username");
-        user.setRole(managerRole);
+        user.setRole(role);
         user.setEmail("email@gmail.com");
         user.setFirstName("FirstName");
+        user.setImageKey("KEY");
         user.setLastName("LastName");
         user.setPassword("SuperSecretPassword");
         user = userRepository.save(user);
@@ -70,16 +73,18 @@ public class BoardOwnerServiceCreateBoardRepoTest {
 
         team = new Team();
         team.setTeamName("Test Team");
+        team.setPresentationName("Test Team");
         team.setManager(user);
         team = teamRepository.save(team);
     }
 
     @AfterEach
-    void clear() {
-        boardRepository.deleteAll();
-        userRepresentationRepository.deleteAll();
+    void clean() {
         teamRepository.deleteAll();
         userRepository.deleteAll();
+        userRepresentationRepository.deleteAll();
+        boardRepository.deleteAll();
+        roleRepository.deleteAll();
     }
 
     @Test
@@ -117,10 +122,11 @@ public class BoardOwnerServiceCreateBoardRepoTest {
 
         User newUser = new User();
         newUser.setPassword("SuperSecret");
-        newUser.setRole(roleRepository.getReferenceById(1));
-        newUser.setUsername("Username");
+        newUser.setRole(role);
+        newUser.setUsername("usenew987");
         newUser.setEmail("email@gmail.com");
         newUser.setFirstName("FirstName");
+        newUser.setImageKey("KEY");
         newUser.setLastName("LastName");
         userRepository.save(newUser);
 
