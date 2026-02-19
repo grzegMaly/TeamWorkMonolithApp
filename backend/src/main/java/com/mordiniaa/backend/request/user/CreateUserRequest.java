@@ -32,7 +32,7 @@ public class CreateUserRequest {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class Address {
+    public static class Address implements AddressRequest {
 
         @NotBlank
         @Size(min = 5, max = 40)

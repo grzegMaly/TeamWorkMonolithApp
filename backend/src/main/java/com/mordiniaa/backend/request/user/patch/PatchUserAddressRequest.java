@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.request.user.patch;
 
+import com.mordiniaa.backend.request.user.AddressRequest;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PatchUserAddressRequest {
+public class PatchUserAddressRequest implements AddressRequest {
 
     @Size(min = 5, max = 40)
     private String street;
