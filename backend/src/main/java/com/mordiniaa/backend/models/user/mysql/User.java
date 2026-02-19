@@ -46,6 +46,9 @@ public class User extends BaseEntity implements DbUser {
     @Column(name = "image_key", nullable = false)
     private String imageKey;
 
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "role_id", referencedColumnName = "role_id", nullable = false)
     private Role role;
@@ -53,7 +56,7 @@ public class User extends BaseEntity implements DbUser {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Set<Address> addresses = new HashSet<>();
 
-    @ManyToMany(mappedBy = "teamMembers")
+    @ManyToMany(mappedBy = "teamMembers", fetch = FetchType.LAZY)
     private Set<Team> teams = new HashSet<>();
 
     @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
