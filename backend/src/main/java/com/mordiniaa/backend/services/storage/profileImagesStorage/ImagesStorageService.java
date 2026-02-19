@@ -31,12 +31,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ImagesStorageService {
 
-    @Value("${storage.profileImages.defaultImageKey}")
-    private String defaultImageKey;
-
-    @Value("${storage.profileImages.defaultImagePath}")
-    private String defaultImagePath;
-
     private final MongoIdUtils mongoIdUtils;
     private final ImageMetadataRepository imageMetadataRepository;
     private final StorageProvider storageProvider;
@@ -47,7 +41,7 @@ public class ImagesStorageService {
 
     public ResponseEntity<StreamingResponseBody> getProfileImage(String key) {
 
-        if (defaultImageKey.equals(key))
+        if (storageProperties.getProfileImages().getDefaultImageKey().equals(key))
             return defaultImage();
 
         ObjectId objectId = mongoIdUtils.getObjectId(key);
@@ -159,7 +153,7 @@ public class ImagesStorageService {
             storageProvider.delete(storageProperties.getProfileImages().getPath(), storageName);
         }
 
-        updateUserImageKey(user.getUserId(), defaultImageKey);
+        updateUserImageKey(user.getUserId(), storageProperties.getProfileImages().getDefaultImageKey());
 
         if (metadata != null)
             imageMetadataRepository.deleteById(metadata.getId());
@@ -178,7 +172,7 @@ public class ImagesStorageService {
 
     private ResponseEntity<StreamingResponseBody> defaultImage() {
 
-        ClassPathResource resource = new ClassPathResource(defaultImagePath);
+        ClassPathResource resource = new ClassPathResource(storageProperties.getProfileImages().getDefaultImagePath());
 
         if (!resource.exists())
             throw new RuntimeException("Default avatar not found in resources"); // TODO: Change In Exceptions Section
