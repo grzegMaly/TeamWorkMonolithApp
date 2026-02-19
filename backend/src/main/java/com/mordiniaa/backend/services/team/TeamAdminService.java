@@ -121,4 +121,14 @@ public class TeamAdminService {
 
         teamRepository.save(team);
     }
+
+    @Transactional
+    public void removeFromTeamByEvent(UUID userId) {
+
+        User user = userService.getUser(userId);
+        if (user.getRole().getAppRole().equals(AppRole.ROLE_MANAGER))
+            user.getOwnedTeams().forEach(t -> removeManagerFromTeam(t.getTeamId()));
+        else
+            user.getTeams().forEach(t -> removeFromTeam(userId, t.getTeamId()));
+    }
 }
