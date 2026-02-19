@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.index.Indexed;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -18,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "User")
-@Table(name = "users")
+@Table(name = "users", indexes = @Index(name = "fx_user_username", columnList = "username", unique = true))
 public class User extends BaseEntity implements DbUser {
 
     @Id
@@ -32,7 +34,7 @@ public class User extends BaseEntity implements DbUser {
     @Column(name = "last_name", nullable = false, length = 20)
     private String lastName;
 
-    @Column(name = "username", nullable = false, length = 20)
+    @Column(name = "username", nullable = false, length = 20, unique = true)
     private String username;
 
     @Column(name = "email", nullable = false, length = 50)
@@ -48,7 +50,7 @@ public class User extends BaseEntity implements DbUser {
     @JoinColumn(name = "role_id", referencedColumnName = "role_id", nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Set<Address> addresses = new HashSet<>();
 
     @ManyToMany(mappedBy = "teamMembers")
@@ -56,4 +58,15 @@ public class User extends BaseEntity implements DbUser {
 
     @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
     private Set<Team> ownedTeams = new HashSet<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
+    private Contact contact;
+
+    public void addAddress(Address address) {
+        this.addresses.add(address);
+    }
+
+    public Set<Address> getAddresses() {
+        return Collections.unmodifiableSet(addresses);
+    }
 }
