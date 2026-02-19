@@ -71,6 +71,7 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
         user.setFirstName("FirstName");
         user.setLastName("LastName");
         user.setPassword("SuperSecretPassword");
+        user.setImageKey("KEY");
         user = userRepository.save(user);
 
         User member = new User();
@@ -80,6 +81,7 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
         member.setFirstName("MemberFirst");
         member.setLastName("MemberLast");
         member.setPassword("SuperSecretPassword");
+        member.setImageKey("KEY");
         member = userRepository.save(member);
 
         ownerUser = new UserRepresentation();
@@ -96,6 +98,7 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
 
         team = new Team();
         team.setTeamName("Test Team");
+        team.setPresentationName("Team Team");
         team.setManager(user);
         team.setTeamMembers(Set.of(member));
         team = teamRepository.save(team);
