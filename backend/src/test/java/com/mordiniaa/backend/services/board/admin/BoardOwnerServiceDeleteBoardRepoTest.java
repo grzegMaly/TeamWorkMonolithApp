@@ -81,13 +81,13 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
         ownerUser = new UserRepresentation();
         ownerUser.setUserId(user.getUserId());
         ownerUser.setUsername("Username");
-        ownerUser.setImageUrl("ImageURL");
+        ownerUser.setImageKey("ImageURL");
         ownerUser = userRepresentationRepository.save(ownerUser);
 
         boardMember = new UserRepresentation();
         boardMember.setUserId(member.getUserId());
         boardMember.setUsername("Member");
-        boardMember.setImageUrl("ImageURL");
+        boardMember.setImageKey("ImageURL");
         boardMember = userRepresentationRepository.save(boardMember);
 
         team = new Team();
@@ -145,7 +145,7 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
         UUID userId = UUID.randomUUID();
         UserRepresentation newUser = new UserRepresentation();
         newUser.setUserId(userId);
-        newUser.setImageUrl("Image");
+        newUser.setImageKey("Image");
         newUser.setUsername("Username");
         userRepresentationRepository.save(newUser);
 
