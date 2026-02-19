@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: backend
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: team-work-test
+      username: team-work-tester
+      password: password
+      authentication-database: team-work-test
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:team-work-test
+    username: team-work-tester
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    database: h2
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
