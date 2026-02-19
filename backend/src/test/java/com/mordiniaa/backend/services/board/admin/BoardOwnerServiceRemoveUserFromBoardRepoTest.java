@@ -1,7 +1,7 @@
 package com.mordiniaa.backend.services.board.admin;
 
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
-import com.mordiniaa.backend.dto.user.mongodb.MongoUserDto;
+import com.mordiniaa.backend.dto.user.UserDto;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.team.Team;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
@@ -85,13 +85,13 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
         ownerUser = new UserRepresentation();
         ownerUser.setUserId(user.getUserId());
         ownerUser.setUsername("Username");
-        ownerUser.setImageUrl("ImageURL");
+        ownerUser.setImageKey("ImageURL");
         ownerUser = userRepresentationRepository.save(ownerUser);
 
         boardMember = new UserRepresentation();
         boardMember.setUserId(member.getUserId());
         boardMember.setUsername("Member");
-        boardMember.setImageUrl("ImageURL");
+        boardMember.setImageKey("ImageURL");
         boardMember = userRepresentationRepository.save(boardMember);
 
         team = new Team();
@@ -131,7 +131,7 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
         );
 
         assertNotNull(dto);
-        assertFalse(dto.getMembers().stream().map(MongoUserDto::getUserId).collect(Collectors.toSet())
+        assertFalse(dto.getMembers().stream().map(UserDto::getUserId).collect(Collectors.toSet())
                 .contains(boardMember.getUserId()));
     }
 
@@ -156,7 +156,7 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
         UUID userId = UUID.randomUUID();
         UserRepresentation newUser = new UserRepresentation();
         newUser.setUsername("New Username");
-        newUser.setImageUrl("Image");
+        newUser.setImageKey("Image");
         newUser.setUserId(userId);
         userRepresentationRepository.save(newUser);
 
