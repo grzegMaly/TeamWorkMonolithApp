@@ -3,7 +3,7 @@ package com.mordiniaa.backend.mappers.board;
 import com.mordiniaa.backend.config.BoardMapperExecutorConfig;
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.dto.task.TaskShortDto;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
+import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.task.TaskStatus;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
         BoardMapper.class,
-        UserRepresentationMapper.class,
+        UserMapper.class,
         BoardMapperExecutorConfig.class
 })
 public class BoardMapperToDtoTest {
@@ -102,25 +102,25 @@ public class BoardMapperToDtoTest {
         owner.setId(ownerOId);
         owner.setUsername(name1);
         owner.setUserId(ownerId);
-        owner.setImageUrl(imageUrl);
+        owner.setImageKey(imageUrl);
 
         member1 = new UserRepresentation();
         member1.setId(member1OId);
         member1.setUsername(name2);
         member1.setUserId(member1Id);
-        member1.setImageUrl(imageUrl);
+        member1.setImageKey(imageUrl);
 
         member2 = new UserRepresentation();
         member2.setId(member2OId);
         member2.setUsername(name3);
         member2.setUserId(member2Id);
-        member2.setImageUrl(imageUrl);
+        member2.setImageKey(imageUrl);
 
         member3 = new UserRepresentation();
         member3.setId(member3OId);
         member3.setUsername(name4);
         member3.setUserId(member3Id);
-        member3.setImageUrl(imageUrl);
+        member3.setImageKey(imageUrl);
 
         taskCategory1 = new BoardFull.TaskCategoryFull();
         taskCategory1.setCategoryName(taskCategoryName1);
