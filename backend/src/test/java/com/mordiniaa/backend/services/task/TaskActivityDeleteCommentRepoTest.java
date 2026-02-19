@@ -2,10 +2,6 @@ package com.mordiniaa.backend.services.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.dto.task.activity.TaskCommentDto;
-import com.mordiniaa.backend.mappers.task.TaskMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
@@ -91,17 +87,17 @@ public class TaskActivityDeleteCommentRepoTest {
         owner = new UserRepresentation();
         owner.setUserId(ownerId);
         owner.setUsername("Owner");
-        owner.setImageUrl("http:random123.com");
+        owner.setImageKey("http:random123.com");
 
         user1 = new UserRepresentation();
         user1.setUserId(member1Id);
         user1.setUsername("Member 1");
-        user1.setImageUrl("http:random123.com");
+        user1.setImageKey("http:random123.com");
 
         user2 = new UserRepresentation();
         user2.setUserId(member2Id);
         user2.setUsername("Member 2");
-        user2.setImageUrl("http:random123.com");
+        user2.setImageKey("http:random123.com");
 
         taskCategory1 = new TaskCategory();
         taskCategory1.setCategoryName("Dev");
@@ -324,7 +320,7 @@ public class TaskActivityDeleteCommentRepoTest {
         UUID userId = UUID.randomUUID();
         UserRepresentation user = new UserRepresentation();
         user.setUsername("Random Name");
-        user.setImageUrl("https://random123.com");
+        user.setImageKey("https://random123.com");
         user.setUserId(userId);
         userRepresentationRepository.save(user);
 
