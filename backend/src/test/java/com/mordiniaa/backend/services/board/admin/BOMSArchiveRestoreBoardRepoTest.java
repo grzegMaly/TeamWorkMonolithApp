@@ -44,7 +44,7 @@ public class BOMSArchiveRestoreBoardRepoTest {
         user = new UserRepresentation();
         user.setUserId(ownerId);
         user.setUsername("Username");
-        user.setImageUrl("imageUrl");
+        user.setImageKey("imageUrl");
         user = userRepository.save(user);
 
         BoardMember ownerMember = new BoardMember(ownerId);
@@ -125,7 +125,7 @@ public class BOMSArchiveRestoreBoardRepoTest {
         UserRepresentation newUser = new UserRepresentation();
         newUser.setUserId(userId);
         newUser.setUsername("Username");
-        newUser.setImageUrl("imageUrl");
+        newUser.setImageKey("imageUrl");
         userRepository.save(newUser);
         assertThrows(RuntimeException.class, () -> managementService.archiveBoard(userId, board.getId().toHexString()));
     }
@@ -207,7 +207,7 @@ public class BOMSArchiveRestoreBoardRepoTest {
         UserRepresentation newUser = new UserRepresentation();
         newUser.setUserId(userId);
         newUser.setUsername("Username");
-        newUser.setImageUrl("imageUrl");
+        newUser.setImageKey("imageUrl");
         userRepository.save(newUser);
         assertThrows(RuntimeException.class, () -> managementService.restoreBoard(userId, board.getId().toHexString()));
     }
