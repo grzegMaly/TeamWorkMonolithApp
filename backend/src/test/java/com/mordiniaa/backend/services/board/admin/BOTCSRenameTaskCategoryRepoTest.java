@@ -70,6 +70,7 @@ public class BOTCSRenameTaskCategoryRepoTest {
         user.setFirstName("FirstName");
         user.setEmail("email@gmail.com");
         user.setUsername("Username");
+        user.setImageKey("KEY");
         user.setPassword("SecretPassword");
         user.setRole(roleRepository.getReferenceById(1));
         user = userRepository.save(user);
@@ -83,6 +84,7 @@ public class BOTCSRenameTaskCategoryRepoTest {
         team = new Team();
         team.setManager(user);
         team.setTeamName("Name");
+        team.setPresentationName("Name");
         team = teamRepository.save(team);
 
         owner = new BoardMember(user.getUserId());
@@ -189,9 +191,9 @@ public class BOTCSRenameTaskCategoryRepoTest {
     void renameTaskCategoryUserNotBoardMemberTest() {
 
         UserRepresentation newUser = new UserRepresentation();
-        userRepresentation.setUsername("New Name");
-        userRepresentation.setUserId(UUID.randomUUID());
-        userRepresentation.setImageKey("IMAGE");
+        newUser.setUsername("New Name");
+        newUser.setUserId(UUID.randomUUID());
+        newUser.setImageKey("IMAGE");
         userRepresentationRepository.save(newUser);
 
         TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
