@@ -3,6 +3,7 @@ package com.mordiniaa.backend.services.board.admin;
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.mappers.board.BoardMapper;
 import com.mordiniaa.backend.models.board.Board;
+import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
@@ -44,6 +45,9 @@ public class BoardOwnerServiceCreateBoardMockTest {
     @Mock
     private BoardAggregationRepositoryImpl boardAggregationRepository;
 
+    @Mock
+    private BoardAdminService boardAdminService;
+
     @Test
     void createBoardTest() {
 
@@ -60,6 +64,10 @@ public class BoardOwnerServiceCreateBoardMockTest {
         ObjectId boardId = ObjectId.get();
         Board board = new Board();
         board.setId(boardId);
+
+        BoardMember member = mock(BoardMember.class);
+        when(boardAdminService.createBoardOwner(userId))
+                .thenReturn(member);
 
         when(boardRepository.save(any(Board.class)))
                 .thenReturn(board);
