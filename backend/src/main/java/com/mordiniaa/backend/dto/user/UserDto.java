@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.dto.user.mongodb;
+package com.mordiniaa.backend.dto.user;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MongoUserDto {
+public class UserDto {
 
     private UUID userId;
     private String username;

@@ -15,7 +15,9 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity(name = "Team")
-@Table(name = "teams")
+@Table(name = "teams", uniqueConstraints = {
+        @UniqueConstraint(name = "uq_team_name", columnNames = "team_name")
+})
 public class Team extends BaseEntity {
 
     @Id
@@ -25,6 +27,9 @@ public class Team extends BaseEntity {
 
     @Column(name = "team_name", nullable = false, length = 40)
     private String teamName;
+
+    @Column(name = "presentation_name", nullable = false, length = 40)
+    private String presentationName;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "manager_id", referencedColumnName = "user_id")
@@ -39,4 +44,24 @@ public class Team extends BaseEntity {
 
     @Column(name = "active")
     private boolean active = true;
+
+    public Team(String teamName) {
+        this.teamName = teamName;
+    }
+
+    public void removeManager() {
+        this.manager = null;
+    }
+
+    public void deactivate() {
+        this.active = false;
+    }
+
+    public void addMember(User user) {
+        this.teamMembers.add(user);
+    }
+
+    public void removeMember(User user) {
+        this.teamMembers.remove(user);
+    }
 }

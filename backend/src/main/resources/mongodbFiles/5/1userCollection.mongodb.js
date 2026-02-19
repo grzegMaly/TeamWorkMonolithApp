@@ -8,7 +8,7 @@ db.runCommand({
         $jsonSchema: {
             bsonType: "object",
             title: "User Schema Validation",
-            required: ["userId", "username", "imageUrl", "deleted"],
+            required: ["userId", "username", "imageKey", "deleted"],
             additionalProperties: false,
             properties: {
                 _id: {
@@ -30,10 +30,10 @@ db.runCommand({
                     minLength: 3,
                     maxLength: 40
                 },
-                imageUrl: {
+                imageKey: {
                     bsonType: "string",
                     title: "Profile Image For Specific User",
-                    description: "Image Url Is Required"
+                    description: "Image Key Is Required"
                 },
                 deleted: {
                     bsonType: "bool",

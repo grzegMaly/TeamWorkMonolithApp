@@ -3,8 +3,8 @@ package com.mordiniaa.backend.mappers.board;
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.dto.board.BoardShortDto;
 import com.mordiniaa.backend.dto.task.TaskShortDto;
-import com.mordiniaa.backend.dto.user.mongodb.MongoUserDto;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
+import com.mordiniaa.backend.dto.user.UserDto;
+import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.board.BoardTemplate;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,14 +18,14 @@ import java.util.concurrent.Executor;
 public class BoardMapper {
 
     private final Executor boardMapperExecutor;
-    private final UserRepresentationMapper userRepresentationMapper;
+    private final UserMapper userMapper;
 
     public BoardMapper(
             @Qualifier("boardMapperExecutor") Executor boardMapperExecutor,
-            UserRepresentationMapper userRepresentationMapper
+            UserMapper userMapper
     ) {
         this.boardMapperExecutor = boardMapperExecutor;
-        this.userRepresentationMapper = userRepresentationMapper;
+        this.userMapper = userMapper;
     }
 
     public BoardShortDto toShortDto(BoardTemplate board) {
@@ -69,19 +69,19 @@ public class BoardMapper {
                         }).toList()
                 , boardMapperExecutor);
 
-        CompletableFuture<List<MongoUserDto>> usersFuture = CompletableFuture
+        CompletableFuture<List<UserDto>> usersFuture = CompletableFuture
                 .supplyAsync(() -> board.getMembers().stream()
                         .map(member -> {
-                            MongoUserDto userDto = new MongoUserDto();
+                            UserDto userDto = new UserDto();
 
                             userDto.setUsername(member.getUsername());
                             userDto.setUserId(member.getUserId());
-                            userDto.setImageUrl(member.getImageUrl());
+                            userDto.setImageUrl(member.getImageKey());
                             return userDto;
                         }).toList()
                 , boardMapperExecutor);
 
-        MongoUserDto owner = userRepresentationMapper.toDto(board.getOwner());
+        UserDto owner = userMapper.toDto(board.getOwner());
         dto.setOwner(owner);
 
         CompletableFuture.allOf(categoriesFuture, usersFuture).join();

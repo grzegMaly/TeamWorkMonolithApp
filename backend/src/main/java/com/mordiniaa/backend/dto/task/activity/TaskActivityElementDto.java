@@ -1,6 +1,6 @@
 package com.mordiniaa.backend.dto.task.activity;
 
-import com.mordiniaa.backend.dto.user.mongodb.MongoUserDto;
+import com.mordiniaa.backend.dto.user.UserDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +14,6 @@ import java.time.Instant;
 @NoArgsConstructor
 public class TaskActivityElementDto {
 
-    private MongoUserDto user;
+    private UserDto user;
     private Instant createdAt;
 }

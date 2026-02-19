@@ -19,6 +19,8 @@ public class CreateUserRequest {
     @Size(min = 3, max = 25)
     private String lastname;
 
+    private String username;
+
     @Valid
     @NotNull
     private ContactData contactData;
@@ -30,7 +32,7 @@ public class CreateUserRequest {
     @Getter
     @Setter
     @NoArgsConstructor
-    static class Address {
+    public static class Address implements AddressRequest {
 
         @NotBlank
         @Size(min = 5, max = 40)
@@ -56,7 +58,7 @@ public class CreateUserRequest {
     @Getter
     @Setter
     @NoArgsConstructor
-    static class ContactData {
+    public static class ContactData implements ContactDataRequest {
 
         @NotBlank
         @Pattern(regexp = "\\d{1,3}")
