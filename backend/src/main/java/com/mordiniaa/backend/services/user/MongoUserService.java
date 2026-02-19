@@ -52,4 +52,14 @@ public class MongoUserService {
 
         mongoTemplate.updateFirst(query, update, UserRepresentation.class);
     }
+
+    public void updateUsername(UUID userId, String username) {
+
+        Query query = Query.query(
+                Criteria.where("userId").is(userId)
+        );
+        Update update = new Update()
+                .set("username", username);
+        mongoTemplate.updateFirst(query, update, UserRepresentation.class);
+    }
 }
