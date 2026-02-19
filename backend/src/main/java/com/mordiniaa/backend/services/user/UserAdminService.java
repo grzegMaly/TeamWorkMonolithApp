@@ -6,9 +6,12 @@ import com.mordiniaa.backend.events.user.events.UserCreatedEvent;
 import com.mordiniaa.backend.events.user.events.UserUsernameChangedEvent;
 import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.user.mysql.*;
+import com.mordiniaa.backend.repositories.mysql.AddressRepository;
 import com.mordiniaa.backend.repositories.mysql.RoleRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
+import com.mordiniaa.backend.request.user.AddressRequest;
 import com.mordiniaa.backend.request.user.CreateUserRequest;
+import com.mordiniaa.backend.request.user.patch.PatchUserAddressRequest;
 import com.mordiniaa.backend.request.user.patch.PatchUserDataRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,12 +33,13 @@ public class UserAdminService {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final MongoUserService mongoUserService;
     private final UserService userService;
+    private final AddressRepository addressRepository;
 
     @Transactional
-    public UserDto createUser(CreateUserRequest createUserRequest) {
+    public UserDto createUser(CreateUserRequest request) {
 
-        String firstName = createUserRequest.getFirstname().trim();
-        String lastName = createUserRequest.getLastname().trim();
+        String firstName = request.getFirstname().trim();
+        String lastName = request.getLastname().trim();
 
         if (userRepository.existsUserByFirstNameAndLastName(firstName, lastName))
             throw new RuntimeException();
@@ -53,9 +57,10 @@ public class UserAdminService {
         newUser.setImageKey(storageProperties.getProfileImages().getDefaultImageKey());
 
         //Address
-        var addr = createUserRequest.getAddress();
+        var addr = request.getAddress();
         if (addr != null) {
             Address address = new Address();
+            setupFullAddress(address, addr);
             address.setCity(addr.getCity().trim());
             address.setDistrict(addr.getDistrict().trim());
             address.setCountry(addr.getCountry().trim());
@@ -66,7 +71,7 @@ public class UserAdminService {
         }
 
         //Contact Data
-        var contactData = createUserRequest.getContactData();
+        var contactData = request.getContactData();
         if (contactData != null) {
             Contact contact = new Contact();
             contact.setEmail(contactData.getEmail().trim());
@@ -75,7 +80,7 @@ public class UserAdminService {
             contact.setUser(newUser);
             newUser.setContact(contact);
         }
-        
+
         User savedUser = userRepository.save(newUser);
         applicationEventPublisher.publishEvent(
                 new UserCreatedEvent(savedUser.getUserId())
@@ -98,12 +103,12 @@ public class UserAdminService {
         User user = userService.getUser(userId);
 
         String newFirst = firstName != null ? firstName : user.getFirstName();
-        String newLast  = lastName  != null ? lastName  : user.getLastName();
+        String newLast = lastName != null ? lastName : user.getLastName();
 
         String username = generateUniqueLogin(newFirst, newLast);
 
         if (firstName != null) user.setFirstName(firstName);
-        if (lastName  != null) user.setLastName(lastName);
+        if (lastName != null) user.setLastName(lastName);
 
         user.setUsername(username);
         userRepository.save(user);
@@ -113,9 +118,32 @@ public class UserAdminService {
         );
     }
 
-    public void updateUserAddressData(UUID userId) {
+    @Transactional
+    public void updateUserAddressData(UUID userId, Long addressId, PatchUserAddressRequest request) {
 
         mongoUserService.checkUserAvailability(userId);
+
+        User user = userService.getUser(userId);
+        Address address;
+
+        if (addressId == null) {
+            address = new Address();
+            setupFullAddress(address, request);
+            address.setUser(user);
+            addressRepository.save(address);
+            return;
+        }
+
+        address = addressRepository.findByIdAndUser_UserId(addressId, userId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        if (request.getCountry() != null) address.setCountry(request.getCountry());
+        if (request.getCity() != null) address.setCity(request.getCity());
+        if (request.getZipCode() != null) address.setZipCode(request.getZipCode());
+        if (request.getStreet() != null) address.setStreet(request.getStreet());
+        if (request.getDistrict() != null) address.setDistrict(request.getDistrict());
+
+        addressRepository.save(address);
     }
 
     public void updateUserContactData(UUID userId) {
@@ -139,5 +167,16 @@ public class UserAdminService {
             fullLogin = raw + ThreadLocalRandom.current().nextInt(999);
         }
         return fullLogin;
+    }
+
+    private void setupFullAddress(Address address, AddressRequest r) {
+
+        if (r.getStreet() == null || r.getCity() == null || r.getCountry() == null || r.getZipCode() == null || r.getDistrict() == null)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+        address.setStreet(r.getStreet().trim());
+        address.setCountry(r.getCountry().trim());
+        address.setCity(r.getCity().trim());
+        address.setZipCode(r.getZipCode().trim());
+        address.setDistrict(r.getDistrict().trim());
     }
 }
