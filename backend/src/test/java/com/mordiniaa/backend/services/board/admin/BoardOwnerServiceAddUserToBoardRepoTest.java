@@ -1,7 +1,7 @@
 package com.mordiniaa.backend.services.board.admin;
 
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
-import com.mordiniaa.backend.dto.user.mongodb.MongoUserDto;
+import com.mordiniaa.backend.dto.user.UserDto;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.team.Team;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
@@ -14,7 +14,6 @@ import com.mordiniaa.backend.repositories.mysql.RoleRepository;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.board.BoardCreationRequest;
-import net.bytebuddy.description.modifier.EnumerationState;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,7 +74,7 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         ownerUser = new UserRepresentation();
         ownerUser.setUserId(user.getUserId());
         ownerUser.setUsername("Username");
-        ownerUser.setImageUrl("ImageURL");
+        ownerUser.setImageKey("ImageURL");
         ownerUser = userRepresentationRepository.save(ownerUser);
 
         team = new Team();
@@ -119,7 +118,7 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setUsername(newUser.getUsername());
         userRepresentation.setUserId(newUser.getUserId());
-        userRepresentation.setImageUrl("Image2");
+        userRepresentation.setImageKey("Image2");
         userRepresentationRepository.save(userRepresentation);
 
         BoardDetailsDto boardDetailsDto = boardOwnerService.addUserToBoard(
@@ -131,9 +130,9 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         assertNotNull(boardDetailsDto);
         assertFalse(boardDetailsDto.getMembers().isEmpty());
 
-        MongoUserDto userDto = boardDetailsDto.getMembers().stream().filter(bm -> bm.getUserId().equals(userRepresentation.getUserId()))
+        UserDto userDto = boardDetailsDto.getMembers().stream().filter(bm -> bm.getUserId().equals(userRepresentation.getUserId()))
                 .findFirst().orElseThrow();
-        assertEquals(userRepresentation.getImageUrl(), userDto.getImageUrl());
+        assertEquals(userRepresentation.getImageKey(), userDto.getImageUrl());
         assertEquals(userRepresentation.getUsername(), userDto.getUsername());
     }
 
@@ -146,7 +145,7 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         newUser.setDeleted(true);
         newUser.setUserId(userId);
         newUser.setUsername("Username");
-        newUser.setImageUrl("ImageURL");
+        newUser.setImageKey("ImageURL");
         userRepresentationRepository.save(newUser);
 
         assertThrows(RuntimeException.class,
@@ -161,7 +160,7 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         UserRepresentation newUser = new UserRepresentation();
         newUser.setUserId(userId);
         newUser.setUsername("Username");
-        newUser.setImageUrl("ImageURL");
+        newUser.setImageKey("ImageURL");
 
         ownerUser.setDeleted(true);
         userRepresentationRepository.saveAll(List.of(ownerUser, newUser));
@@ -190,7 +189,7 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         UUID userId = UUID.randomUUID();
         UserRepresentation newUser = new UserRepresentation();
         newUser.setUsername("Username");
-        newUser.setImageUrl("ImageURL");
+        newUser.setImageKey("ImageURL");
         newUser.setUserId(userId);
         userRepresentationRepository.save(newUser);
 
@@ -217,7 +216,7 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
 
         UserRepresentation newUR = new UserRepresentation();
         newUR.setUserId(user.getUserId());
-        newUR.setImageUrl("ImageURL");
+        newUR.setImageKey("ImageURL");
         newUR.setUsername(user.getUsername());
         userRepresentationRepository.save(newUR);
 
@@ -232,7 +231,7 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         UserRepresentation newUser = new UserRepresentation();
         newUser.setUserId(UUID.randomUUID());
         newUser.setUsername("New Username");
-        newUser.setImageUrl("ImageURL");
+        newUser.setImageKey("ImageURL");
         userRepresentationRepository.save(newUser);
 
         assertThrows(RuntimeException.class,
