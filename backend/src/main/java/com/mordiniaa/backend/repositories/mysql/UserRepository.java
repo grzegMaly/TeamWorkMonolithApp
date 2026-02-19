@@ -17,4 +17,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsUserByFirstNameAndLastName(String firstName, String lastName);
 
     boolean existsByUsername(String username);
+
+    @Modifying
+    @Query("update User u set u.deleted = :deleted where u.userId = :userId")
+    void updateDeletedByUserId(boolean deleted, UUID userId);
 }
