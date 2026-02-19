@@ -54,25 +54,28 @@ public class UserAdminService {
 
         //Address
         var addr = createUserRequest.getAddress();
-        Address address = new Address();
-        address.setCity(addr.getCity().trim());
-        address.setDistrict(addr.getDistrict().trim());
-        address.setCountry(addr.getCountry().trim());
-        address.setStreet(addr.getStreet().trim());
-        address.setZipCode(addr.getZipCode().trim());
-        address.setUser(newUser);
+        if (addr != null) {
+            Address address = new Address();
+            address.setCity(addr.getCity().trim());
+            address.setDistrict(addr.getDistrict().trim());
+            address.setCountry(addr.getCountry().trim());
+            address.setStreet(addr.getStreet().trim());
+            address.setZipCode(addr.getZipCode().trim());
+            address.setUser(newUser);
+            newUser.addAddress(address);
+        }
 
         //Contact Data
         var contactData = createUserRequest.getContactData();
-        Contact contact = new Contact();
-        contact.setEmail(contactData.getEmail().trim());
-        contact.setCountryCallingCode(contactData.getCountryCallingCode().trim());
-        contact.setPhoneNumber(contactData.getPhoneNumber().trim());
-        contact.setUser(newUser);
-
-        newUser.addAddress(address);
-        newUser.setContact(contact);
-
+        if (contactData != null) {
+            Contact contact = new Contact();
+            contact.setEmail(contactData.getEmail().trim());
+            contact.setCountryCallingCode(contactData.getCountryCallingCode().trim());
+            contact.setPhoneNumber(contactData.getPhoneNumber().trim());
+            contact.setUser(newUser);
+            newUser.setContact(contact);
+        }
+        
         User savedUser = userRepository.save(newUser);
         applicationEventPublisher.publishEvent(
                 new UserCreatedEvent(savedUser.getUserId())
