@@ -21,9 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -92,17 +90,17 @@ public class TaskServiceDeleteTaskFromBoardRepoTest {
         UserRepresentation boardOwner = new UserRepresentation();
         boardOwner.setUserId(ownerId);
         boardOwner.setUsername("Owner 1");
-        boardOwner.setImageUrl("https://random1.pl");
+        boardOwner.setImageKey("https://random1.pl");
 
         UserRepresentation user1 = new UserRepresentation();
         user1.setUserId(member1Id);
         user1.setUsername("Mem 1");
-        user1.setImageUrl("https://random1.pl");
+        user1.setImageKey("https://random1.pl");
 
         UserRepresentation user2 = new UserRepresentation();
         user2.setUserId(member2Id);
         user2.setUsername("Mem 2");
-        user2.setImageUrl("https://random2.pl");
+        user2.setImageKey("https://random2.pl");
         userRepresentationRepository.saveAll(List.of(boardOwner, user1, user2));
 
         BoardMember boardMemberOwner = new BoardMember();
