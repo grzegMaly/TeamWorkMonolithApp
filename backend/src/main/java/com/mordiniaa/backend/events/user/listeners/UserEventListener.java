@@ -1,6 +1,7 @@
 package com.mordiniaa.backend.events.user.listeners;
 
 import com.mordiniaa.backend.events.user.events.UserCreatedEvent;
+import com.mordiniaa.backend.events.user.events.UserDeleteEvent;
 import com.mordiniaa.backend.events.user.events.UserProfileImageChangedEvent;
 import com.mordiniaa.backend.events.user.events.UserUsernameChangedEvent;
 import com.mordiniaa.backend.services.user.MongoUserService;
@@ -38,5 +39,12 @@ public class UserEventListener {
     public void handle(UserUsernameChangedEvent event) {
         mongoUserService.updateUsername(event.userId(), event.username());
         log.info("Username updated successfully for user: {}", event.userId());
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(UserDeleteEvent event) {
+        mongoUserService.deleteUser(event.userId());
+        log.info("User {} successfully deleted", event.userId());
     }
 }
