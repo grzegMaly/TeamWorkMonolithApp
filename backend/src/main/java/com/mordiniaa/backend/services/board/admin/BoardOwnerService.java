@@ -38,6 +38,7 @@ public class BoardOwnerService {
     private final BoardAggregationRepositoryImpl boardAggregationRepositoryImpl;
     private final MongoIdUtils mongoIdUtils;
     private final MongoTemplate mongoTemplate;
+    private final BoardAdminService boardAdminService;
 
     public BoardDetailsDto createBoard(UUID userId, BoardCreationRequest boardCreationRequest) {
 
@@ -51,11 +52,7 @@ public class BoardOwnerService {
         board.setTeamId(teamId);
         board.setBoardName(boardCreationRequest.getBoardName());
 
-        BoardMember ownerMember = new BoardMember(userId);
-        ownerMember.setBoardPermissions(Set.of(BoardPermission.values()));
-        ownerMember.setCategoryPermissions(Set.of(CategoryPermissions.values()));
-        ownerMember.setTaskPermissions(Set.of(TaskPermission.values()));
-        ownerMember.setCommentPermissions(Set.of(CommentPermission.values()));
+        BoardMember ownerMember = boardAdminService.createBoardOwner(userId);
 
         board.setOwner(ownerMember);
 
