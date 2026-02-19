@@ -1,7 +1,6 @@
 package com.mordiniaa.backend.repositories.mongo.board;
 
 import com.mordiniaa.backend.models.board.Board;
-import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardMembersOnly;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -40,4 +39,6 @@ public interface BoardRepository extends MongoRepository<Board, ObjectId> {
     Optional<Board> getBoardByIdWithCategoryAndBoardMemberOrOwner(ObjectId objectId, String categoryName, UUID userId);
 
     Optional<Board> findBoardByIdAndOwner_UserIdAndTeamId(ObjectId id, UUID ownerUserId, UUID teamId);
+
+    Optional<Board> findByIdAndTeamId(ObjectId id, UUID teamId);
 }
