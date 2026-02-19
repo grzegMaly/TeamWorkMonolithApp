@@ -81,16 +81,17 @@ public class BOTCSDeleteTaskCategoryTest {
     @BeforeEach
     void setup() {
 
-        Role role = new Role(AppRole.ROLE_MANAGER);
-        roleRepository.save(role);
+        Role role = roleRepository.findRoleByAppRole(AppRole.ROLE_MANAGER)
+                .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_MANAGER)));
 
         User user = new User();
         user.setLastName("LastName");
         user.setFirstName("FirstName");
         user.setEmail("email@gmail.com");
         user.setUsername("Username");
+        user.setImageKey("KEY");
         user.setPassword("SecretPassword");
-        user.setRole(roleRepository.getReferenceById(1));
+        user.setRole(role);
         user = userRepository.save(user);
 
         userRepresentation = new UserRepresentation();
@@ -102,6 +103,7 @@ public class BOTCSDeleteTaskCategoryTest {
         team = new Team();
         team.setManager(user);
         team.setTeamName("Name");
+        team.setPresentationName("Name");
         team = teamRepository.save(team);
 
         owner = new BoardMember(user.getUserId());
@@ -180,6 +182,7 @@ public class BOTCSDeleteTaskCategoryTest {
         userRepresentationRepository.deleteAll();
         boardRepository.deleteAll();
         taskRepository.deleteAll();
+        roleRepository.deleteAll();
     }
 
     @Test
