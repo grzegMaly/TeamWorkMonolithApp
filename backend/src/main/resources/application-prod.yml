@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: backend
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: ${DB_NAME}
+      username: ${DB_USERNAME}
+      password: ${MONGODB_PASSWORD}
+      authentication-database: ${DB_NAME}
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    database: ${DB_TYPE}
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
+
+storage:
+  profileImages:
+    path: ${PROFILE_IMAGES_ROOT:./profile_images_storage}
+    mimeTypes:
+      - image/jpeg
+      - image/png
+    profileWidth: 512
+    profileHeight: 512
+    defaultImageKey: defaultProfileImage
+    defaultImagePath: static/images/defaultProfileImage.png
+  cloudStorage:
+    path: ${STORAGE_ROOT:./files_storage}
