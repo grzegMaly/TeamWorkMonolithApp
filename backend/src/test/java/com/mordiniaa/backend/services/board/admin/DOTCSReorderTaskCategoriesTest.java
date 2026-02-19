@@ -81,7 +81,7 @@ public class DOTCSReorderTaskCategoriesTest {
         userRepresentation = new UserRepresentation();
         userRepresentation.setUserId(user.getUserId());
         userRepresentation.setUsername(user.getUsername());
-        userRepresentation.setImageUrl("IMAGE");
+        userRepresentation.setImageKey("IMAGE");
         userRepresentationRepository.save(userRepresentation);
 
         team = new Team();
@@ -338,7 +338,7 @@ public class DOTCSReorderTaskCategoriesTest {
         UserRepresentation user = new UserRepresentation();
         user.setUserId(UUID.randomUUID());
         user.setUsername("Username");
-        user.setImageUrl("IMAGE");
+        user.setImageKey("IMAGE");
         userRepresentationRepository.save(user);
 
         TaskCategoryRequest categoryRequest = new TaskCategoryRequest();
