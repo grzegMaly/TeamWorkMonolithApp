@@ -56,12 +56,12 @@ public class BOMSChangeBoardMemberPermissionsRepoTest {
         ownerUser = new UserRepresentation();
         ownerUser.setUserId(ownerId);
         ownerUser.setUsername("weewrge");
-        ownerUser.setImageUrl("ererge");
+        ownerUser.setImageKey("ererge");
         ownerUser = userRepository.save(ownerUser);
 
         memberUser = new UserRepresentation();
         memberUser.setUserId(memberId);
-        memberUser.setImageUrl("evrertgh");
+        memberUser.setImageKey("evrertgh");
         memberUser.setUsername("ergvertg");
         memberUser = userRepository.save(memberUser);
 
