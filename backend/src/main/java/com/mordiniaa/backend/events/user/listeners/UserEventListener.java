@@ -2,16 +2,9 @@ package com.mordiniaa.backend.events.user.listeners;
 
 import com.mordiniaa.backend.events.user.events.UserCreatedEvent;
 import com.mordiniaa.backend.events.user.events.UserProfileImageChangedEvent;
-import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
-import com.mordiniaa.backend.models.user.mysql.User;
-import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
-import com.mordiniaa.backend.repositories.mysql.UserRepository;
+import com.mordiniaa.backend.services.user.MongoUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,24 +16,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class UserEventListener {
 
-    private final UserRepository userRepository;
-    private final UserRepresentationRepository userRepresentationRepository;
-    private final MongoTemplate mongoTemplate;
+    private final MongoUserService mongoUserService;
 
     @Async
     @Transactional(readOnly = true)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(UserCreatedEvent event) {
-
-        User user = userRepository.findById(event.userId())
-                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
-
-        UserRepresentation mongoUser = new UserRepresentation();
-        mongoUser.setUsername(user.getUsername());
-        mongoUser.setImageKey(user.getImageKey());
-        mongoUser.setUserId(user.getUserId());
-        userRepresentationRepository.save(mongoUser);
-
+        mongoUserService.createUserRepresentation(event.userId());
         log.info("Mongo projection created for user: {}", event.userId());
     }
 
@@ -48,13 +30,7 @@ public class UserEventListener {
     @Transactional
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(UserProfileImageChangedEvent event) {
-
-        Query query = Query.query(
-                Criteria.where("userId").is(event.userId())
-        );
-        Update update = new Update()
-                .set("imageKey", event.imageKey());
-
-        mongoTemplate.updateFirst(query, update, UserRepresentation.class);
+        mongoUserService.setProfileImageKey(event.userId(), event.imageKey());
+        log.info("Image Changed For User: {}", event.userId());
     }
 }
