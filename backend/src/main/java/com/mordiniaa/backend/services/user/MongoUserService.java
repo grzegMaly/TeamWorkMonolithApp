@@ -1,7 +1,15 @@
 package com.mordiniaa.backend.services.user;
 
+import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
+import com.mordiniaa.backend.models.user.mysql.User;
+import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepository;
+import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -11,11 +19,37 @@ import java.util.UUID;
 public class MongoUserService {
 
     private final UserReprCustomRepository userReprCustomRepository;
+    private final UserRepository userRepository;
+    private final UserRepresentationRepository userRepresentationRepository;
+    private final MongoTemplate mongoTemplate;
 
     public void checkUserAvailability(UUID... userIds) {
         boolean result = userReprCustomRepository.allUsersAvailable(userIds);
         if (!result) {
             throw new RuntimeException(); //TODO: Change in Exceptions Section
         }
+    }
+
+    public void createUserRepresentation(UUID userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        UserRepresentation mongoUser = new UserRepresentation();
+        mongoUser.setUsername(user.getUsername());
+        mongoUser.setImageKey(user.getImageKey());
+        mongoUser.setUserId(user.getUserId());
+        userRepresentationRepository.save(mongoUser);
+    }
+
+    public void setProfileImageKey(UUID userId, String imageKey) {
+
+        Query query = Query.query(
+                Criteria.where("userId").is(userId)
+        );
+        Update update = new Update()
+                .set("imageKey", imageKey);
+
+        mongoTemplate.updateFirst(query, update, UserRepresentation.class);
     }
 }
