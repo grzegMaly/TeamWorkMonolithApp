@@ -3,6 +3,7 @@ package com.mordiniaa.backend.services.user;
 import com.mordiniaa.backend.config.StorageProperties;
 import com.mordiniaa.backend.dto.user.UserDto;
 import com.mordiniaa.backend.events.user.events.UserCreatedEvent;
+import com.mordiniaa.backend.events.user.events.UserDeleteEvent;
 import com.mordiniaa.backend.events.user.events.UserUsernameChangedEvent;
 import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.user.mysql.*;
@@ -171,7 +172,16 @@ public class UserAdminService {
 
     public void deactivateUser(UUID userId) {
 
-        mongoUserService.checkUserAvailability(userId);
+        try {
+            mongoUserService.checkUserAvailability(userId);
+        } catch (RuntimeException e) { // TODO: Change In Exceptions Section
+            throw new RuntimeException("User already inactive"); // TODO: Change In Exceptions Section
+        }
+
+        userRepository.updateDeletedByUserId(true, userId);
+        applicationEventPublisher.publishEvent(
+                new UserDeleteEvent(userId)
+        );
     }
 
     private String generateUniqueLogin(String firstName, String lastName) {
