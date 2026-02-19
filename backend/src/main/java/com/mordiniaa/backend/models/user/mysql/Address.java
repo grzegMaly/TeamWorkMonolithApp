@@ -28,7 +28,7 @@ public class Address {
     @Column(name = "zip_code", length = 20, nullable = false)
     private String zipCode;
 
-    @Column(name = "district", length = 100)
+    @Column(name = "district", length = 100, nullable = false)
     private String district;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
