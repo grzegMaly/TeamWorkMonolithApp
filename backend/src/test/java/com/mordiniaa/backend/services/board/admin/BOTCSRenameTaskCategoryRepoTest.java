@@ -77,7 +77,7 @@ public class BOTCSRenameTaskCategoryRepoTest {
         userRepresentation = new UserRepresentation();
         userRepresentation.setUserId(user.getUserId());
         userRepresentation.setUsername(user.getUsername());
-        userRepresentation.setImageUrl("IMAGE");
+        userRepresentation.setImageKey("IMAGE");
         userRepresentationRepository.save(userRepresentation);
 
         team = new Team();
@@ -191,7 +191,7 @@ public class BOTCSRenameTaskCategoryRepoTest {
         UserRepresentation newUser = new UserRepresentation();
         userRepresentation.setUsername("New Name");
         userRepresentation.setUserId(UUID.randomUUID());
-        userRepresentation.setImageUrl("IMAGE");
+        userRepresentation.setImageKey("IMAGE");
         userRepresentationRepository.save(newUser);
 
         TaskCategoryRequest taskCategoryRequest = new TaskCategoryRequest();
