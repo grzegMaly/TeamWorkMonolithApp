@@ -1,9 +1,5 @@
 package com.mordiniaa.backend.services.task;
 
-import com.mordiniaa.backend.mappers.task.TaskMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
@@ -13,21 +9,12 @@ import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
-import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
-import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
 import com.mordiniaa.backend.request.task.AssignUsersRequest;
-import com.mordiniaa.backend.services.user.MongoUserService;
-import com.mordiniaa.backend.utils.BoardUtils;
-import com.mordiniaa.backend.utils.MongoIdUtils;
-import lombok.With;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.*;
-import org.mockito.internal.matchers.Any;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -91,17 +78,17 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         owner = new UserRepresentation();
         owner.setUserId(ownerId);
         owner.setUsername("Owner");
-        owner.setImageUrl("http:random123.com");
+        owner.setImageKey("http:random123.com");
 
         user1 = new UserRepresentation();
         user1.setUserId(member1Id);
         user1.setUsername("Member 1");
-        user1.setImageUrl("http:random123.com");
+        user1.setImageKey("http:random123.com");
 
         user2 = new UserRepresentation();
         user2.setUserId(member2Id);
         user2.setUsername("Member 2");
-        user2.setImageUrl("http:random123.com");
+        user2.setImageKey("http:random123.com");
 
         taskCategory1 = new TaskCategory();
         taskCategory1.setCategoryName("Dev");
@@ -261,7 +248,7 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         UserRepresentation user = new UserRepresentation();
         user.setUserId(userId);
         user.setUsername("Username");
-        user.setImageUrl("https://random123.com");
+        user.setImageKey("https://random123.com");
         userRepresentationRepository.save(user);
 
         BoardMember newMember = new BoardMember(userId);
@@ -355,7 +342,7 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         UserRepresentation user = new UserRepresentation();
         user.setUserId(userId);
         user.setUsername("Username");
-        user.setImageUrl("https://random123.com");
+        user.setImageKey("https://random123.com");
         userRepresentationRepository.save(user);
 
         BoardMember member = new BoardMember(userId);
@@ -388,7 +375,7 @@ public class TaskManagementRemoveUserFromTaskRepoTest {
         UserRepresentation user = new UserRepresentation();
         user.setUserId(userId);
         user.setUsername("Username");
-        user.setImageUrl("https://random123.com");
+        user.setImageKey("https://random123.com");
         userRepresentationRepository.save(user);
 
         BoardMember member = new BoardMember(userId);
