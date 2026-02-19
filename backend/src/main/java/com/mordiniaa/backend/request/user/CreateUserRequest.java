@@ -58,7 +58,7 @@ public class CreateUserRequest {
     @Getter
     @Setter
     @NoArgsConstructor
-    public static class ContactData {
+    public static class ContactData implements ContactDataRequest {
 
         @NotBlank
         @Pattern(regexp = "\\d{1,3}")

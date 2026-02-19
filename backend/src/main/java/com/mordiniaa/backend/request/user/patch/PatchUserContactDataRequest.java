@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.request.user.patch;
 
+import com.mordiniaa.backend.request.user.ContactDataRequest;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -10,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PatchUserContactDataRequest {
+public class PatchUserContactDataRequest implements ContactDataRequest {
 
     @Pattern(regexp = "\\d{1,3}")
     private String countryCallingCode;
