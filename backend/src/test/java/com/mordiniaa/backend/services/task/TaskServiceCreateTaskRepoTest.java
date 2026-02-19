@@ -1,12 +1,6 @@
 package com.mordiniaa.backend.services.task;
 
 import com.mordiniaa.backend.dto.task.TaskShortDto;
-import com.mordiniaa.backend.mappers.task.TaskMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCategoryChangeDtoMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskStatusChangeDtoMapper;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
@@ -102,28 +96,28 @@ public class TaskServiceCreateTaskRepoTest {
         UserRepresentation boardOwner1 = new UserRepresentation();
         boardOwner1.setUserId(owner1Id);
         boardOwner1.setUsername("Owner 1");
-        boardOwner1.setImageUrl("https://random1.pl");
+        boardOwner1.setImageKey("https://random1.pl");
 
         UserRepresentation boardOwner2 = new UserRepresentation();
         boardOwner2.setUserId(owner2Id);
         boardOwner2.setUsername("Owner 2");
-        boardOwner2.setImageUrl("https://random2.pl");
+        boardOwner2.setImageKey("https://random2.pl");
 
         UserRepresentation deletedBoardOwner3 = new UserRepresentation();
         deletedBoardOwner3.setUserId(owner3Id);
         deletedBoardOwner3.setUsername("Owner 3");
-        deletedBoardOwner3.setImageUrl("https://random3.pl");
+        deletedBoardOwner3.setImageKey("https://random3.pl");
         deletedBoardOwner3.setDeleted(true);
 
         UserRepresentation user11 = new UserRepresentation();
         user11.setUserId(member11Id);
         user11.setUsername("XXXX");
-        user11.setImageUrl("https://random1.pl");
+        user11.setImageKey("https://random1.pl");
 
         UserRepresentation user12 = new UserRepresentation();
         user12.setUserId(member12Id);
         user12.setUsername("XXXX");
-        user12.setImageUrl("https://random2.pl");
+        user12.setImageKey("https://random2.pl");
 
         userRepresentationRepository.saveAll(List.of(boardOwner1, boardOwner2, deletedBoardOwner3, user11, user12));
 
