@@ -57,7 +57,7 @@ public class BUSGetBoardListForUserRepoTest {
         user = new UserRepresentation();
         user.setUserId(ownerId);
         user.setUsername("Username");
-        user.setImageUrl("https://random123.com");
+        user.setImageKey("https://random123.com");
         user = userRepresentationRepository.save(user);
 
         board1 = new Board();
