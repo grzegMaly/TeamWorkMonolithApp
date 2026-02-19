@@ -1,9 +1,9 @@
 package com.mordiniaa.backend.services.storage.profileImagesStorage;
 
 import com.mordiniaa.backend.config.StorageProperties;
+import com.mordiniaa.backend.events.user.events.UserProfileImageChangedEvent;
 import com.mordiniaa.backend.models.file.imageStorage.ImageMetadata;
 import com.mordiniaa.backend.models.user.DbUser;
-import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.ImageMetadataRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.services.storage.StorageProvider;
@@ -11,11 +11,9 @@ import com.mordiniaa.backend.utils.CloudStorageServiceUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,6 +35,7 @@ public class ImagesStorageService {
     private final MongoTemplate mongoTemplate;
     private final UserRepository userRepository;
     private final CloudStorageServiceUtils cloudStorageServiceUtils;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public ResponseEntity<StreamingResponseBody> getProfileImage(String key) {
 
@@ -159,14 +158,11 @@ public class ImagesStorageService {
     }
 
     private void updateUserImageKey(UUID userId, String imageKey) {
-        Query query = Query.query(
-                Criteria.where("userId").is(userId)
-        );
-        Update update = new Update()
-                .set("imageKey", imageKey);
 
-        mongoTemplate.updateFirst(query, update, UserRepresentation.class);
         userRepository.updateImageKeyByUserId(imageKey, userId);
+        applicationEventPublisher.publishEvent(
+                new UserProfileImageChangedEvent(userId, imageKey)
+        );
     }
 
     private ResponseEntity<StreamingResponseBody> defaultImage() {
