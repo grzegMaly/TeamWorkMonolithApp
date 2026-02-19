@@ -4,12 +4,6 @@ import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
 import com.mordiniaa.backend.dto.task.activity.TaskActivityElementDto;
 import com.mordiniaa.backend.dto.task.activity.TaskCommentDto;
 import com.mordiniaa.backend.dto.task.activity.TaskStatusChangeDto;
-import com.mordiniaa.backend.mappers.task.TaskMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCategoryChangeDtoMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskStatusChangeDtoMapper;
-import com.mordiniaa.backend.mappers.user.UserRepresentationMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
@@ -107,17 +101,17 @@ public class TaskServiceGetTaskByIdRepoTest {
         UserRepresentation boardOwner = new UserRepresentation();
         boardOwner.setUserId(ownerId);
         boardOwner.setUsername("Owner 1");
-        boardOwner.setImageUrl("https://random1.pl");
+        boardOwner.setImageKey("https://random1.pl");
 
         UserRepresentation user1 = new UserRepresentation();
         user1.setUserId(member1Id);
         user1.setUsername("Mem 1");
-        user1.setImageUrl("https://random1.pl");
+        user1.setImageKey("https://random1.pl");
 
         UserRepresentation user2 = new UserRepresentation();
         user2.setUserId(member2Id);
         user2.setUsername("Mem 2");
-        user2.setImageUrl("https://random2.pl");
+        user2.setImageKey("https://random2.pl");
         userRepresentationRepository.saveAll(List.of(boardOwner, user1, user2));
 
         BoardMember boardMemberOwner = new BoardMember();
