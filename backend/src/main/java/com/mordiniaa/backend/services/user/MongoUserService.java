@@ -62,4 +62,14 @@ public class MongoUserService {
                 .set("username", username);
         mongoTemplate.updateFirst(query, update, UserRepresentation.class);
     }
+
+    public void deleteUser(UUID userId) {
+
+        Query query = Query.query(
+                Criteria.where("userId").is(userId)
+        );
+        Update update = new Update()
+                .set("deleted", true);
+        mongoTemplate.updateFirst(query, update, UserRepresentation.class);
+    }
 }
