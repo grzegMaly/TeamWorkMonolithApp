@@ -2,7 +2,7 @@ package com.mordiniaa.backend.services.board;
 
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.dto.task.TaskShortDto;
-import com.mordiniaa.backend.dto.user.mongodb.MongoUserDto;
+import com.mordiniaa.backend.dto.user.UserDto;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.TaskCategory;
@@ -111,25 +111,25 @@ public class BUSGetBoardDetailsRepoTest {
         BoardDetailsDto dto = boardUserService.getBoardDetails(ownerId, board.getId().toHexString(), teamId);
         assertNotNull(dto);
 
-        MongoUserDto ownerDto = dto.getOwner();
+        UserDto ownerDto = dto.getOwner();
         assertNotNull(ownerDto);
         assertEquals(ownerId, ownerDto.getUserId());
         assertEquals(owner.getUsername(), ownerDto.getUsername());
-        assertEquals(owner.getImageUrl(), ownerDto.getImageUrl());
+        assertEquals(owner.getImageKey(), ownerDto.getImageUrl());
 
-        List<MongoUserDto> members = dto.getMembers();
+        List<UserDto> members = dto.getMembers();
         assertFalse(members.isEmpty());
-        MongoUserDto userDto1 = members.stream().filter(m -> m.getUserId().equals(member1Id))
+        UserDto userDto1 = members.stream().filter(m -> m.getUserId().equals(member1Id))
                 .findFirst().orElse(null);
         assertNotNull(userDto1);
         assertEquals(member1.getUsername(), userDto1.getUsername());
-        assertEquals(member1.getImageUrl(), userDto1.getImageUrl());
+        assertEquals(member1.getImageKey(), userDto1.getImageUrl());
 
-        MongoUserDto userDto2 = members.stream().filter(m -> m.getUserId().equals(member2Id))
+        UserDto userDto2 = members.stream().filter(m -> m.getUserId().equals(member2Id))
                 .findFirst().orElse(null);
         assertNotNull(userDto2);
         assertEquals(member2.getUsername(), userDto2.getUsername());
-        assertEquals(member2.getImageUrl(), userDto2.getImageUrl());
+        assertEquals(member2.getImageKey(), userDto2.getImageUrl());
 
         List<BoardDetailsDto.TaskCategoryDTO> categoryDTOs = dto.getTaskCategories();
         assertFalse(categoryDTOs.isEmpty());
@@ -156,25 +156,25 @@ public class BUSGetBoardDetailsRepoTest {
         BoardDetailsDto dto = boardUserService.getBoardDetails(member1Id, board.getId().toHexString(), teamId);
         assertNotNull(dto);
 
-        MongoUserDto ownerDto = dto.getOwner();
+        UserDto ownerDto = dto.getOwner();
         assertNotNull(ownerDto);
         assertEquals(ownerId, ownerDto.getUserId());
         assertEquals(owner.getUsername(), ownerDto.getUsername());
-        assertEquals(owner.getImageUrl(), ownerDto.getImageUrl());
+        assertEquals(owner.getImageKey(), ownerDto.getImageUrl());
 
-        List<MongoUserDto> members = dto.getMembers();
+        List<UserDto> members = dto.getMembers();
         assertFalse(members.isEmpty());
-        MongoUserDto userDto1 = members.stream().filter(m -> m.getUserId().equals(member1Id))
+        UserDto userDto1 = members.stream().filter(m -> m.getUserId().equals(member1Id))
                 .findFirst().orElse(null);
         assertNotNull(userDto1);
         assertEquals(member1.getUsername(), userDto1.getUsername());
-        assertEquals(member1.getImageUrl(), userDto1.getImageUrl());
+        assertEquals(member1.getImageKey(), userDto1.getImageUrl());
 
-        MongoUserDto userDto2 = members.stream().filter(m -> m.getUserId().equals(member2Id))
+        UserDto userDto2 = members.stream().filter(m -> m.getUserId().equals(member2Id))
                 .findFirst().orElse(null);
         assertNotNull(userDto2);
         assertEquals(member2.getUsername(), userDto2.getUsername());
-        assertEquals(member2.getImageUrl(), userDto2.getImageUrl());
+        assertEquals(member2.getImageKey(), userDto2.getImageUrl());
 
         List<BoardDetailsDto.TaskCategoryDTO> categoryDTOs = dto.getTaskCategories();
         assertFalse(categoryDTOs.isEmpty());
@@ -215,7 +215,7 @@ public class BUSGetBoardDetailsRepoTest {
         UUID userId = UUID.randomUUID();
         UserRepresentation newUser = new UserRepresentation();
         newUser.setUserId(userId);
-        newUser.setImageUrl("ImageUrl");
+        newUser.setImageKey("ImageUrl");
         newUser.setUsername("Username");
         userRepository.save(newUser);
 
@@ -259,7 +259,7 @@ public class BUSGetBoardDetailsRepoTest {
 
         UserRepresentation user = new UserRepresentation();
         user.setUsername(username);
-        user.setImageUrl(imageUrl);
+        user.setImageKey(imageUrl);
         user.setUserId(userId);
         return userRepository.save(user);
     }
