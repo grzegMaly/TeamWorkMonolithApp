@@ -3,18 +3,20 @@ package com.mordiniaa.backend.services.user;
 import com.mordiniaa.backend.config.StorageProperties;
 import com.mordiniaa.backend.dto.user.UserDto;
 import com.mordiniaa.backend.events.user.events.UserCreatedEvent;
+import com.mordiniaa.backend.events.user.events.UserUsernameChangedEvent;
 import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.user.mysql.*;
-import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mysql.RoleRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.user.CreateUserRequest;
+import com.mordiniaa.backend.request.user.patch.PatchUserDataRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -26,6 +28,8 @@ public class UserAdminService {
     private final StorageProperties storageProperties;
     private final UserMapper userMapper;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final MongoUserService mongoUserService;
+    private final UserService userService;
 
     @Transactional
     public UserDto createUser(CreateUserRequest createUserRequest) {
@@ -36,11 +40,7 @@ public class UserAdminService {
         if (userRepository.existsUserByFirstNameAndLastName(firstName, lastName))
             throw new RuntimeException();
 
-        String raw = new Random().nextBoolean()
-                ? firstName.substring(0, 3).concat(lastName.substring(0, 3))
-                : lastName.substring(0, 3).concat(firstName.substring(0, 3));
-
-        String login = generateUniqueLogin(raw);
+        String login = generateUniqueLogin(firstName, lastName);
 
         Role userRole = roleRepository.findRoleByAppRole(AppRole.ROLE_USER)
                 .orElseThrow(RuntimeException::new); //TODO: Change In Exceptions Section
@@ -81,24 +81,60 @@ public class UserAdminService {
         return userMapper.toDto(savedUser);
     }
 
-    private String generateUniqueLogin(String rawLogin) {
+    @Transactional
+    public void updateUserBasicData(UUID userId, PatchUserDataRequest request) {
 
-        String fullLogin = rawLogin + ThreadLocalRandom.current().nextInt(999);
+        mongoUserService.checkUserAvailability(userId);
+
+        String firstName = request.getFirstname();
+        String lastName = request.getLastname();
+
+        if (firstName == null && lastName == null)
+            throw new RuntimeException(); // TODO: Change In Exceptions Section
+
+        User user = userService.getUser(userId);
+
+        String newFirst = firstName != null ? firstName : user.getFirstName();
+        String newLast  = lastName  != null ? lastName  : user.getLastName();
+
+        String username = generateUniqueLogin(newFirst, newLast);
+
+        if (firstName != null) user.setFirstName(firstName);
+        if (lastName  != null) user.setLastName(lastName);
+
+        user.setUsername(username);
+        userRepository.save(user);
+
+        applicationEventPublisher.publishEvent(
+                new UserUsernameChangedEvent(userId, username)
+        );
+    }
+
+    public void updateUserAddressData(UUID userId) {
+
+        mongoUserService.checkUserAvailability(userId);
+    }
+
+    public void updateUserContactData(UUID userId) {
+
+        mongoUserService.checkUserAvailability(userId);
+    }
+
+    public void deactivateUser(UUID userId) {
+
+        mongoUserService.checkUserAvailability(userId);
+    }
+
+    private String generateUniqueLogin(String firstName, String lastName) {
+
+        String raw = new Random().nextBoolean()
+                ? firstName.substring(0, 3).concat(lastName.substring(0, 3))
+                : lastName.substring(0, 3).concat(firstName.substring(0, 3));
+
+        String fullLogin = raw + ThreadLocalRandom.current().nextInt(999);
         while (userRepository.existsByUsername(fullLogin)) {
-            fullLogin = rawLogin + ThreadLocalRandom.current().nextInt(999);
+            fullLogin = raw + ThreadLocalRandom.current().nextInt(999);
         }
         return fullLogin;
-    }
-
-    public void updateUserData() {
-
-    }
-
-    public void updateUserAddress() {
-
-    }
-
-    public void deactivateUser() {
-
     }
 }
