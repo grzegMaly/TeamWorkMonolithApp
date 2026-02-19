@@ -5,7 +5,7 @@ import com.mordiniaa.backend.dto.task.activity.TaskActivityElementDto;
 import com.mordiniaa.backend.dto.task.activity.TaskCategoryChangeDto;
 import com.mordiniaa.backend.dto.task.activity.TaskCommentDto;
 import com.mordiniaa.backend.dto.task.activity.TaskStatusChangeDto;
-import com.mordiniaa.backend.dto.user.mongodb.MongoUserDto;
+import com.mordiniaa.backend.dto.user.UserDto;
 import com.mordiniaa.backend.mappers.task.TaskMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
@@ -181,7 +181,7 @@ public class TaskServiceGetTaskByIdMockTest {
         UserRepresentation user = new UserRepresentation();
         user.setUserId(userId);
         user.setUsername(username);
-        user.setImageUrl(imageUrl);
+        user.setImageKey(imageUrl);
         return user;
     }
 
@@ -238,10 +238,10 @@ public class TaskServiceGetTaskByIdMockTest {
             TaskActivityElementDto elementDto;
 
             UserRepresentation user = users.get(element.getUser());
-            MongoUserDto userDto = new MongoUserDto();
+            UserDto userDto = new UserDto();
             userDto.setUserId(user.getUserId());
             userDto.setUsername(user.getUsername());
-            userDto.setImageUrl(user.getImageUrl());
+            userDto.setImageUrl(user.getImageKey());
 
             switch (element) {
                 case TaskComment tc -> {
