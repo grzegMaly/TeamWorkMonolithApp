@@ -13,4 +13,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Modifying
     @Query("update User u set u.imageKey = :imageKey where u.userId = :userId")
     void updateImageKeyByUserId(String imageKey, UUID userId);
+
+    boolean existsUserByFirstNameAndLastName(String firstName, String lastName);
+
+    boolean existsByUsername(String username);
 }
