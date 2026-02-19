@@ -56,18 +56,21 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
 
     private Board board;
 
+    private Role role;
+
     @BeforeEach
     void setup() {
 
-        Role managerRole = new Role(AppRole.ROLE_MANAGER);
-        managerRole = roleRepository.save(managerRole);
+        role = roleRepository.findRoleByAppRole(AppRole.ROLE_MANAGER)
+                .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_MANAGER)));
 
         User user = new User();
         user.setUsername("Username");
-        user.setRole(managerRole);
+        user.setRole(role);
         user.setEmail("email@gmail.com");
         user.setFirstName("FirstName");
         user.setLastName("LastName");
+        user.setImageKey("KEY");
         user.setPassword("SuperSecretPassword");
         user = userRepository.save(user);
 
@@ -79,6 +82,7 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
 
         team = new Team();
         team.setTeamName("Test Team");
+        team.setPresentationName("Test Team");
         team.setManager(user);
         team = teamRepository.save(team);
 
@@ -97,6 +101,7 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         userRepresentationRepository.deleteAll();
         teamRepository.deleteAll();
         userRepository.deleteAll();
+        roleRepository.deleteAll();
     }
 
     @Test
@@ -104,11 +109,12 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
     void addUserToBoardTest() {
 
         User newUser = new User();
-        newUser.setRole(roleRepository.getReferenceById(1));
+        newUser.setRole(role);
         newUser.setUsername("Username2");
         newUser.setPassword("SuperSecretPassword");
         newUser.setFirstName("First");
         newUser.setLastName("Last");
+        newUser.setImageKey("KEY");
         newUser.setEmail("emailEmail@gmail.com");
         newUser = userRepository.save(newUser);
 
@@ -210,8 +216,9 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         user.setUsername("New Username");
         user.setFirstName("LastName");
         user.setLastName("FirstName"); // Hehe
-        user.setRole(roleRepository.getReferenceById(1));
+        user.setRole(role);
         user.setEmail("newEmail@gmail.com");
+        user.setImageKey("KEY");
         user = userRepository.save(user);
 
         UserRepresentation newUR = new UserRepresentation();
