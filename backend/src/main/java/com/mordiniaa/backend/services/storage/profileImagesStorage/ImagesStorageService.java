@@ -11,7 +11,6 @@ import com.mordiniaa.backend.utils.CloudStorageServiceUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
