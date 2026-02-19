@@ -66,8 +66,8 @@ public class DOTCSReorderTaskCategoriesTest {
     @BeforeEach
     void setup() {
 
-        Role role = new Role(AppRole.ROLE_MANAGER);
-        roleRepository.save(role);
+        Role role = roleRepository.findRoleByAppRole(AppRole.ROLE_MANAGER)
+                .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_MANAGER)));
 
         User user = new User();
         user.setLastName("LastName");
@@ -75,7 +75,8 @@ public class DOTCSReorderTaskCategoriesTest {
         user.setEmail("email@gmail.com");
         user.setUsername("Username");
         user.setPassword("SecretPassword");
-        user.setRole(roleRepository.getReferenceById(1));
+        user.setImageKey("KEY");
+        user.setRole(role);
         user = userRepository.save(user);
 
         userRepresentation = new UserRepresentation();
@@ -87,6 +88,7 @@ public class DOTCSReorderTaskCategoriesTest {
         team = new Team();
         team.setManager(user);
         team.setTeamName("Name");
+        team.setPresentationName("Name");
         team = teamRepository.save(team);
 
         owner = new BoardMember(user.getUserId());
@@ -105,11 +107,12 @@ public class DOTCSReorderTaskCategoriesTest {
     }
 
     @AfterEach
-    void clear() {
+    void clean() {
         teamRepository.deleteAll();
         userRepository.deleteAll();
         userRepresentationRepository.deleteAll();
         boardRepository.deleteAll();
+        roleRepository.deleteAll();
     }
 
     @Test
