@@ -5,7 +5,6 @@ import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.models.user.mysql.User;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
-import com.mordiniaa.backend.utils.CloudStorageServiceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -17,11 +16,10 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class UserMongoProjectionListener {
+public class UserEventListener {
 
     private final UserRepository userRepository;
     private final UserRepresentationRepository userRepresentationRepository;
-    private final CloudStorageServiceUtils cloudStorageServiceUtils;
 
     @Async
     @Transactional(readOnly = true)
