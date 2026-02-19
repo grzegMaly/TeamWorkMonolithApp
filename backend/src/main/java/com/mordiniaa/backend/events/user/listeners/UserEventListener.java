@@ -2,6 +2,7 @@ package com.mordiniaa.backend.events.user.listeners;
 
 import com.mordiniaa.backend.events.user.events.UserCreatedEvent;
 import com.mordiniaa.backend.events.user.events.UserProfileImageChangedEvent;
+import com.mordiniaa.backend.events.user.events.UserUsernameChangedEvent;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,6 @@ public class UserEventListener {
     private final MongoUserService mongoUserService;
 
     @Async
-    @Transactional(readOnly = true)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(UserCreatedEvent event) {
         mongoUserService.createUserRepresentation(event.userId());
@@ -27,10 +27,16 @@ public class UserEventListener {
     }
 
     @Async
-    @Transactional
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handle(UserProfileImageChangedEvent event) {
         mongoUserService.setProfileImageKey(event.userId(), event.imageKey());
-        log.info("Image Changed For User: {}", event.userId());
+        log.info("Image changed for user: {}", event.userId());
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(UserUsernameChangedEvent event) {
+        mongoUserService.updateUsername(event.userId(), event.username());
+        log.info("Username updated successfully for user: {}", event.userId());
     }
 }
