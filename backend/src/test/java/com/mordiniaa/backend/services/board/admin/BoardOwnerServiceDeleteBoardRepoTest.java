@@ -13,6 +13,7 @@ import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.board.BoardCreationRequest;
 import org.bson.types.ObjectId;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,7 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
         user.setFirstName("FirstName");
         user.setLastName("LastName");
         user.setPassword("SuperSecretPassword");
+        user.setImageKey("KEY");
         user = userRepository.save(user);
 
         User member = new User();
@@ -76,6 +78,7 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
         member.setFirstName("MemberFirst");
         member.setLastName("MemberLast");
         member.setPassword("SuperSecretPassword");
+        member.setImageKey("KEY");
         member = userRepository.save(member);
 
         ownerUser = new UserRepresentation();
@@ -92,6 +95,7 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
 
         team = new Team();
         team.setTeamName("Test Team");
+        team.setPresentationName("Test Team");
         team.setManager(user);
         team.setTeamMembers(Set.of(member));
         team = teamRepository.save(team);
@@ -106,6 +110,15 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
 
         board = boardRepository.findById(boardId)
                 .orElseThrow();
+    }
+
+    @AfterEach
+    void clean() {
+        teamRepository.deleteAll();
+        userRepository.deleteAll();
+        userRepresentationRepository.deleteAll();
+        boardRepository.deleteAll();
+        roleRepository.deleteAll();
     }
 
     @Test
