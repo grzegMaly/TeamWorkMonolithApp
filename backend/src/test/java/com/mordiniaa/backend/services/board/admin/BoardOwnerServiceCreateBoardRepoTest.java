@@ -65,7 +65,7 @@ public class BoardOwnerServiceCreateBoardRepoTest {
         ownerUser = new UserRepresentation();
         ownerUser.setUserId(user.getUserId());
         ownerUser.setUsername("Username");
-        ownerUser.setImageUrl("ImageURL");
+        ownerUser.setImageKey("ImageURL");
         ownerUser = userRepresentationRepository.save(ownerUser);
 
         team = new Team();
@@ -126,7 +126,7 @@ public class BoardOwnerServiceCreateBoardRepoTest {
 
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setUserId(newUser.getUserId());
-        userRepresentation.setImageUrl("ImageURL");
+        userRepresentation.setImageKey("ImageURL");
         userRepresentation.setUsername(newUser.getUsername());
         userRepresentationRepository.save(userRepresentation);
 
