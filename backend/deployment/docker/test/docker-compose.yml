@@ -1,0 +1,22 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mongodb-container
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_NAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+      - ../../../mongo/init/test:/docker-entrypoint-initdb.d
+    networks:
+      - team-work
+
+networks:
+  team-work:
+    driver: bridge
+
+volumes:
+  mongo_data:
