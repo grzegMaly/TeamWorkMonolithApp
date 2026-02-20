@@ -67,7 +67,6 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         User user = new User();
         user.setUsername("Username");
         user.setRole(role);
-        user.setEmail("email@gmail.com");
         user.setFirstName("FirstName");
         user.setLastName("LastName");
         user.setImageKey("KEY");
@@ -115,7 +114,6 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         newUser.setFirstName("First");
         newUser.setLastName("Last");
         newUser.setImageKey("KEY");
-        newUser.setEmail("emailEmail@gmail.com");
         newUser = userRepository.save(newUser);
 
         team.getTeamMembers().add(newUser);
@@ -217,7 +215,6 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         user.setFirstName("LastName");
         user.setLastName("FirstName"); // Hehe
         user.setRole(role);
-        user.setEmail("newEmail@gmail.com");
         user.setImageKey("KEY");
         user = userRepository.save(user);
 
