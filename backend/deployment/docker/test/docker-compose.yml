@@ -9,7 +9,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_NAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
     volumes:
-      - mongo_data:/data/db
+      - test_mongo_data:/data/db
       - ../../../mongo/init/test:/docker-entrypoint-initdb.d
     networks:
       - team-work
@@ -23,7 +23,7 @@ services:
     ports:
       - "${MYSQL_DB_PORT}:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - test_mysql_data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -53,5 +53,5 @@ networks:
     driver: bridge
 
 volumes:
-  mongo_data:
-  mysql_data:
+  test_mongo_data:
+  test_mysql_data:
