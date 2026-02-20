@@ -87,7 +87,6 @@ public class BOTCSDeleteTaskCategoryTest {
         User user = new User();
         user.setLastName("LastName");
         user.setFirstName("FirstName");
-        user.setEmail("email@gmail.com");
         user.setUsername("Username");
         user.setImageKey("KEY");
         user.setPassword("SecretPassword");
