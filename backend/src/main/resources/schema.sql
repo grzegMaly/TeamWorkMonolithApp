@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `roles`
 (
-    `id`       int auto_increment primary key,
+    `role_id`       int auto_increment primary key,
     `app_role` varchar(20) not null,
     constraint `uq_role` unique (`app_role`)
 );
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `users`
     `updated_by` varchar(20) null,
     `created_at` timestamp   not null default current_timestamp,
     `updated_at` timestamp   not null default current_timestamp on update current_timestamp,
-    constraint `fk_role` foreign key (`role_id`) references `roles` (`id`),
+    constraint `fk_role` foreign key (`role_id`) references `roles` (`role_id`),
     constraint `uq_user_username` unique (`username`)
 );
 
