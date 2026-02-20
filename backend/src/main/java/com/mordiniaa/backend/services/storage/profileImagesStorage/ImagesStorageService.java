@@ -60,7 +60,7 @@ public class ImagesStorageService {
         };
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(meta.getMimeType()))
+                .contentType(MediaType.parseMediaType(meta.getExtension()))
                 .body(body);
     }
 
@@ -109,7 +109,7 @@ public class ImagesStorageService {
                 .originalName(originalName)
                 .storedName(storedName)
                 .ownerId(user.getUserId())
-                .mimeType(file.getContentType())
+                .extension(file.getContentType())
                 .size(file.getSize())
                 .build()
         );
