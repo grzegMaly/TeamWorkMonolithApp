@@ -13,14 +13,18 @@ spring:
     console:
       enabled: true
   datasource:
-    url: jdbc:h2:mem:team-work-test
+    url: jdbc:mysql://localhost:3306/team-work-test
     username: team-work-tester
     password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
-    database: h2
+    database: mysql
+  sql:
+    init:
+      mode: always
   servlet:
     multipart:
       max-file-size: -1
