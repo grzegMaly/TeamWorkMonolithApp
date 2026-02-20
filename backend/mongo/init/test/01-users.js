@@ -1,4 +1,4 @@
-use team-work-test
+db = db.getSiblingDB("team-work-test")
 db.createUser({
     user: "team-work-tester",
     roles: [

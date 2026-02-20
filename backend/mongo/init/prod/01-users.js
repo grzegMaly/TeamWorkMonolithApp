@@ -1,4 +1,4 @@
-use team-work
+db = db.getSiblingDB("team-work")
 db.createUser({
     user: "team-work-admin",
     roles: [

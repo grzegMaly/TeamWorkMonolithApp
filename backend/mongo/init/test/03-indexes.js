@@ -1,5 +1,5 @@
-use team-work-tester
-db.auth("team-work-test", "password")
+db = db.getSiblingDB("team-work-test")
+db.auth("team-work-tester", "password")
 
 db.notes.createIndex(
     {

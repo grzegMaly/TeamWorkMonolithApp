@@ -1,4 +1,4 @@
-use team-work
+db = db.getSiblingDB("team-work")
 db.auth("team-work-admin", "admin")
 
 db.notes.createIndex(
