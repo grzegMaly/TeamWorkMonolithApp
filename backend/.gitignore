@@ -36,3 +36,7 @@ build/
 /mvnw.cmd
 /.mvn/wrapper/maven-wrapper.properties
 /.env
+/deployment/docker/dev/.env
+/deployment/docker/prod/.env
+/deployment/docker/test/.env
+/Dockerfile
