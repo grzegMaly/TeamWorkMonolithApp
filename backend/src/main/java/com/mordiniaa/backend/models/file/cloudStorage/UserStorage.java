@@ -5,28 +5,34 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.File;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(indexes = @Index(name = "fx_user_id", columnList = "user_id", unique = true))
+@Entity(name = "UserStorage")
+@Table(name = "user_storage", indexes = @Index(name = "uq_user_storage_user_id", columnList = "user_id", unique = true))
 public class UserStorage {
 
     @Version
     private long version;
 
     @Id
+    @Column(name = "resource_id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID resourceId;
 
     @Column(name = "user_id", unique = true, nullable = false)
     private UUID userId;
 
+    @Column(name = "used_bytes", nullable = false)
     private Long usedBytes = 0L;
+
+    @Column(name = "quota_bytes", nullable = false)
     private Long quotaBytes = 50_000_000_000L;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -45,7 +51,7 @@ public class UserStorage {
         if (rootNode == null) {
             FileNode root = new FileNode();
             root.setNodeType(NodeType.ROOT);
-            root.setMaterializedPath("/");
+            root.setMaterializedPath(FileSystems.getDefault().getSeparator());
             root.setUserStorage(this);
             this.rootNode = root;
         }
