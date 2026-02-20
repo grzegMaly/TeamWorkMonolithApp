@@ -27,11 +27,11 @@ public abstract class BaseEntity {
     @Column(name = "updated_by", length = 20)
     private String updatedBy;
 
-    @Column(name = "created_at", updatable = false, nullable = false)
     @CreatedDate
+    @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
     @LastModifiedDate
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }

@@ -5,37 +5,54 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.File;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity(name = "FileNode")
+@Table(name = "file_nodes")
 public class FileNode {
 
     @Version
+    @Column(name = "version")
     private Long version;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "parent_id")
     private UUID parentId;
+
+    @Column(name = "storage_key")
     private String storageKey;
+
+    @Column(name = "materialized_path")
     private String materializedPath;
 
     // For Files
+    @Column(name = "size")
     private Long size = 0L;
 
     // For Dirs
+    @Column(name = "sub_tree_size")
     private Long subTreeSize = 0L;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "node_type", nullable = false)
     private NodeType nodeType;
+
+    @Column(name = "deleted", nullable = false)
     private boolean deleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_storage_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "user_storage_id", referencedColumnName = "resource_id")
     private UserStorage userStorage;
 
     public FileNode(NodeType nodeType) {
@@ -51,6 +68,6 @@ public class FileNode {
         if (parentPath == null) {
             throw new RuntimeException();
         }
-        this.materializedPath = parentPath + "/" + this.id;
+        this.materializedPath = parentPath + FileSystems.getDefault().getSeparator() + this.id;
     }
 }

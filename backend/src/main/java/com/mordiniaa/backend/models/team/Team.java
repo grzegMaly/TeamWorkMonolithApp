@@ -31,6 +31,9 @@ public class Team extends BaseEntity {
     @Column(name = "presentation_name", nullable = false, length = 40)
     private String presentationName;
 
+    @Column(name = "active")
+    private boolean active = true;
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "manager_id", referencedColumnName = "user_id")
     private User manager;
@@ -41,9 +44,6 @@ public class Team extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> teamMembers = new HashSet<>();
-
-    @Column(name = "active")
-    private boolean active = true;
 
     public Team(String teamName) {
         this.teamName = teamName;

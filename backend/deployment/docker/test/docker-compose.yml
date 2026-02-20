@@ -1,0 +1,57 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mongodb-container
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_NAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+    volumes:
+      - test_mongo_data:/data/db
+      - ../../../mongo/init/test:/docker-entrypoint-initdb.d
+    networks:
+      - team-work
+      - dbs
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    networks:
+      - team-work
+      - dbs
+    ports:
+      - "${MYSQL_DB_PORT}:3306"
+    volumes:
+      - test_mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    restart: unless-stopped
+  phpmyadmin:
+    image: phpmyadmin:5.2.3-apache
+    restart: unless-stopped
+    ports:
+      - "8030:80"
+    networks:
+      - dbs
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+      - mysql
+
+networks:
+  team-work:
+    driver: bridge
+  dbs:
+    driver: bridge
+
+volumes:
+  test_mongo_data:
+  test_mysql_data:

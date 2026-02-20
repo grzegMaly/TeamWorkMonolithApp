@@ -27,7 +27,7 @@ public class ImageMetadata {
 
     @Indexed(unique = true, name = "idx_userId")
     private UUID ownerId;
-    private String mimeType;
+    private String extension;
     private long size;
 
     @CreatedDate

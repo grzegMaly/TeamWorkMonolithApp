@@ -64,7 +64,6 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
         User user = new User();
         user.setUsername("Username");
         user.setRole(managerRole);
-        user.setEmail("email@gmail.com");
         user.setFirstName("FirstName");
         user.setLastName("LastName");
         user.setPassword("SuperSecretPassword");
@@ -74,7 +73,6 @@ public class BoardOwnerServiceDeleteBoardRepoTest {
         User member = new User();
         member.setUsername("Member");
         member.setRole(managerRole);
-        member.setEmail("member@gmail.com");
         member.setFirstName("MemberFirst");
         member.setLastName("MemberLast");
         member.setPassword("SuperSecretPassword");

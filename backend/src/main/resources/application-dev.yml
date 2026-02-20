@@ -3,24 +3,26 @@ spring:
     name: backend
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: ${DB_NAME}
-      username: ${DB_USERNAME}
-      password: ${MONGODB_PASSWORD}
-      authentication-database: ${DB_NAME}
-  h2:
-    console:
-      enabled: true
+      host: ${MONGO_HOST:localhost}
+      port: ${MONGO_PORT:27017}
+      database: ${MONGO_DB_NAME:team-work-temp}
+      username: ${MONGO_DB_USERNAME:team-work-temp}
+      password: ${MONGODB_PASSWORD:secretPass}
+      authentication-database: ${MONGO_DB_NAME:team-work-temp}
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_DB_PORT:3306}/${MYSQL_DATABASE:team-work-temp}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
-    database: ${DB_TYPE}
+    database: mysql
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
   servlet:
     multipart:
       max-file-size: -1
