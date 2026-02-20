@@ -28,3 +28,7 @@ db.tasks.createIndex(
 db.users.createIndex({
     userId: 1
 })
+
+db.image_metadata.createIndex({
+    ownerId: 1
+})
