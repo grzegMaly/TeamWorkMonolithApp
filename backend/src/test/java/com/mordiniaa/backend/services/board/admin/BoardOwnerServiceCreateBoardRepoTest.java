@@ -58,7 +58,6 @@ public class BoardOwnerServiceCreateBoardRepoTest {
         User user = new User();
         user.setUsername("Username");
         user.setRole(role);
-        user.setEmail("email@gmail.com");
         user.setFirstName("FirstName");
         user.setImageKey("KEY");
         user.setLastName("LastName");
@@ -124,7 +123,6 @@ public class BoardOwnerServiceCreateBoardRepoTest {
         newUser.setPassword("SuperSecret");
         newUser.setRole(role);
         newUser.setUsername("usenew987");
-        newUser.setEmail("email@gmail.com");
         newUser.setFirstName("FirstName");
         newUser.setImageKey("KEY");
         newUser.setLastName("LastName");
