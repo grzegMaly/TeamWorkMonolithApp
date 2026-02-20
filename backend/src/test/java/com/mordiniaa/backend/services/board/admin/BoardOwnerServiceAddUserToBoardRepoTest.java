@@ -136,7 +136,7 @@ public class BoardOwnerServiceAddUserToBoardRepoTest {
         assertNotNull(boardDetailsDto);
         assertFalse(boardDetailsDto.getMembers().isEmpty());
 
-        UserDto userDto = boardDetailsDto.getMembers().stream().filter(bm -> bm.getUserId().equals(userRepresentation.getUserId()))
+        UserDto userDto = boardDetailsDto.getMembers().stream().filter(dto -> dto.getUserId().equals(userRepresentation.getUserId()))
                 .findFirst().orElseThrow();
         assertEquals(userRepresentation.getImageKey(), userDto.getImageUrl());
         assertEquals(userRepresentation.getUsername(), userDto.getUsername());
