@@ -20,13 +20,12 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class ArchivedNotesServiceImpl implements ArchivedNotesService {
+public class ArchivedNotesService {
 
     private final NotesRepository notesRepository;
     private final NoteMapper noteMapper;
     private final MongoTemplate mongoTemplate;
 
-    @Override
     public PageResult<List<NoteDto>> fetchAllArchivedNotes(UUID ownerId, int pageNumber, int pageSize) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -41,7 +40,6 @@ public class ArchivedNotesServiceImpl implements ArchivedNotesService {
         return result;
     }
 
-    @Override
     public void switchArchivedNoteForUser(UUID ownerId, String noteId) {
 
         if (!ObjectId.isValid(noteId)) {

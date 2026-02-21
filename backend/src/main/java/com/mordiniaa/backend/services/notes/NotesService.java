@@ -26,13 +26,12 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class NotesServiceImpl implements NotesService {
+public class NotesService {
 
     private final NotesRepository notesRepository;
     private final NoteMapper noteMapper;
     private final MongoTemplate mongoTemplate;
 
-    @Override
     public Optional<NoteDto> getNoteById(String noteId, UUID ownerId) {
 
         if (!ObjectId.isValid(noteId)) {
@@ -48,7 +47,6 @@ public class NotesServiceImpl implements NotesService {
                 .map(noteMapper::toDto);
     }
 
-    @Override
     public PageResult<List<NoteDto>> fetchAllNotesForUser(UUID ownerId, int pageNumber, int pageSize, String sortOrder, String sortKey, String keyword) {
 
         if (!sortOrder.equalsIgnoreCase("asc") && !sortOrder.equalsIgnoreCase("desc")) {
@@ -80,7 +78,6 @@ public class NotesServiceImpl implements NotesService {
         return result;
     }
 
-    @Override
     public NoteDto createNote(UUID ownerId, CreateNoteRequest createNoteRequest) {
 
         Note mappedNote = noteMapper.toModel(createNoteRequest);
@@ -90,7 +87,6 @@ public class NotesServiceImpl implements NotesService {
         return noteMapper.toDto(savedNote);
     }
 
-    @Override
     public NoteDto updateNote(UUID ownerId, String noteId, PatchNoteRequest patchNoteRequest) {
 
         if (!ObjectId.isValid(noteId)) {
@@ -106,7 +102,6 @@ public class NotesServiceImpl implements NotesService {
         return noteMapper.toDto(savedNote);
     }
 
-    @Override
     public void deleteNote(UUID ownerId, String noteId) {
 
         if (!ObjectId.isValid(noteId)) {
