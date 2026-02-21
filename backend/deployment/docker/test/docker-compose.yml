@@ -15,7 +15,7 @@ services:
       - team-work
       - dbs
   mysql:
-    image: mysql:latest
+    image: mysql:8.0
     container_name: mysql-container
     networks:
       - team-work
