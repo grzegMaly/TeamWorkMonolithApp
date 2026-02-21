@@ -1,11 +1,6 @@
 package com.mordiniaa.backend.mappers.task;
 
 import com.mordiniaa.backend.dto.task.TaskDetailsDTO;
-import com.mordiniaa.backend.mappers.task.activityMappers.TaskActivityMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCategoryChangeDtoMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskCommentDtoMapper;
-import com.mordiniaa.backend.mappers.task.activityMappers.dtoMappers.TaskStatusChangeDtoMapper;
-import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.board.TaskCategory;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.task.TaskStatus;
@@ -17,10 +12,9 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -31,15 +25,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-        TaskMapper.class,
-        TaskActivityMapper.class,
-        TaskCommentDtoMapper.class,
-        TaskStatusChangeDtoMapper.class,
-        TaskCategoryChangeDtoMapper.class,
-        UserMapper.class
-})
+@SpringBootTest
+@ActiveProfiles("test")
 public class TaskMapperToDtoTest {
 
     @Autowired
