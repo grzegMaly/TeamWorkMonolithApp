@@ -19,9 +19,6 @@ spring:
       ddl-auto: validate
     show-sql: true
     database: mysql
-  sql:
-    init:
-      mode: always
   servlet:
     multipart:
       max-file-size: -1
