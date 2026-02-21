@@ -1,10 +1,10 @@
 services:
   mongodb:
     image: mongo:7
-    container_name: mongodb-container
+    container_name: mongodb-dev-container
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT}:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_NAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
@@ -16,7 +16,7 @@ services:
       - dbs
   mysql:
     image: mysql:latest
-    container_name: mysql-container
+    container_name: mysql-dev-container
     networks:
       - team-work
       - dbs
@@ -32,9 +32,10 @@ services:
     restart: unless-stopped
   phpmyadmin:
     image: phpmyadmin:5.2.3-apache
+    container_name: phpmyadmin-dev-container
     restart: unless-stopped
     ports:
-      - "8030:80"
+      - "${PHPMYADMIN_PORT}:80"
     networks:
       - dbs
     environment:
