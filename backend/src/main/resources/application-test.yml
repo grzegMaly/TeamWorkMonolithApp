@@ -3,23 +3,44 @@ spring:
     name: backend
   data:
     mongodb:
-      host: localhost
+      host: mongodb
       port: 27017
-      database: team-work-test
+      database: team-work
       username: team-work-tester
       password: password
-      authentication-database: team-work-test
+      authentication-database: team-work
   datasource:
-    url: jdbc:mysql://localhost:3306/team-work-test
+    url: jdbc:mysql://mysql:3306/team-work
     username: team-work-tester
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
-    database:   mysql
+    database: mysql
+  sql:
+    init:
+      mode: always
   servlet:
     multipart:
       max-file-size: -1
       max-request-size: -1
+  flyway:
+    user: team-work-tester
+    password: password
+    url: jdbc:mysql://mysql:3306/team-work
+    locations: classpath:db/migration
+    schemas: team-work
+storage:
+  profileImages:
+    path: ./profile_images_storage
+    mimeTypes:
+      - image/jpeg
+      - image/png
+    profileWidth: 512
+    profileHeight: 512
+    defaultImageKey: defaultProfileImage
+    defaultImagePath: static/images/defaultProfileImage.png
+  cloudStorage:
+    path: ./files_storage
