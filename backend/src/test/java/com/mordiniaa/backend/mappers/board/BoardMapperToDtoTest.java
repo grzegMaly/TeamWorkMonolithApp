@@ -1,9 +1,7 @@
 package com.mordiniaa.backend.mappers.board;
 
-import com.mordiniaa.backend.config.BoardMapperExecutorConfig;
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
 import com.mordiniaa.backend.dto.task.TaskShortDto;
-import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.task.Task;
 import com.mordiniaa.backend.models.task.TaskStatus;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
@@ -11,10 +9,10 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.Bo
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -24,12 +22,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-        BoardMapper.class,
-        UserMapper.class,
-        BoardMapperExecutorConfig.class
-})
+@SpringBootTest
+@ActiveProfiles("test")
 public class BoardMapperToDtoTest {
 
     @Autowired
