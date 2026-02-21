@@ -9,7 +9,7 @@ import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.payload.PageMeta;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
-import com.mordiniaa.backend.services.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.NotesService;
 import com.mordiniaa.backend.utils.PageResult;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NoteServiceGetAllUserNotesRepoTest {
 
     @Autowired
-    private NotesServiceImpl notesService;
+    private NotesService notesService;
 
     @Autowired
     private NotesRepository notesRepository;

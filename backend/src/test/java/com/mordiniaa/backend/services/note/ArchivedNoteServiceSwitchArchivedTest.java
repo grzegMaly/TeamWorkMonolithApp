@@ -4,7 +4,7 @@ import com.mordiniaa.backend.models.note.Note;
 import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
-import com.mordiniaa.backend.services.notes.ArchivedNotesServiceImpl;
+import com.mordiniaa.backend.services.notes.ArchivedNotesService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,7 @@ public class ArchivedNoteServiceSwitchArchivedTest {
     private AuditorAware<String> mongoAuditor;
 
     @Autowired
-    private ArchivedNotesServiceImpl archivedNotesService;
+    private ArchivedNotesService archivedNotesService;
 
     @Autowired
     private NotesRepository notesRepository;

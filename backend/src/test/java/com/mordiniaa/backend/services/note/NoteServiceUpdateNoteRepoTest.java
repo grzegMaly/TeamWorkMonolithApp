@@ -11,7 +11,7 @@ import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.deadline.PatchDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;
-import com.mordiniaa.backend.services.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.NotesService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +41,7 @@ public class NoteServiceUpdateNoteRepoTest {
     private NotesRepository notesRepository;
 
     @Autowired
-    private NotesServiceImpl notesService;
+    private NotesService notesService;
 
     private final UUID ownerId = UUID.randomUUID();
 

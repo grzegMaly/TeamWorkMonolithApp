@@ -8,7 +8,7 @@ import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.regular.PatchRegularNoteRequest;
-import com.mordiniaa.backend.services.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.NotesService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 public class NoteServiceUpdateNoteMockTest {
 
     @InjectMocks
-    private NotesServiceImpl notesService;
+    private NotesService notesService;
 
     @Mock
     private NotesRepository notesRepository;

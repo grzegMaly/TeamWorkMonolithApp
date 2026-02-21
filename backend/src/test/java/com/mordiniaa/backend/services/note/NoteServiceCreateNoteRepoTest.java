@@ -9,7 +9,7 @@ import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.request.note.deadline.CreateDeadlineNoteRequest;
 import com.mordiniaa.backend.request.note.regular.CreateRegularNoteRequest;
-import com.mordiniaa.backend.services.notes.NotesServiceImpl;
+import com.mordiniaa.backend.services.notes.NotesService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class NoteServiceCreateNoteRepoTest {
 
     @Autowired
-    private NotesServiceImpl notesService;
+    private NotesService notesService;
 
     @Autowired
     private NotesRepository notesRepository;
