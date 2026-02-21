@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.controllers.admin;
+package com.mordiniaa.backend.controllers.secured.admin;
 
 import com.mordiniaa.backend.request.user.CreateUserRequest;
 import com.mordiniaa.backend.request.user.patch.PatchUserAddressRequest;

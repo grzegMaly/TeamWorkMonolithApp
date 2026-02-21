@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.controllers.admin;
+package com.mordiniaa.backend.controllers.secured.admin;
 
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
