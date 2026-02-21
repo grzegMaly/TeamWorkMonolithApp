@@ -6,6 +6,5 @@ db.createUser({
         {role: "dbOwner", db: "team-work"},
         {role: "userAdmin", db: "team-work"}
     ],
-    pwd: "admin"
+    pwd: "password"
 })
-db.auth("team-work-admin", "admin")

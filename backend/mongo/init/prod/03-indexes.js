@@ -1,5 +1,5 @@
 db = db.getSiblingDB("team-work")
-db.auth("team-work-admin", "admin")
+db.auth("team-work-admin", "password")
 
 db.notes.createIndex(
     {
