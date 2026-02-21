@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles("test")
 @SpringBootTest
+@ActiveProfiles("test")
 public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
 
     @Autowired
@@ -58,15 +58,17 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
 
     private Board board;
 
+    private Role role;
+
     @BeforeEach
     void setup() {
 
-        Role managerRole = new Role(AppRole.ROLE_MANAGER);
-        managerRole = roleRepository.save(managerRole);
+        role = roleRepository.findRoleByAppRole(AppRole.ROLE_MANAGER)
+                .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_MANAGER)));
 
         User user = new User();
         user.setUsername("Username");
-        user.setRole(managerRole);
+        user.setRole(role);
         user.setFirstName("FirstName");
         user.setLastName("LastName");
         user.setPassword("SuperSecretPassword");
@@ -75,7 +77,7 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
 
         User member = new User();
         member.setUsername("Member");
-        member.setRole(managerRole);
+        member.setRole(role);
         member.setFirstName("MemberFirst");
         member.setLastName("MemberLast");
         member.setPassword("SuperSecretPassword");
@@ -119,6 +121,7 @@ public class BoardOwnerServiceRemoveUserFromBoardRepoTest {
         userRepresentationRepository.deleteAll();
         teamRepository.deleteAll();
         userRepository.deleteAll();
+        roleRepository.deleteAll();
     }
 
     @Test
