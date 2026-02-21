@@ -12,6 +12,7 @@ import com.mordiniaa.backend.repositories.mysql.RoleRepository;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.board.BoardCreationRequest;
+import com.mordiniaa.backend.services.board.owner.BoardOwnerService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

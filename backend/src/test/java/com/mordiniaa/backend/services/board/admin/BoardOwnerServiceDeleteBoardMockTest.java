@@ -1,6 +1,7 @@
 package com.mordiniaa.backend.services.board.admin;
 
 import com.mongodb.client.result.UpdateResult;
+import com.mordiniaa.backend.services.board.owner.BoardOwnerService;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;

@@ -5,6 +5,7 @@ import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
+import com.mordiniaa.backend.services.board.owner.BoardOwnerManagementService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

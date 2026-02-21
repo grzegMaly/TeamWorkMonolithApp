@@ -9,6 +9,7 @@ import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
 import com.mordiniaa.backend.request.board.PermissionsRequest;
+import com.mordiniaa.backend.services.board.owner.BoardOwnerManagementService;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
 import com.mordiniaa.backend.utils.MongoIdUtils;

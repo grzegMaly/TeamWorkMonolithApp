@@ -12,6 +12,7 @@ import com.mordiniaa.backend.repositories.mysql.RoleRepository;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.request.board.BoardCreationRequest;
+import com.mordiniaa.backend.services.board.owner.BoardOwnerService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

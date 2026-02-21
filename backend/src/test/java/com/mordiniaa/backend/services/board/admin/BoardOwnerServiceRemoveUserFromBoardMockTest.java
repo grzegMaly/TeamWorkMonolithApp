@@ -6,6 +6,7 @@ import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
+import com.mordiniaa.backend.services.board.owner.BoardOwnerService;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;

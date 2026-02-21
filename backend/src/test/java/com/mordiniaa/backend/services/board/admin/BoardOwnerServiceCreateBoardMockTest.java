@@ -9,6 +9,7 @@ import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregati
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.request.board.BoardCreationRequest;
+import com.mordiniaa.backend.services.board.owner.BoardOwnerService;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.Test;
