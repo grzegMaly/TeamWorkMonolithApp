@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles("test")
 @SpringBootTest
+@ActiveProfiles("test")
 public class BOTCSRenameTaskCategoryRepoTest {
 
     @Autowired
@@ -59,11 +59,13 @@ public class BOTCSRenameTaskCategoryRepoTest {
 
     private UserRepresentation userRepresentation;
 
+    private Role role;
+
     @BeforeEach
     void setup() {
 
-        Role role = new Role(AppRole.ROLE_MANAGER);
-        roleRepository.save(role);
+        role = roleRepository.findRoleByAppRole(AppRole.ROLE_MANAGER)
+                .orElseGet(() -> roleRepository.save(new Role(AppRole.ROLE_MANAGER)));
 
         User user = new User();
         user.setLastName("LastName");
@@ -71,7 +73,7 @@ public class BOTCSRenameTaskCategoryRepoTest {
         user.setUsername("Username");
         user.setImageKey("KEY");
         user.setPassword("SecretPassword");
-        user.setRole(roleRepository.getReferenceById(1));
+        user.setRole(role);
         user = userRepository.save(user);
 
         userRepresentation = new UserRepresentation();
