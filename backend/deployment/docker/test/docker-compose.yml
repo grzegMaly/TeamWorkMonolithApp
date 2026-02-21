@@ -1,10 +1,9 @@
 services:
   mongodb:
     image: mongo:7
-    container_name: mongodb-test-container
     restart: unless-stopped
     ports:
-      - "${MONGO_PORT}:27017"
+      - "27019:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_NAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
@@ -14,14 +13,19 @@ services:
     networks:
       - team-work
       - dbs
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
   mysql:
     image: mysql:8.0
-    container_name: mysql-test-container
     networks:
       - team-work
       - dbs
     ports:
-      - "${MYSQL_DB_PORT}:3306"
+      - "3308:3306"
     volumes:
       - test_mysql_data:/var/lib/mysql
     environment:
@@ -30,12 +34,16 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
   phpmyadmin:
     image: phpmyadmin:5.2.3-apache
-    container_name: phpmyadmin-test-container
     restart: unless-stopped
     ports:
-      - "${PHPMYADMIN_PORT}:80"
+      - "8032:80"
     networks:
       - dbs
     environment:
@@ -46,6 +54,23 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       - mysql
+  teamwork-app:
+    image: mordiniaa/teamworkmon
+    networks:
+      - team-work
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    volumes:
+      - test_files_storage:${STORAGE_ROOT}
+      - test_profile_images_storage:${PROFILE_IMAGES_ROOT}
+    ports:
+      - "8082:8080"
+    environment:
+      PROFILE: test
+    restart: unless-stopped
 
 networks:
   team-work:
@@ -56,3 +81,5 @@ networks:
 volumes:
   test_mongo_data:
   test_mysql_data:
+  test_files_storage:
+  test_profile_images_storage:
