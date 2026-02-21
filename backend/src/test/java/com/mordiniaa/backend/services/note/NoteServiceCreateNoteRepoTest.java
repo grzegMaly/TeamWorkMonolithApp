@@ -1,6 +1,5 @@
 package com.mordiniaa.backend.services.note;
 
-import com.mordiniaa.backend.BackendApplication;
 import com.mordiniaa.backend.dto.note.DeadlineNoteDto;
 import com.mordiniaa.backend.dto.note.RegularNoteDto;
 import com.mordiniaa.backend.mappers.note.NoteMapper;
@@ -25,8 +24,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ActiveProfiles("test")
 @SpringBootTest
+@ActiveProfiles("test")
 public class NoteServiceCreateNoteRepoTest {
 
     @Autowired
