@@ -19,7 +19,6 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.security.Permission;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -29,8 +28,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles("test")
 @SpringBootTest
+@ActiveProfiles("test")
 public class TaskManagementRemoveUserFromTaskRepoTest {
 
     @MockitoBean("mongoAuditor")
