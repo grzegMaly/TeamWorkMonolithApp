@@ -39,4 +39,3 @@ build/
 /deployment/docker/dev/.env
 /deployment/docker/prod/.env
 /deployment/docker/test/.env
-/Dockerfile
