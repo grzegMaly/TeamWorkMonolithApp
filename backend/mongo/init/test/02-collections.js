@@ -1,4 +1,4 @@
-db = db.getSiblingDB("team-work-test")
+db = db.getSiblingDB("team-work")
 db.auth("team-work-tester", "password")
 
 db.runCommand({

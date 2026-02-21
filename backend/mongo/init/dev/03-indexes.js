@@ -1,4 +1,4 @@
-db = db.getSiblingDB("team-work-dev")
+db = db.getSiblingDB("team-work")
 db.auth("team-work-dev", "password")
 
 db.notes.createIndex(

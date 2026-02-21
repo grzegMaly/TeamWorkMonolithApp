@@ -1,9 +1,9 @@
-db = db.getSiblingDB("team-work-test")
+db = db.getSiblingDB("team-work")
 db.createUser({
     user: "team-work-tester",
     roles: [
-        {role: "dbOwner", db: "team-work-test"},
-        {role: "dbAdmin", db: "team-work-test"}
+        {role: "dbOwner", db: "team-work"},
+        {role: "dbAdmin", db: "team-work"}
     ],
     pwd: "password"
 })
