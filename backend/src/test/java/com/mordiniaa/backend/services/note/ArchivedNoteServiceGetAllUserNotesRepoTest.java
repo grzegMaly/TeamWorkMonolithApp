@@ -1,9 +1,6 @@
 package com.mordiniaa.backend.services.note;
 
 import com.mordiniaa.backend.dto.note.NoteDto;
-import com.mordiniaa.backend.mappers.note.NoteMapper;
-import com.mordiniaa.backend.mappers.note.dtoMappers.DeadlineNoteDtoMapper;
-import com.mordiniaa.backend.mappers.note.dtoMappers.RegularNoteDtoMapper;
 import com.mordiniaa.backend.models.note.Note;
 import com.mordiniaa.backend.models.note.deadline.DeadlineNote;
 import com.mordiniaa.backend.models.note.deadline.Priority;
@@ -19,9 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -37,8 +32,8 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles("test")
 @SpringBootTest
+@ActiveProfiles("test")
 public class ArchivedNoteServiceGetAllUserNotesRepoTest {
 
     @MockitoBean(name = "mongoAuditor")
