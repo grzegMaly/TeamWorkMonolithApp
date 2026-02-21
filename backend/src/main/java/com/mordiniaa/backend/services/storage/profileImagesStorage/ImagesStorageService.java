@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,6 @@ public class ImagesStorageService {
     private final ImageMetadataRepository imageMetadataRepository;
     private final StorageProvider storageProvider;
     private final StorageProperties storageProperties;
-    private final MongoTemplate mongoTemplate;
     private final UserRepository userRepository;
     private final CloudStorageServiceUtils cloudStorageServiceUtils;
     private final ApplicationEventPublisher applicationEventPublisher;
