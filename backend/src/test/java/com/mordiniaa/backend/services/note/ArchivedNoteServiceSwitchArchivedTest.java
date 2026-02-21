@@ -1,23 +1,17 @@
 package com.mordiniaa.backend.services.note;
 
-import com.mordiniaa.backend.mappers.note.NoteMapper;
-import com.mordiniaa.backend.mappers.note.dtoMappers.DeadlineNoteDtoMapper;
-import com.mordiniaa.backend.mappers.note.dtoMappers.RegularNoteDtoMapper;
 import com.mordiniaa.backend.models.note.Note;
 import com.mordiniaa.backend.models.note.regular.Category;
 import com.mordiniaa.backend.models.note.regular.RegularNote;
 import com.mordiniaa.backend.repositories.mongo.NotesRepository;
 import com.mordiniaa.backend.services.notes.ArchivedNotesServiceImpl;
-import com.mordiniaa.backend.services.notes.NotesServiceImpl;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -31,8 +25,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles("test")
 @SpringBootTest
+@ActiveProfiles("test")
 public class ArchivedNoteServiceSwitchArchivedTest {
 
     @MockitoBean(name = "mongoAuditor")
