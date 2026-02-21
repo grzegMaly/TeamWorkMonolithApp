@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.controllers;
+package com.mordiniaa.backend.controllers.global;
 
 import com.mordiniaa.backend.services.storage.profileImagesStorage.ImagesStorageService;
 import lombok.RequiredArgsConstructor;

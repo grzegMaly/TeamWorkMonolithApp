@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.controllers.cloudStorageController;
+package com.mordiniaa.backend.controllers.global.cloudStorageController;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
