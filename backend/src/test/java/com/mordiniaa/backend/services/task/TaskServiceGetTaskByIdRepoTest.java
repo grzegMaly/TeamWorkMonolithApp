@@ -17,22 +17,15 @@ import com.mordiniaa.backend.models.task.activity.TaskStatusChange;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
-import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
-import com.mordiniaa.backend.repositories.mongo.user.aggregation.UserReprCustomRepositoryImpl;
 import com.mordiniaa.backend.request.task.CreateTaskRequest;
-import com.mordiniaa.backend.services.user.MongoUserService;
-import com.mordiniaa.backend.utils.BoardUtils;
-import com.mordiniaa.backend.utils.MongoIdUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -46,8 +39,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@ActiveProfiles("test")
 @SpringBootTest
+@ActiveProfiles("test")
 public class TaskServiceGetTaskByIdRepoTest {
 
     @MockitoBean("mongoAuditor")
