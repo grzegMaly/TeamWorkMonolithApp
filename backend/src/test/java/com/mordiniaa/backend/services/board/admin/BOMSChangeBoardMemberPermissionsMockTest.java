@@ -1,6 +1,5 @@
 package com.mordiniaa.backend.services.board.admin;
 
-import com.mordiniaa.backend.mappers.board.BoardMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
