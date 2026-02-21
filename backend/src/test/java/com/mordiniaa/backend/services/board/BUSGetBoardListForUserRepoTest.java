@@ -1,15 +1,12 @@
 package com.mordiniaa.backend.services.board;
 
 import com.mordiniaa.backend.dto.board.BoardShortDto;
-import com.mordiniaa.backend.mappers.board.BoardMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.user.mongodb.UserRepresentation;
 import com.mordiniaa.backend.repositories.mongo.TaskRepository;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
-import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
-import com.mordiniaa.backend.services.user.MongoUserService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ActiveProfiles("test")
 @SpringBootTest
+@ActiveProfiles("test")
 public class BUSGetBoardListForUserRepoTest {
 
     @Autowired
