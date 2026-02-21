@@ -1,10 +1,9 @@
 services:
   mongodb:
     image: mongo:7
-    container_name: mongodb-container
     restart: unless-stopped
     ports:
-      - "${MONGO_PORT}:27017"
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_NAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
@@ -14,14 +13,19 @@ services:
     networks:
       - team-work
       - dbs
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
   mysql:
     image: mysql:8.0
-    container_name: mysql-container
     networks:
       - team-work
       - dbs
     ports:
-      - "${MYSQL_DB_PORT}:3306"
+      - "3306:3306"
     volumes:
       - prod_mysql_data:/var/lib/mysql
     environment:
@@ -30,12 +34,16 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
   phpmyadmin:
-    container_name: phpmyadmin-container
     image: phpmyadmin:5.2.3-apache
     restart: unless-stopped
     ports:
-      - "${PHPMYADMIN_PORT}:80"
+      - "8030:80"
     networks:
       - dbs
     environment:
@@ -46,6 +54,35 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       - mysql
+  teamwork-app:
+    image: mordiniaa/teamworkmon
+    networks:
+      - team-work
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    volumes:
+      - prod_files_storage:${STORAGE_ROOT}
+      - prod_profile_images_storage:${PROFILE_IMAGES_ROOT}
+    ports:
+      - "8080:8080"
+    environment:
+      PROFILE: prod
+      STORAGE_ROOT: ${STORAGE_ROOT}
+      PROFILE_IMAGES_ROOT: ${PROFILE_IMAGES_ROOT}
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_DB_USERNAME: ${MONGO_DB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      MYSQL_HOST: mysql
+      MYSQL_DB_PORT: 3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    restart: unless-stopped
 
 networks:
   team-work:
@@ -56,3 +93,5 @@ networks:
 volumes:
   prod_mongo_data:
   prod_mysql_data:
+  prod_files_storage:
+  prod_profile_images_storage:
