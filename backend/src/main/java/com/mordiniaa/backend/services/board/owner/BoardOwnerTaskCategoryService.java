@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.services.board.admin;
+package com.mordiniaa.backend.services.board.owner;
 
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;

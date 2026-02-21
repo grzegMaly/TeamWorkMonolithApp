@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.services.board.admin;
+package com.mordiniaa.backend.services.board.owner;
 
 import com.mongodb.client.result.UpdateResult;
 import com.mordiniaa.backend.dto.board.BoardDetailsDto;
@@ -6,14 +6,12 @@ import com.mordiniaa.backend.mappers.board.BoardMapper;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.models.board.permissions.BoardPermission;
-import com.mordiniaa.backend.models.board.permissions.CategoryPermissions;
-import com.mordiniaa.backend.models.board.permissions.CommentPermission;
-import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepositoryImpl;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.returnTypes.BoardFull;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.request.board.BoardCreationRequest;
+import com.mordiniaa.backend.services.board.admin.BoardAdminService;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.MongoIdUtils;
 import lombok.RequiredArgsConstructor;

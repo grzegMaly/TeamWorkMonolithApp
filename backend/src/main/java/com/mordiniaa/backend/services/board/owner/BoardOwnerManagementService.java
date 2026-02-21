@@ -1,11 +1,10 @@
-package com.mordiniaa.backend.services.board.admin;
+package com.mordiniaa.backend.services.board.owner;
 
 import com.mongodb.client.result.UpdateResult;
 import com.mordiniaa.backend.models.board.Board;
 import com.mordiniaa.backend.models.board.BoardMember;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
 import com.mordiniaa.backend.repositories.mongo.board.aggregation.BoardAggregationRepository;
-import com.mordiniaa.backend.repositories.mysql.TeamRepository;
 import com.mordiniaa.backend.request.board.PermissionsRequest;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.utils.BoardUtils;
