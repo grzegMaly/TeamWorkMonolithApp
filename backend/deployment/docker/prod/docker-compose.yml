@@ -4,7 +4,7 @@ services:
     container_name: mongodb-container
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT}:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_NAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
@@ -31,10 +31,11 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     restart: unless-stopped
   phpmyadmin:
+    container_name: phpmyadmin-container
     image: phpmyadmin:5.2.3-apache
     restart: unless-stopped
     ports:
-      - "8030:80"
+      - "${PHPMYADMIN_PORT}:80"
     networks:
       - dbs
     environment:
@@ -53,5 +54,5 @@ networks:
     driver: bridge
 
 volumes:
-  test_mongo_data:
-  test_mysql_data:
+  prod_mongo_data:
+  prod_mysql_data:
