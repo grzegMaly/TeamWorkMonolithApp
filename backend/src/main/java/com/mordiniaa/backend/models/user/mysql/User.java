@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,6 +44,21 @@ public class User extends BaseEntity implements DbUser {
     @Column(name = "image_key", nullable = false)
     private String imageKey;
 
+    @Column(name = "account_non_locked")
+    private boolean accountNonLocked = true;
+
+    @Column(name = "account_non_expired")
+    private boolean accountNonExpired = true;
+
+    @Column(name = "credentials_non_expired")
+    private boolean credentialsNonExpired = true;
+
+    @Column(name = "credentials_expiry_date")
+    private LocalDate credentialsExpiryDate;
+
+    @Column(name = "account_expiry_date")
+    private LocalDate accountExpiryDate;
+
     @Column(name = "deleted", nullable = false)
     private boolean deleted = false;
 
@@ -62,11 +78,27 @@ public class User extends BaseEntity implements DbUser {
     @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private Contact contact;
 
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public void addAddress(Address address) {
         this.addresses.add(address);
     }
 
     public Set<Address> getAddresses() {
         return Collections.unmodifiableSet(addresses);
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (credentialsExpiryDate == null) {
+            credentialsExpiryDate = LocalDate.now().plusYears(1);
+        }
+
+        if (accountExpiryDate == null) {
+            accountExpiryDate = LocalDate.now().plusYears(1);
+        }
     }
 }
