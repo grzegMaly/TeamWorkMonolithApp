@@ -40,8 +40,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ActiveProfiles("test")
 @SpringBootTest
+@ActiveProfiles("test")
 public class BOTCSDeleteTaskCategoryTest {
 
     @Autowired
