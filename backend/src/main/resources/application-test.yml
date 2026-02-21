@@ -9,9 +9,6 @@ spring:
       username: team-work-tester
       password: password
       authentication-database: team-work-test
-  h2:
-    console:
-      enabled: true
   datasource:
     url: jdbc:mysql://localhost:3306/team-work-test
     username: team-work-tester
@@ -19,13 +16,9 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop
     show-sql: true
-    database: mysql
-    defer-datasource-initialization: true
-  sql:
-    init:
-      mode: always
+    database:   mysql
   servlet:
     multipart:
       max-file-size: -1
