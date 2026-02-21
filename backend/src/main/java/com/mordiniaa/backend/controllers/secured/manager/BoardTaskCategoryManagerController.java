@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/manager/board/{boardId}/task")
-public class BoardTaskManagerController {
+@RequestMapping("/api/v1/manager/board/{boardId}/category")
+public class BoardTaskCategoryManagerController {
 
     @PostMapping
     public void createTaskCategory(
@@ -17,7 +17,7 @@ public class BoardTaskManagerController {
 
     }
 
-    @PutMapping
+    @PutMapping("/rename")
     public void renameTaskCategory(
         @PathVariable String boardId,
         @RequestParam(name = "t") UUID teamId,
@@ -26,7 +26,7 @@ public class BoardTaskManagerController {
 
     }
 
-    @PutMapping
+    @PutMapping("/reorder")
     public void reorderTaskCategories(
             @PathVariable String boardId,
             @RequestParam(name = "t") UUID teamId,
