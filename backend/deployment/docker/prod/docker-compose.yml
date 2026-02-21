@@ -9,14 +9,49 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_NAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
     volumes:
-      - mongo_data:/data/db
+      - prod_mongo_data:/data/db
       - ../../../mongo/init/prod:/docker-entrypoint-initdb.d
     networks:
       - team-work
+      - dbs
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    networks:
+      - team-work
+      - dbs
+    ports:
+      - "${MYSQL_DB_PORT}:3306"
+    volumes:
+      - prod_mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    restart: unless-stopped
+  phpmyadmin:
+    image: phpmyadmin:5.2.3-apache
+    restart: unless-stopped
+    ports:
+      - "8030:80"
+    networks:
+      - dbs
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    depends_on:
+      - mysql
 
 networks:
   team-work:
     driver: bridge
+  dbs:
+    driver: bridge
 
 volumes:
-  mongo_data:
+  test_mongo_data:
+  test_mysql_data:
