@@ -9,10 +9,7 @@ import com.mordiniaa.backend.models.board.permissions.TaskPermission;
 import com.mordiniaa.backend.models.user.mysql.AppRole;
 import com.mordiniaa.backend.models.user.mysql.User;
 import com.mordiniaa.backend.repositories.mongo.board.BoardRepository;
-import com.mordiniaa.backend.repositories.mongo.user.UserRepresentationRepository;
 import com.mordiniaa.backend.repositories.mysql.TeamRepository;
-import com.mordiniaa.backend.repositories.mysql.UserRepository;
-import com.mordiniaa.backend.services.board.BoardUserService;
 import com.mordiniaa.backend.services.user.MongoUserService;
 import com.mordiniaa.backend.services.user.UserService;
 import com.mordiniaa.backend.utils.MongoIdUtils;
@@ -50,7 +47,7 @@ public class BoardAdminService {
             removeUserFromBoards(userId);
     }
 
-    public void removeBoardOwner(UUID userId) {
+    private void removeBoardOwner(UUID userId) {
 
         Query query = Query.query(Criteria.where("owner.userId").is(userId));
         Update update = new Update().unset("owner");
@@ -58,7 +55,7 @@ public class BoardAdminService {
         mongoTemplate.updateMulti(query, update, Board.class);
     }
 
-    public void removeUserFromBoards(UUID userId) {
+    private void removeUserFromBoards(UUID userId) {
 
         Query query = Query.query(Criteria.where("members.userId").is(userId));
         Update update = new Update().pull("members", Criteria.where("userId").is(userId));
