@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.request.user;
 
+import com.mordiniaa.backend.models.user.mysql.AppRole;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -19,7 +20,10 @@ public class CreateUserRequest {
     @Size(min = 3, max = 25)
     private String lastname;
 
+    @Size(min = 6, max = 20)
     private String username;
+
+    private AppRole role;
 
     @Valid
     @NotNull
