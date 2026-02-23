@@ -39,3 +39,8 @@ build/
 /deployment/docker/dev/.env
 /deployment/docker/prod/.env
 /deployment/docker/test/.env
+/deployment/docker/dev/admin_password.txt
+/rebuildAndRun.sh
+/run.sh
+/stop.sh
+/stopWithVolumes.sh
