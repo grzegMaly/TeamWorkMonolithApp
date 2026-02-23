@@ -54,6 +54,22 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       - mysql
+  redis:
+    image: redis:8.4-alpine
+    networks:
+      - dbs
+      - team-work
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "password", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   teamwork-app:
     image: mordiniaa/teamworkmon
     networks:
@@ -63,7 +79,10 @@ services:
         condition: service_healthy
       mysql:
           condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
+      - ./admin_password.txt:/run/secrets/admin_password:ro
       - dev_files_storage:${STORAGE_ROOT}
       - dev_profile_images_storage:${PROFILE_IMAGES_ROOT}
     ports:
