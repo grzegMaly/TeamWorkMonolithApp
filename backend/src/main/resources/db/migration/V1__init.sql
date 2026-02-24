@@ -79,18 +79,19 @@ CREATE TABLE IF NOT EXISTS `user_storage`
 
 CREATE TABLE IF NOT EXISTS `users`
 (
-    `user_id`    binary(16)  not null,
-    `first_name` varchar(20) not null,
-    `last_name`  varchar(20) not null,
-    `username`   varchar(20) not null,
-    `password`   varchar(60) not null,
-    `image_key`  varchar(50) not null default 'defaultProfileImage',
-    `deleted`    boolean     not null default 0,
-    `role_id`    int         not null,
-    `created_by` varchar(20) not null,
-    `updated_by` varchar(20) null,
-    `created_at` timestamp   not null default current_timestamp,
-    `updated_at` timestamp   not null default current_timestamp on update current_timestamp,
+    `user_id`       binary(16)   not null,
+    `first_name`    varchar(20)  not null,
+    `last_name`     varchar(20)  not null,
+    `username`      varchar(20)  not null,
+    `password`      varchar(255) null,
+    `image_key`     varchar(50)  not null default 'defaultProfileImage',
+    `deleted`       boolean      not null default 0,
+    `token_version` int          not null default 0,
+    `role_id`       int          not null,
+    `created_by`    varchar(20)  not null,
+    `updated_by`    varchar(20)  null,
+    `created_at`    timestamp    not null default current_timestamp,
+    `updated_at`    timestamp    not null default current_timestamp on update current_timestamp,
     constraint `pk_users` primary key (`user_id`)
 );
 
