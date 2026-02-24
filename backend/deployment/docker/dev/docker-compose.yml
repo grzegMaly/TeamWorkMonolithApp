@@ -90,6 +90,7 @@ services:
     environment:
       PROFILE: dev
       STORAGE_ROOT: ${STORAGE_ROOT}
+      JWT_SECRET: ${JWT_SECRET}
       PROFILE_IMAGES_ROOT: ${PROFILE_IMAGES_ROOT}
       MONGO_HOST: mongodb
       MONGO_PORT: 27017
