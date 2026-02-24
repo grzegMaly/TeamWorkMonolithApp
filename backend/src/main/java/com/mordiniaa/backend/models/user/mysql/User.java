@@ -38,11 +38,11 @@ public class User extends BaseEntity implements DbUser {
     @Column(name = "username", nullable = false, length = 20, unique = true)
     private String username;
 
-    @Column(name = "password", nullable = false, length = 60)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "image_key", nullable = false)
-    private String imageKey;
+    private String imageKey = "defaultProfileImage";
 
     @Column(name = "account_non_locked")
     private boolean accountNonLocked = true;
