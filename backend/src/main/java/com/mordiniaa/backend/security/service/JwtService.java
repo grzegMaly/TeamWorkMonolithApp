@@ -1,8 +1,6 @@
 package com.mordiniaa.backend.security.service;
 
-import com.mordiniaa.backend.security.token.rawToken.RawTokenService;
-import com.mordiniaa.backend.security.token.refreshToken.RefreshToken;
-import com.mordiniaa.backend.security.token.refreshToken.RefreshTokenService;
+import com.mordiniaa.backend.security.token.JwtToken;
 import com.mordiniaa.backend.security.utils.JwtUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -18,7 +16,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -35,28 +32,6 @@ public class JwtService {
     private String audience;
 
     private final JwtUtils jwtUtils;
-    private final RefreshTokenService refreshTokenService;
-    private final SessionService sessionService;
-    private final RawTokenService rawTokenService;
-
-    public String generateAccessToken(UUID userId, String rawToken, List<String> roles) {
-
-        RefreshToken refreshToken = refreshTokenService.generateRefreshToken(
-                userId,
-                UUID.randomUUID(),
-                rawToken,
-                null,
-                roles
-        );
-
-        UUID sessionId = UUID.randomUUID();
-        sessionService.createSession(
-                sessionId.toString(),
-                refreshToken.getId()
-        );
-
-       return buildJwt(userId.toString(), sessionId, roles);
-    }
 
     public boolean validateToke(String jwtToken) {
         try {
@@ -75,14 +50,14 @@ public class JwtService {
         return false;
     }
 
-    public String buildJwt(String subject, UUID sessionId, List<String> roles) {
+    public JwtToken buildJwt(String subject, String sessionId, List<String> roles) {
 
         Instant now = Instant.now();
-        Instant exp = now.plus(Duration.ofMillis(accessTtlMinutes));
+        Instant exp = now.plus(Duration.ofMinutes(accessTtlMinutes));
 
         String role = (roles == null || roles.isEmpty()) ? null : roles.getFirst();
 
-        return Jwts.builder()
+        String jwt = Jwts.builder()
                 .issuer(issuer)
                 .subject(subject)
                 .audience().add(audience).and()
@@ -90,9 +65,11 @@ public class JwtService {
                 .expiration(Date.from(exp))
 
                 .claim("role", role)
-                .claim("sid", sessionId.toString())
+                .claim("sid", sessionId)
                 .signWith(jwtUtils.key())
                 .compact();
+
+        return new JwtToken(jwt, exp.toEpochMilli());
     }
 
     public String extractUserId(String authToken) {
