@@ -15,9 +15,9 @@ public class SessionService {
 
     private final StringRedisTemplate redis;
 
-    public void createSession(String sessionId, Long refreshTokenId) {
+    public void createSession(UUID sessionId, Long refreshTokenId) {
 
-        String key = "session:".concat(sessionId);
+        String key = "session:".concat(sessionId.toString());
 
         redis.opsForValue().set(
                 key,
