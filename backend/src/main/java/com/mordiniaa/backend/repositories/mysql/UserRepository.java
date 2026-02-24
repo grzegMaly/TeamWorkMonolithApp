@@ -43,4 +43,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             where u.username = :username
             """)
     Optional<SecurityUserProjection> findSecurityUserByUsername(String username);
+
+    @Modifying
+    @Query("""
+            update User u
+            set u.password = :newPassword
+            where u.userId = :userId
+            """)
+    void updatePasswordByUserId(UUID userId, String newPassword);
 }
