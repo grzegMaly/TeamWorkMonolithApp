@@ -72,10 +72,12 @@ storage:
 security:
   app:
     jwt:
+      cookie-name: TEAMWORK-ACCESS
       issuer: teamwork-backend
       audience: teamwork-frontend
       secret: ${JWT_SECRET}
       minutes-of-life: 15
     refresh-token:
+      cookie-name: TEAMWORK-REFRESH
       max-session-days: 90
       validity-days: 30
