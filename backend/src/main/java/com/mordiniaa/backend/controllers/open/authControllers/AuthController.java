@@ -4,6 +4,7 @@ import com.mordiniaa.backend.exceptions.BadCredentialsException;
 import com.mordiniaa.backend.request.auth.LoginRequest;
 import com.mordiniaa.backend.response.user.UserInfoResponse;
 import com.mordiniaa.backend.services.auth.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -66,5 +67,27 @@ public class AuthController {
     public ResponseEntity<?> signOut() {
 
         return null;
+    }
+
+    @GetMapping("/refresh")
+    public ResponseEntity<Void> refreshTokens(
+            Authentication authentication,
+            HttpServletRequest request
+    ) {
+
+        HttpHeaders headers = authService.refresh(
+                        authentication,
+                        request.getCookies()
+                )
+                .stream()
+                .collect(
+                        HttpHeaders::new,
+                        (h, c) -> h.add(HttpHeaders.SET_COOKIE, c.toString()),
+                        HttpHeaders::addAll
+                );
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .build();
     }
 }
