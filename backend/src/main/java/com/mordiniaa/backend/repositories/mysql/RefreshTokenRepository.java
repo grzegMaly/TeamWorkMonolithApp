@@ -1,4 +1,4 @@
-package com.mordiniaa.backend.security.repository;
+package com.mordiniaa.backend.repositories.mysql;
 
 import com.mordiniaa.backend.security.model.RefreshTokenEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
