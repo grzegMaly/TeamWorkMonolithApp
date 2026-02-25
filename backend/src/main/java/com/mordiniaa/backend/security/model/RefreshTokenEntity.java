@@ -49,7 +49,7 @@ public class RefreshTokenEntity {
     @Column(name = "parent_id")
     private Long parentId;
 
-    @Column(name = "family_id", columnDefinition = "BINARY(16)")
+    @Column(name = "family_id", columnDefinition = "BINARY(16)", nullable = false)
     private UUID familyId;
 
     @Column(name = "family_expires_at", nullable = false, updatable = false)
