@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshToken {
+public class RefreshToken implements Token {
 
-    private String refreshToken;
-    private long refreshTtl;
+    private String tokenName;
+    private String token;
+    private long ttl;
 }

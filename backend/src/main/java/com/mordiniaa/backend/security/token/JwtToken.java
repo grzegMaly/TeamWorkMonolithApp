@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class JwtToken {
+public class JwtToken implements Token {
 
-    private String jwtToken;
-    private long jwtTtl;
+    private String tokenName;
+    private String token;
+    private long ttl;
 }
