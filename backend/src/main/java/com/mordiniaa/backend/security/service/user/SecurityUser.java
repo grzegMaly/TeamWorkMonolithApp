@@ -39,43 +39,43 @@ public class SecurityUser implements UserDetails {
                 user.getAccountNonExpired(),
                 user.getAccountNonLocked(),
                 user.getCredentialsNonExpired(),
-                user.getDeleted(),
+                !user.getDeleted(),
                 List.of(authority)
-                );
+        );
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return authorities;
     }
 
     @Override
     public String getPassword() {
-        return "";
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return this.username;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return this.isAccountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return this.isAccountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return this.isCredentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return this.isEnabled;
     }
 }
