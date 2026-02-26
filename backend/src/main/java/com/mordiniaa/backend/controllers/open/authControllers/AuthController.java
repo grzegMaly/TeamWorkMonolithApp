@@ -69,16 +69,10 @@ public class AuthController {
         return null;
     }
 
-    @GetMapping("/refresh")
-    public ResponseEntity<Void> refreshTokens(
-            Authentication authentication,
-            HttpServletRequest request
-    ) {
+    @PostMapping("/refresh")
+    public ResponseEntity<Void> refreshTokens(Authentication authentication) {
 
-        HttpHeaders headers = authService.refresh(
-                        authentication,
-                        request.getCookies()
-                )
+        HttpHeaders headers = authService.refresh(authentication)
                 .stream()
                 .collect(
                         HttpHeaders::new,
