@@ -79,7 +79,7 @@ public class RefreshTokenService {
                 sha256Bytes(oldRawToken),
                 Base64.getUrlDecoder().decode(storedTokenEntity.getHashedToken())
         );
-        
+
         if (!valid) {
             log.info("Invalid refresh token");
             throw new RuntimeException();

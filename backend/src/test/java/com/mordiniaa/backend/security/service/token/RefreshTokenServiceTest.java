@@ -114,4 +114,27 @@ public class RefreshTokenServiceTest {
         assertThrows(RuntimeException.class,
                 () -> refreshTokenService.rotate(userId, tokenId, oldRawToken, newRawToken, roles));
     }
+
+    @Test
+    void rotateTokenTokenRevoked() {
+
+        UUID userId = UUID.randomUUID();
+        Long familyId = new Random().nextLong();
+        String rawToken = rawTokenService.generateOpaqueToken();
+        List<String> roles = List.of("ROLE_USER");
+
+        RefreshTokenEntity entity = refreshTokenService.generateRefreshTokenEntity(
+                userId,
+                familyId,
+                rawToken,
+                roles
+        );
+
+        entity.setRevoked(true);
+        refreshTokenRepository.save(entity);
+
+        String newToken = rawTokenService.generateOpaqueToken();
+        assertThrows(RuntimeException.class,
+                () -> refreshTokenService.rotate(userId, entity.getId(), rawToken, newToken, roles));
+    }
 }
