@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ public class CustomUserDetailsPasswordService implements UserDetailsPasswordServ
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public UserDetails updatePassword(UserDetails user, String newPassword) {
 
         SecurityUser securityUser = (SecurityUser) user;
