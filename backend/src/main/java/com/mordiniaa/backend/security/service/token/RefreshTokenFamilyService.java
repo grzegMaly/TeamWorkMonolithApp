@@ -24,8 +24,10 @@ public class RefreshTokenFamilyService {
     public RefreshTokenFamily getRefreshTokenFamilyOrCreate(Long familyId, UUID userId) {
         return refreshTokenFamilyRepository.findRefreshTokenFamilyByIdAndUserIdAndRevokedFalse(familyId, userId)
                 .orElseGet(() -> {
+                    Instant now = Instant.now();
                     RefreshTokenFamily newFamily = new RefreshTokenFamily(userId);
-                    newFamily.setExpiresAt(Instant.now().plus(Duration.ofDays(maxSessionDays)));
+                    newFamily.setCreatedAt(now);
+                    newFamily.setExpiresAt(now.plus(Duration.ofDays(maxSessionDays)));
                     return refreshTokenFamilyRepository.save(newFamily);
                 });
     }
