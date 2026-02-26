@@ -7,7 +7,7 @@ spring:
   data:
     redis:
       host: localhost
-      port: 6380
+      port: 6381
       jedis:
         pool:
           enabled: true
@@ -15,6 +15,8 @@ spring:
           max-idle: 5
           min-idle: 1
           max-wait: 3s
+      username: redis-tester
+      password: password
     mongodb:
       host: mongodb
       port: 27017
@@ -73,7 +75,7 @@ security:
       token-name: TEAMWORK-ACCESS
       issuer: teamwork-backend
       audience: teamwork-frontend
-      secret: ${JWT_SECRET}
+      secret: testSecret1dkWhat1@mwr1t1ngDrinkMilkBeHealthy
       minutes-of-life: 15
     refresh-token:
       token-name: TEAMWORK-REFRESH

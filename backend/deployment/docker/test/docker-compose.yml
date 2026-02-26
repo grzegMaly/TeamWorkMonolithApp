@@ -11,7 +11,6 @@ services:
       - test_mongo_data:/data/db
       - ../../../mongo/init/test:/docker-entrypoint-initdb.d
     networks:
-      - team-work
       - dbs
     healthcheck:
       test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
@@ -22,7 +21,6 @@ services:
   mysql:
     image: mysql:8.0
     networks:
-      - team-work
       - dbs
     ports:
       - "3308:3306"
@@ -54,27 +52,22 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       - mysql
-  teamwork-app:
-    image: mordiniaa/teamworkmon
+  redis:
+    image: redis:8.4-alpine
     networks:
-      - team-work
-    depends_on:
-      mongodb:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
-    volumes:
-      - test_files_storage:${STORAGE_ROOT}
-      - test_profile_images_storage:${PROFILE_IMAGES_ROOT}
+      - dbs
     ports:
-      - "8082:8080"
-    environment:
-      PROFILE: test
-    restart: unless-stopped
+      - "6381:6379"
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "password", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 networks:
-  team-work:
-    driver: bridge
   dbs:
     driver: bridge
 
