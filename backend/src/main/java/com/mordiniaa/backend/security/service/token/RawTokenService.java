@@ -12,7 +12,7 @@ public class RawTokenService {
     private final SecureRandom SR = new SecureRandom();
 
     public String generateOpaqueToken() {
-        byte[] b = new byte[128];
+        byte[] b = new byte[32];
         SR.nextBytes(b);
         return Base64.getUrlEncoder().encodeToString(b);
     }
