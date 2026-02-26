@@ -18,14 +18,14 @@ spring:
       username: redis-tester
       password: password
     mongodb:
-      host: mongodb
-      port: 27017
+      host: localhost
+      port: 27019
       database: team-work
       username: team-work-tester
       password: password
       authentication-database: team-work
   datasource:
-    url: jdbc:mysql://mysql:3306/team-work
+    url: jdbc:mysql://localhost:3308/team-work
     username: team-work-tester
     password: password
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -41,7 +41,7 @@ spring:
   flyway:
     user: team-work-tester
     password: password
-    url: jdbc:mysql://mysql:3306/team-work
+    url: jdbc:mysql://localhost:3308/team-work
     locations: classpath:db/migration
     schemas: team-work
   main:
