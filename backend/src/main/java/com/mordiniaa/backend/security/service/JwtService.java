@@ -22,6 +22,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtService {
 
+    @Value("${security.app.jwt.token-name}")
+    private String tokenName;
+
     @Value("${security.app.jwt.minutes-of-life}")
     private long accessTtlMinutes;
 
@@ -69,7 +72,7 @@ public class JwtService {
                 .signWith(jwtUtils.key())
                 .compact();
 
-        return new JwtToken(jwt, exp.toEpochMilli());
+        return new JwtToken(tokenName, jwt, exp.toEpochMilli());
     }
 
     public String extractUserId(String authToken) {
