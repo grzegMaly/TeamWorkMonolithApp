@@ -1,6 +1,5 @@
 package com.mordiniaa.backend.security.service;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -53,5 +51,20 @@ public class SessionServiceTest {
         String val = redisTemplate.opsForValue().get("session:" + sessionId);
         assertNotNull(val);
         assertEquals(newId, Long.parseLong(val));
+    }
+
+    @Test
+    @DisplayName("Delete Session Test")
+    void deleteSessionTest() {
+
+        UUID sessionId = UUID.randomUUID();
+        long tokenId = new Random().nextLong();
+
+        sessionService.createSession(sessionId, tokenId);
+
+        sessionService.deleteSession(sessionId);
+
+        assertThrows(RuntimeException.class,
+                () -> sessionService.getTokenIdBySessionId(sessionId));
     }
 }
