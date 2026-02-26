@@ -34,6 +34,7 @@ public class RefreshTokenEntity {
     @Column(name = "hashed_token", updatable = false, nullable = false)
     private String hashedToken;
 
+    @Builder.Default
     @Column(name = "revoked", nullable = false)
     private boolean revoked = false;
 

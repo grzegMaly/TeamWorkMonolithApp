@@ -1,10 +1,7 @@
 package com.mordiniaa.backend.models.note.deadline;
 
 import com.mordiniaa.backend.models.note.Note;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -25,6 +22,7 @@ public class DeadlineNote extends Note {
     @Field(name = "priority", order = 100)
     private Priority priority;
 
+    @Builder.Default
     @Field(name = "status", order = 101)
     private Status status = Status.NEW;
 
