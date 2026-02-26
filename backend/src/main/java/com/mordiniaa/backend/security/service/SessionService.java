@@ -36,6 +36,16 @@ public class SessionService {
         return Long.parseLong(value);
     }
 
+    public void rotateRefreshToken(UUID sessionId, Long refreshTokenId) {
+
+        String key = key(sessionId);
+        redis.opsForValue().set(
+                key,
+                refreshTokenId.toString(),
+                Duration.ofMinutes(30)
+        );
+    }
+
     private String key(UUID sessionId) {
         return "session:".concat(sessionId.toString());
     }
