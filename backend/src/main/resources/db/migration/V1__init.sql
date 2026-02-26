@@ -35,6 +35,10 @@ CREATE TABLE IF NOT EXISTS `file_nodes`
     `node_type`         varchar(32)  not null,
     `deleted`           boolean      not null default 0,
     `user_storage_id`   binary(16)   null,
+    `created_by`        varchar(20) not null,
+    `updated_by`        varchar(20) null,
+    `created_at`        timestamp   not null default current_timestamp,
+    `updated_at`        timestamp   not null default current_timestamp on update current_timestamp,
     constraint `pk_file_nodes` primary key (`id`)
 );
 
@@ -74,6 +78,10 @@ CREATE TABLE IF NOT EXISTS `user_storage`
     `used_bytes`   bigint     not null default 0,
     `quota_bytes`  bigint     not null default 50000000000,
     `root_node_id` binary(16) null,
+    `created_by`        varchar(20) not null,
+    `updated_by`        varchar(20) null,
+    `created_at`        timestamp   not null default current_timestamp,
+    `updated_at`        timestamp   not null default current_timestamp on update current_timestamp,
     constraint `pk_users_storage` primary key (`resource_id`)
 );
 
