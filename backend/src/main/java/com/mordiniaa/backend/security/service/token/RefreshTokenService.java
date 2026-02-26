@@ -1,7 +1,6 @@
 package com.mordiniaa.backend.security.service.token;
 
 import com.mordiniaa.backend.events.refreshToken.events.DeactivateTokenEvent;
-import com.mordiniaa.backend.events.refreshToken.events.RotateRefreshTokenEvent;
 import com.mordiniaa.backend.security.model.RefreshTokenFamily;
 import com.mordiniaa.backend.security.token.RefreshToken;
 import com.mordiniaa.backend.security.model.RefreshTokenEntity;
@@ -10,12 +9,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -32,7 +34,6 @@ public class RefreshTokenService {
     @Value("${security.app.refresh-token.validity-days}")
     private int validityDays;
 
-    private final BCryptPasswordEncoder passwordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
     private final RefreshTokenFamilyService refreshTokenFamilyService;
 
@@ -74,17 +75,19 @@ public class RefreshTokenService {
             throw new RuntimeException(); // TODO: Change In Exceptions Section
         }
 
-        if (!passwordEncoder.matches(oldRawToken, storedTokenEntity.getHashedToken())) {
-            log.info("Invalid refresh token: {}", storedTokenEntity.getId());
+        boolean valid = MessageDigest.isEqual(
+                sha256Bytes(oldRawToken),
+                Base64.getUrlDecoder().decode(storedTokenEntity.getHashedToken())
+        );
+        if (!valid) {
+            log.info("Invalid refresh token");
             throw new RuntimeException();
         }
 
         RefreshTokenEntity newTokenEntity = buildRefreshToken(family, now, storedTokenEntity.getId(), newRawToken, roles);
         RefreshTokenEntity savedEntity = refreshTokenRepository.save(newTokenEntity);
 
-        applicationEventPublisher.publishEvent(
-                new RotateRefreshTokenEvent(savedEntity.getId(), storedTokenEntity.getId(), now)
-        );
+        rotateToken(savedEntity.getId(), storedTokenEntity.getId(), now);
         return savedEntity;
     }
 
@@ -108,13 +111,20 @@ public class RefreshTokenService {
         refreshTokenRepository.rotateToken(newTokenId, oldTokenId, revokedAt);
     }
 
-    private String hash(String token) {
-        return passwordEncoder.encode(token);
+    private byte[] sha256Bytes(String token) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return digest.digest(token.getBytes(StandardCharsets.UTF_8));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 not available", e);
+        }
     }
 
     private RefreshTokenEntity buildRefreshToken(RefreshTokenFamily family, Instant time, Long parentId, String rawToken, List<String> roles) {
+
+        String hashed = Base64.getUrlEncoder().withoutPadding().encodeToString(sha256Bytes(rawToken));
         return RefreshTokenEntity.builder()
-                .hashedToken(hash(rawToken))
+                .hashedToken(hashed)
                 .refreshTokenFamily(family)
                 .parentId(parentId)
                 .roles(roles)
