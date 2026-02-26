@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.models.file.cloudStorage;
 
+import com.mordiniaa.backend.models.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity(name = "FileNode")
 @Table(name = "file_nodes")
-public class FileNode {
+public class FileNode extends BaseEntity {
 
     @Version
     @Column(name = "version")
