@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.models.file.cloudStorage;
 
+import com.mordiniaa.backend.models.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity(name = "UserStorage")
 @Table(name = "user_storage", indexes = @Index(name = "uq_user_storage_user_id", columnList = "user_id", unique = true))
-public class UserStorage {
+public class UserStorage extends BaseEntity {
 
     @Version
     private long version;
