@@ -27,6 +27,15 @@ public class SessionService {
         );
     }
 
+    public Long getTokenIdBySessionId(UUID sessionId) {
+
+        String key = key(sessionId);
+        String value = Optional.ofNullable(redis.opsForValue().get(key))
+                .orElseThrow(RuntimeException::new); // TODO: Change In Exceptions Section
+
+        return Long.parseLong(value);
+    }
+
     private String key(UUID sessionId) {
         return "session:".concat(sessionId.toString());
     }
