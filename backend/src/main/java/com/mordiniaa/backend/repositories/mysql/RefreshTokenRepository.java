@@ -23,7 +23,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
             """, nativeQuery = true)
     void deactivateTokenWithFamily(Long tokenId, Long familyId, Instant revokedAt);
 
-    @Modifying
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query(value = """
             update refresh_tokens old
             join refresh_tokens new on new.id = :newTokenId
