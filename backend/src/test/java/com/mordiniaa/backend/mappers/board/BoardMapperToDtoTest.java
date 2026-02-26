@@ -71,8 +71,8 @@ public class BoardMapperToDtoTest {
     private final Instant deadline3 = Instant.now().plus(3, ChronoUnit.DAYS);
     private final Instant deadline4 = Instant.now().plus(4, ChronoUnit.DAYS);
 
-    private String taskCategoryName1 = "TaskCategoryName1";
-    private String taskCategoryName2 = "TaskCategoryName2";
+    private final String taskCategoryName1 = "TaskCategoryName1";
+    private final String taskCategoryName2 = "TaskCategoryName2";
 
     private BoardFull board;
     private BoardFull.TaskCategoryFull taskCategory1;

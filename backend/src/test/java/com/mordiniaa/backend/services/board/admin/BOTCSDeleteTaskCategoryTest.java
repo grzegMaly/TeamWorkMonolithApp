@@ -72,8 +72,8 @@ public class BOTCSDeleteTaskCategoryTest {
 
     private Team team;
 
-    private String categoryName1 = "New Category1";
-    private String categoryName2 = "New Category2";
+    private final String categoryName1 = "New Category1";
+    private final String categoryName2 = "New Category2";
 
     private UserRepresentation userRepresentation;
     @Autowired

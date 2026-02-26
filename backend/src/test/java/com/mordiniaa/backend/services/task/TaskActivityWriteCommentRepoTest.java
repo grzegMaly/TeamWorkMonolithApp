@@ -364,7 +364,7 @@ public class TaskActivityWriteCommentRepoTest {
         UserRepresentation user = new UserRepresentation();
         user.setUserId(userId);
         user.setUsername("Test User");
-        user.setImageKey("http://random123.com");
+        user.setImageKey("https://random123.com");
         userRepresentationRepository.save(user);
 
         BoardMember boardMember = new BoardMember(userId);

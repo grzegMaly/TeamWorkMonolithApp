@@ -65,8 +65,8 @@ public class TaskMapperToDtoTest {
 
     private TaskStatusChange taskStatusChange1;
     private TaskStatusChange taskStatusChange2;
-    private TaskStatus taskStatus1 = TaskStatus.COMPLETED;
-    private TaskStatus taskStatus2 = TaskStatus.UNCOMPLETED;
+    private final TaskStatus taskStatus1 = TaskStatus.COMPLETED;
+    private final TaskStatus taskStatus2 = TaskStatus.UNCOMPLETED;
 
     private TaskCategoryChange taskCategoryChange1;
     private TaskCategoryChange taskCategoryChange2;

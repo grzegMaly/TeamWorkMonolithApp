@@ -56,7 +56,7 @@ public class BOTCSRenameTaskCategoryRepoTest {
 
     private Team team;
 
-    private String categoryName = "New Category";
+    private final String categoryName = "New Category";
 
     private UserRepresentation userRepresentation;
 
