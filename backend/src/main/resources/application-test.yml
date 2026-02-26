@@ -75,7 +75,7 @@ security:
       token-name: TEAMWORK-ACCESS
       issuer: teamwork-backend
       audience: teamwork-frontend
-      secret: testSecret1dkWhat1@mwr1t1ngDrinkMilkBeHealthy
+      secret: testSecret1dkWhat1amwr1t1ngDrinkMilkBeHealthy
       minutes-of-life: 15
     refresh-token:
       token-name: TEAMWORK-REFRESH
