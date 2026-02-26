@@ -79,5 +79,6 @@ security:
       minutes-of-life: 15
     refresh-token:
       token-name: TEAMWORK-REFRESH
-      max-session-days: 90
       validity-days: 30
+    refresh-token-family:
+      max-session-days: 90

@@ -1,7 +1,22 @@
 spring:
   application:
     name: backend
+  output:
+    ansi:
+      enabled: always
   data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6380}
+      jedis:
+        pool:
+          enabled: true
+          max-active: 10
+          max-idle: 5
+          min-idle: 1
+          max-wait: 3s
+      username: ${REDIS_USER:}
+      password: ${REDIS_PASSWORD:}
     mongodb:
       host: ${MONGO_HOST:localhost}
       port: ${MONGO_PORT:27017}
@@ -29,6 +44,18 @@ spring:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_DB_PORT:3306}/${MYSQL_DATABASE:team-work}
     locations: classpath:db/migration
     schemas: ${MYSQL_DATABASE:team-work}
+  main:
+    banner-mode: off
+
+logging:
+  level:
+    org:
+      springframework:
+        security: trace
+        boot:
+          autoconfigure:
+            data:
+              redis: debug
 storage:
   profileImages:
     path: ${PROFILE_IMAGES_ROOT:./profile_images_storage}
@@ -41,3 +68,17 @@ storage:
     defaultImagePath: static/images/defaultProfileImage.png
   cloudStorage:
     path: ${STORAGE_ROOT:./files_storage}
+
+security:
+  app:
+    jwt:
+      token-name: TEAMWORK-ACCESS
+      issuer: teamwork-backend
+      audience: teamwork-frontend
+      secret: ${JWT_SECRET}
+      minutes-of-life: 15
+    refresh-token:
+      token-name: TEAMWORK-REFRESH
+      validity-days: 30
+    refresh-token-family:
+      max-session-days: 90
