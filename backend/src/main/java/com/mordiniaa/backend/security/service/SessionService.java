@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -17,7 +18,7 @@ public class SessionService {
 
     public void createSession(UUID sessionId, Long refreshTokenId) {
 
-        String key = "session:".concat(sessionId.toString());
+        String key = key(sessionId);
 
         redis.opsForValue().set(
                 key,
@@ -26,15 +27,7 @@ public class SessionService {
         );
     }
 
-    public void validateRefreshToken() {
-
-    }
-
-    public void rotateRefreshToken() {
-
-    }
-
-    public void deleteSession() {
-
+    private String key(UUID sessionId) {
+        return "session:".concat(sessionId.toString());
     }
 }
