@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ public class JwtServiceTest {
         assertNotNull(jwtToken);
 
         assertNotNull(jwtToken.getToken());
-        assertTrue(jwtToken.getTtl() > Duration.ofMinutes(14).toMillis());
+        assertTrue(jwtToken.getTtl() > Instant.now().plus(Duration.ofMinutes(14)).toEpochMilli());
 
         String token = jwtToken.getToken();
         assertNotNull(token);
