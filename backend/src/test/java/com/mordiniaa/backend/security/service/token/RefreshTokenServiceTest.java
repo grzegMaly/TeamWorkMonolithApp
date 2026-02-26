@@ -101,4 +101,17 @@ public class RefreshTokenServiceTest {
 
         assertEquals(savedFamilyId, rotatedEntity.getRefreshTokenFamily().getId());
     }
+
+    @Test
+    void rotateRefreshTokenTokenNotFound() {
+
+        UUID userId = UUID.randomUUID();
+        Long tokenId = new Random().nextLong();
+        String oldRawToken = rawTokenService.generateOpaqueToken();
+        String newRawToken = rawTokenService.generateOpaqueToken();
+        List<String> roles = List.of("ROLE_USER");
+
+        assertThrows(RuntimeException.class,
+                () -> refreshTokenService.rotate(userId, tokenId, oldRawToken, newRawToken, roles));
+    }
 }
