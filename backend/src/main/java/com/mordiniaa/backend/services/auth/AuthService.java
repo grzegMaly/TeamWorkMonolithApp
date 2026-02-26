@@ -1,28 +1,22 @@
 package com.mordiniaa.backend.services.auth;
 
-import com.mordiniaa.backend.mappers.user.UserMapper;
 import com.mordiniaa.backend.models.user.mysql.User;
-import com.mordiniaa.backend.request.auth.LoginRequest;
 import com.mordiniaa.backend.response.user.UserInfoResponse;
-import com.mordiniaa.backend.security.service.JwtService;
-import com.mordiniaa.backend.security.service.token.RawTokenService;
-import com.mordiniaa.backend.security.service.token.TokenIssuerService;
+import com.mordiniaa.backend.security.objects.JwtPrincipal;
+import com.mordiniaa.backend.security.service.token.TokenService;
 import com.mordiniaa.backend.security.service.user.SecurityUserProjection;
-import com.mordiniaa.backend.security.token.JwtToken;
-import com.mordiniaa.backend.security.token.RefreshToken;
+import com.mordiniaa.backend.security.token.Token;
 import com.mordiniaa.backend.security.token.TokenSet;
 import com.mordiniaa.backend.security.utils.JwtUtils;
 import com.mordiniaa.backend.services.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,13 +24,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final TokenIssuerService tokenIssuerService;
-    @Value("${security.app.jwt.cookie-name}")
-    private String jwtCookieName;
-
-    @Value("${security.app.refresh-token.cookie-name}")
-    private String refreshCookieName;
-
+    private final TokenService tokenService;
     private final UserService userService;
     private final JwtUtils jwtUtils;
 
@@ -64,22 +52,41 @@ public class AuthService {
 
         SecurityUserProjection user = (SecurityUserProjection) authentication.getPrincipal();
 
-        TokenSet tokenSet = tokenIssuerService.issue(user.getUserId(), List.of(user.getRole().getAppRole().name()));
+        TokenSet tokenSet = tokenService.issue(user.getUserId(), List.of(user.getRole().getAppRole().name()));
 
-        JwtToken jwtToken = tokenSet.getJwtToken();
-        ResponseCookie jwtCookie = jwtUtils.getCookie(
-                jwtCookieName,
-                jwtToken.getJwtToken(),
-                Duration.ofMillis(jwtToken.getJwtTtl())
+        return createCookieResponse(
+                tokenSet.getJwtToken(),
+                tokenSet.getRefreshToken()
         );
+    }
 
-        RefreshToken refreshToken = tokenSet.getRefreshToken();
-        ResponseCookie responseCookie = jwtUtils.getCookie(
-                refreshCookieName,
-                refreshToken.getRefreshToken(),
-                Duration.ofMillis(refreshToken.getRefreshTtl())
+    public List<ResponseCookie> refresh(Authentication authentication) {
+
+        JwtPrincipal user = (JwtPrincipal) authentication.getPrincipal();
+
+        TokenSet tokenSet = tokenService.refreshToken(
+                user.userId(),
+                user.sessionId(),
+                user.refreshToken()
         );
+        
+        return createCookieResponse(
+                tokenSet.getJwtToken(),
+                tokenSet.getRefreshToken()
+        );
+    }
 
-        return List.of(jwtCookie, responseCookie);
+    private List<ResponseCookie> createCookieResponse(Token... tokens) {
+
+        List<ResponseCookie> cookies = new ArrayList<>();
+        for (Token token : tokens) {
+            ResponseCookie cookie = jwtUtils.getCookie(
+                    token.getTokenName(),
+                    token.getToken(),
+                    Duration.ofMillis(token.getTtl())
+            );
+            cookies.add(cookie);
+        }
+        return cookies;
     }
 }
