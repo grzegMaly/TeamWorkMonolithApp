@@ -15,8 +15,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity(name = "RefreshToken")
 @Table(name = "refresh_tokens", indexes = {
-        @Index(name = "idx_rt_user", columnList = "user_id"),
-        @Index(name = "idx_rt_family", columnList = "family_id"),
+        @Index(name = "idx_rt_family", columnList = "refresh_token_family"),
         @Index(name = "idx_rt_revoked", columnList = "revoked")
 })
 public class RefreshTokenEntity {
@@ -28,14 +27,15 @@ public class RefreshTokenEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", updatable = false)
-    private UUID userId;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "refresh_token_family", referencedColumnName = "id", nullable = false)
+    private RefreshTokenFamily refreshTokenFamily;
 
     @Column(name = "hashed_token", updatable = false, nullable = false)
     private String hashedToken;
 
     @Column(name = "revoked", nullable = false)
-    private boolean revoked;
+    private boolean revoked = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -48,12 +48,6 @@ public class RefreshTokenEntity {
 
     @Column(name = "parent_id")
     private Long parentId;
-
-    @Column(name = "family_id", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID familyId;
-
-    @Column(name = "family_expires_at", nullable = false, updatable = false)
-    private Instant familyExpiresAt;
 
     @Column(name = "replaced_by_id")
     private Long replacedById;
