@@ -33,7 +33,6 @@ public class TokenService {
                 userId,
                 null,
                 rawToken,
-                null,
                 roles
         );
 

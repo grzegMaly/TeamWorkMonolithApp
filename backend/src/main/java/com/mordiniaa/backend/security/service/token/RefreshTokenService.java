@@ -37,7 +37,7 @@ public class RefreshTokenService {
     private final RefreshTokenFamilyService refreshTokenFamilyService;
 
     @Transactional
-    public RefreshTokenEntity generateRefreshTokenEntity(UUID userId, Long familyId, String rawToken, Long parentId, List<String> roles) {
+    public RefreshTokenEntity generateRefreshTokenEntity(UUID userId, Long familyId, String rawToken, List<String> roles) {
 
         Instant now = Instant.now();
 
