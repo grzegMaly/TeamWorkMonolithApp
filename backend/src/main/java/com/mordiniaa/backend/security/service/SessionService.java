@@ -46,6 +46,12 @@ public class SessionService {
         );
     }
 
+    public void deleteSession(UUID sessionId) {
+
+        String key = key(sessionId);
+        redis.delete(key);
+    }
+
     private String key(UUID sessionId) {
         return "session:".concat(sessionId.toString());
     }
