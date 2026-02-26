@@ -1,16 +1,12 @@
-package com.mordiniaa.backend.security.service;
+package com.mordiniaa.backend.security.service.user;
 
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
-import com.mordiniaa.backend.security.service.user.CustomUserDetailsPasswordService;
-import com.mordiniaa.backend.security.service.user.SecurityUser;
-import com.mordiniaa.backend.security.service.user.SecurityUserProjection;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
