@@ -44,7 +44,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             """)
     Optional<SecurityUserProjection> findSecurityUserByUsername(String username);
 
-    @Modifying
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             update User u
             set u.password = :newPassword
