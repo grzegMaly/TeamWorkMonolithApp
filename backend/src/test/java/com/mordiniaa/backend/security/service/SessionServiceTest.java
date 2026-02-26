@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -33,7 +34,24 @@ public class SessionServiceTest {
         sessionService.createSession(sessionId, tokenId);
 
         String val = redisTemplate.opsForValue().get("session:" + sessionId);
-        Assertions.assertNotNull(val);
+        assertNotNull(val);
         assertEquals(tokenId, Long.parseLong(val));
+    }
+
+    @Test
+    @DisplayName("Rotate Token Test")
+    void rotateTokenTest() {
+
+        UUID sessionId = UUID.randomUUID();
+        long tokenId = new Random().nextLong();
+
+        sessionService.createSession(sessionId, tokenId);
+
+        long newId = new Random().nextLong();
+        sessionService.rotateRefreshToken(sessionId, newId);
+
+        String val = redisTemplate.opsForValue().get("session:" + sessionId);
+        assertNotNull(val);
+        assertEquals(newId, Long.parseLong(val));
     }
 }
