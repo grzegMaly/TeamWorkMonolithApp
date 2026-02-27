@@ -4,6 +4,7 @@ import com.mordiniaa.backend.models.user.mysql.User;
 import com.mordiniaa.backend.response.user.UserInfoResponse;
 import com.mordiniaa.backend.security.objects.JwtPrincipal;
 import com.mordiniaa.backend.security.service.token.TokenService;
+import com.mordiniaa.backend.security.service.user.SecurityUser;
 import com.mordiniaa.backend.security.service.user.SecurityUserProjection;
 import com.mordiniaa.backend.security.token.Token;
 import com.mordiniaa.backend.security.token.TokenSet;
@@ -12,6 +13,7 @@ import com.mordiniaa.backend.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,9 +52,10 @@ public class AuthService {
 
     public List<ResponseCookie> authenticate(Authentication authentication) {
 
-        SecurityUserProjection user = (SecurityUserProjection) authentication.getPrincipal();
+        SecurityUser user = (SecurityUser) authentication.getPrincipal();
 
-        TokenSet tokenSet = tokenService.issue(user.getUserId(), List.of(user.getRole().getAppRole().name()));
+        List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        TokenSet tokenSet = tokenService.issue(user.getUserId(), roles);
 
         return createCookieResponse(
                 tokenSet.getJwtToken(),
