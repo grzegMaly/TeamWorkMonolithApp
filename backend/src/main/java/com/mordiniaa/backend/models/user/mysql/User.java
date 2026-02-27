@@ -4,10 +4,7 @@ import com.mordiniaa.backend.models.BaseEntity;
 import com.mordiniaa.backend.models.team.Team;
 import com.mordiniaa.backend.models.user.DbUser;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.time.LocalDate;
@@ -21,6 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "User")
+@ToString(exclude = {"addresses", "teams", "ownedTeams", "contact"})
 @Table(name = "users", indexes = @Index(name = "fx_user_username", columnList = "username", unique = true))
 public class User extends BaseEntity implements DbUser {
 
