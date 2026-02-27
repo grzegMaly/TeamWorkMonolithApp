@@ -27,8 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -130,5 +129,48 @@ public class AuthServiceTest {
         List<ResponseCookie> refreshedCookies = authService.refresh(jwtAuthentication);
         assertNotNull(refreshedCookies);
         assertFalse(refreshedCookies.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Refresh Token User Not Found Test")
+    void refreshTokenUserNotFoundTest() {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        "admin",
+                        "superSecretPassword"
+                )
+        );
+
+        List<ResponseCookie> cookies = authService.authenticate(authentication);
+
+        ResponseCookie jwtCookie = cookies.stream().filter(cookie -> cookie.getName().equals("TEAMWORK-ACCESS"))
+                .findFirst().orElseThrow();
+
+        ResponseCookie refreshCookie = cookies.stream().filter(cookie -> cookie.getName().equals("TEAMWORK-REFRESH"))
+                .findFirst().orElseThrow();
+
+        String jwtToken = jwtCookie.getValue();
+        String refreshToken = refreshCookie.getValue();
+        UUID userId = UUID.randomUUID();
+
+        UUID sessionId = UUID.fromString((String) Jwts.parser()
+                .verifyWith((SecretKey) jwtUtils.key())
+                .build().parseSignedClaims(jwtToken)
+                .getPayload().get("sid"));
+
+        List<String> roles = List.of((String) Jwts.parser()
+                .verifyWith((SecretKey) jwtUtils.key())
+                .build().parseSignedClaims(jwtToken)
+                .getPayload().get("sid"));
+
+        Authentication jwtAuthentication = new UsernamePasswordAuthenticationToken(
+                new JwtPrincipal(userId, sessionId, roles, refreshToken),
+                null,
+                List.of()
+        );
+
+        assertThrows(RuntimeException.class,
+                () -> authService.refresh(jwtAuthentication));
     }
 }
