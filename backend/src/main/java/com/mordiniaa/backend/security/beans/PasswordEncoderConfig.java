@@ -14,11 +14,6 @@ import java.util.Map;
 public class PasswordEncoderConfig {
 
     @Bean
-    public BCryptPasswordEncoder bcryptEncoder() {
-        return new BCryptPasswordEncoder(12);
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
 
         String defaultId = "argon2";
