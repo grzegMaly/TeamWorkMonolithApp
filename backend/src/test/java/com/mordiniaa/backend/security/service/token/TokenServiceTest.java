@@ -49,6 +49,8 @@ public class TokenServiceTest {
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RawTokenService rawTokenService;
 
     @AfterEach
     void tearDown() {
@@ -145,6 +147,20 @@ public class TokenServiceTest {
         Long tokenIdFromRedis = sessionService.getTokenIdBySessionId(sessionId);
         assertNotNull(tokenIdFromRedis);
         assertEquals(Long.parseLong(idPart), tokenIdFromRedis);
+    }
+
+    @Test
+    @DisplayName("Refresh Token User Not Found Test")
+    void refreshTokenUserNotFoundTest() {
+
+        UUID userId = UUID.randomUUID();
+        List<String> roles = List.of("ROLE_USER");
+
+        TokenSet tokenSet = tokenService.issue(userId, roles);
+        UUID sessionId = getSessionIdFromJwtToken(tokenSet.getJwtToken().getToken());
+
+        assertThrows(RuntimeException.class,
+                () -> tokenService.refreshToken(userId, sessionId, tokenSet.getRefreshToken().getToken()));
     }
 
     private UUID getSessionIdFromJwtToken(String token) {
