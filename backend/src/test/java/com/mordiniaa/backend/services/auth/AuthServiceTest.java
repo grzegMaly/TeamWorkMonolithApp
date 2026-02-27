@@ -173,4 +173,47 @@ public class AuthServiceTest {
         assertThrows(RuntimeException.class,
                 () -> authService.refresh(jwtAuthentication));
     }
+
+    @Test
+    @DisplayName("Refresh Token Session Not Found Test")
+    void refreshTokenSessionNotFoundTest() {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        "admin",
+                        "superSecretPassword"
+                )
+        );
+
+        List<ResponseCookie> cookies = authService.authenticate(authentication);
+
+        ResponseCookie jwtCookie = cookies.stream().filter(cookie -> cookie.getName().equals("TEAMWORK-ACCESS"))
+                .findFirst().orElseThrow();
+
+        ResponseCookie refreshCookie = cookies.stream().filter(cookie -> cookie.getName().equals("TEAMWORK-REFRESH"))
+                .findFirst().orElseThrow();
+
+        String jwtToken = jwtCookie.getValue();
+        String refreshToken = refreshCookie.getValue();
+        UUID userId = UUID.fromString(Jwts.parser()
+                .verifyWith((SecretKey) jwtUtils.key())
+                .build().parseSignedClaims(jwtToken)
+                .getPayload().getSubject());
+
+        UUID sessionId = UUID.randomUUID();
+
+        List<String> roles = List.of((String) Jwts.parser()
+                .verifyWith((SecretKey) jwtUtils.key())
+                .build().parseSignedClaims(jwtToken)
+                .getPayload().get("sid"));
+
+        Authentication jwtAuthentication = new UsernamePasswordAuthenticationToken(
+                new JwtPrincipal(userId, sessionId, roles, refreshToken),
+                null,
+                List.of()
+        );
+
+        assertThrows(RuntimeException.class,
+                () -> authService.refresh(jwtAuthentication));
+    }
 }
