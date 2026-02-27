@@ -5,6 +5,7 @@ import com.mordiniaa.backend.repositories.mysql.RefreshTokenRepository;
 import com.mordiniaa.backend.security.model.RefreshTokenEntity;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,6 +42,7 @@ public class RefreshTokenServiceTest {
     }
 
     @Test
+    @DisplayName("Generate Refresh Token Entity Test")
     void generateRefreshTokenEntityTest() {
 
         UUID userId = UUID.randomUUID();
@@ -61,6 +63,7 @@ public class RefreshTokenServiceTest {
     }
 
     @Test
+    @DisplayName("Rotate Token Valid Test")
     void rotateTokenValidTest() {
 
         UUID userId = UUID.randomUUID();
@@ -93,7 +96,8 @@ public class RefreshTokenServiceTest {
     }
 
     @Test
-    void rotateRefreshTokenTokenNotFound() {
+    @DisplayName("Rotate Refresh Token Token Not Found Test")
+    void rotateRefreshTokenTokenNotFoundTest() {
 
         UUID userId = UUID.randomUUID();
         Long tokenId = new Random().nextLong();
@@ -106,7 +110,8 @@ public class RefreshTokenServiceTest {
     }
 
     @Test
-    void rotateTokenTokenRevoked() {
+    @DisplayName("Rotate Token Revoked Test")
+    void rotateTokenTokenRevokedTest() {
 
         UUID userId = UUID.randomUUID();
         Long familyId = new Random().nextLong();
@@ -129,7 +134,8 @@ public class RefreshTokenServiceTest {
     }
 
     @Test
-    void rotateTokenRawTokenMismatch() {
+    @DisplayName("Rotate Token Raw Tokens Mismatch Test")
+    void rotateTokenRawTokenMismatchTest() {
         UUID userId = UUID.randomUUID();
         Long familyId = new Random().nextLong();
         String rawToken = rawTokenService.generateOpaqueToken();

@@ -1,6 +1,7 @@
 package com.mordiniaa.backend.security.service.user;
 
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,7 +24,8 @@ public class CustomUserDetailsPasswordServiceTest {
     private UserRepository userRepository;
 
     @Test
-    void updatePassword() {
+    @DisplayName("Update Password Test")
+    void updatePasswordTest() {
 
         String newPassword = "CompletelyNewPassword";
         String hashedPassword = passwordEncoder.encode(newPassword);

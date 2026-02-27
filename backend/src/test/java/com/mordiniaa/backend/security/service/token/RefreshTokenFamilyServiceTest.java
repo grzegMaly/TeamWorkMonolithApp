@@ -3,6 +3,7 @@ package com.mordiniaa.backend.security.service.token;
 import com.mordiniaa.backend.repositories.mysql.RefreshTokenFamilyRepository;
 import com.mordiniaa.backend.security.model.RefreshTokenFamily;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,7 @@ public class RefreshTokenFamilyServiceTest {
     }
 
     @Test
+    @DisplayName("Get Refresh Token Family Or Create Test")
     void getRefreshTokenFamilyOrCreateTest() {
 
         Long familyId = new Random().nextLong();

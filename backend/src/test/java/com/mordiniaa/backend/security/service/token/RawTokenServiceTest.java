@@ -1,5 +1,6 @@
 package com.mordiniaa.backend.security.service.token;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,7 @@ public class RawTokenServiceTest {
     private RawTokenService rawTokenService;
 
     @Test
+    @DisplayName("Create Raw Token Test")
     void createRawTokenTest() {
 
         String rawToken = rawTokenService.generateOpaqueToken();
