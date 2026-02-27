@@ -56,7 +56,7 @@ public class TokenService {
     @Transactional
     public TokenSet refreshToken(UUID userId, UUID sessionId, String oldRefreshToken) {
 
-        int dotIdx = oldRefreshToken.indexOf("\\.");
+        int dotIdx = oldRefreshToken.indexOf(".");
         if (dotIdx < 1) throw new RuntimeException(); // TODO: Change in exceptions Section
 
         String idPart = oldRefreshToken.substring(0, dotIdx);
