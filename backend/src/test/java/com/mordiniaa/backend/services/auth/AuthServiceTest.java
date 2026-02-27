@@ -2,19 +2,30 @@ package com.mordiniaa.backend.services.auth;
 
 import com.mordiniaa.backend.repositories.mysql.RefreshTokenFamilyRepository;
 import com.mordiniaa.backend.repositories.mysql.UserRepository;
+import com.mordiniaa.backend.security.objects.JwtPrincipal;
+import com.mordiniaa.backend.security.utils.JwtUtils;
+import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,18 +36,37 @@ public class AuthServiceTest {
 
     @Autowired
     private AuthService authService;
+
     @Autowired
     private RefreshTokenFamilyRepository refreshTokenFamilyRepository;
+
     @Autowired
     private AuthenticationManager authenticationManager;
+
     @Autowired
-    private UserRepository userRepository;
+    private StringRedisTemplate stringRedisTemplate;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private JwtUtils jwtUtils;
 
     @AfterEach
     void tearDown() {
         refreshTokenFamilyRepository.deleteAll();
+
+        ScanOptions options = ScanOptions.scanOptions()
+                .match("session:*")
+                .build();
+
+        assertNotNull(stringRedisTemplate.getConnectionFactory());
+        Cursor<byte[]> cursor = stringRedisTemplate.getConnectionFactory()
+                .getConnection()
+                .scan(options);
+
+        List<String> keysToDelete = new ArrayList<>();
+        while (cursor.hasNext())
+            keysToDelete.add(new String(cursor.next(), StandardCharsets.UTF_8));
+
+        if (!keysToDelete.isEmpty())
+            stringRedisTemplate.delete(keysToDelete);
     }
 
     @Test
@@ -50,10 +80,55 @@ public class AuthServiceTest {
                 )
         );
 
-        System.out.println(authentication.getPrincipal().getClass());
-
         List<ResponseCookie> cookies = authService.authenticate(authentication);
         assertNotNull(cookies);
         assertFalse(cookies.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Refresh Token Valid Test")
+    void refreshTokenValidTest() {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        "admin",
+                        "superSecretPassword"
+                )
+        );
+
+        List<ResponseCookie> cookies = authService.authenticate(authentication);
+
+        ResponseCookie jwtCookie = cookies.stream().filter(cookie -> cookie.getName().equals("TEAMWORK-ACCESS"))
+                .findFirst().orElseThrow();
+
+        ResponseCookie refreshCookie = cookies.stream().filter(cookie -> cookie.getName().equals("TEAMWORK-REFRESH"))
+                .findFirst().orElseThrow();
+
+        String jwtToken = jwtCookie.getValue();
+        String refreshToken = refreshCookie.getValue();
+        UUID userId = UUID.fromString(Jwts.parser()
+                .verifyWith((SecretKey) jwtUtils.key())
+                .build().parseSignedClaims(jwtToken)
+                .getPayload().getSubject());
+
+        UUID sessionId = UUID.fromString((String) Jwts.parser()
+                .verifyWith((SecretKey) jwtUtils.key())
+                .build().parseSignedClaims(jwtToken)
+                .getPayload().get("sid"));
+
+        List<String> roles = List.of((String) Jwts.parser()
+                .verifyWith((SecretKey) jwtUtils.key())
+                .build().parseSignedClaims(jwtToken)
+                .getPayload().get("sid"));
+
+        Authentication jwtAuthentication = new UsernamePasswordAuthenticationToken(
+                new JwtPrincipal(userId, sessionId, roles, refreshToken),
+                null,
+                List.of()
+        );
+
+        List<ResponseCookie> refreshedCookies = authService.refresh(jwtAuthentication);
+        assertNotNull(refreshedCookies);
+        assertFalse(refreshedCookies.isEmpty());
     }
 }
