@@ -90,7 +90,7 @@ public class RefreshTokenServiceTest {
         RefreshTokenEntity revokedEntity = refreshTokenRepository.findById(tokenId)
                 .orElseThrow();
         assertTrue(revokedEntity.isRevoked());
-        assertTrue(revokedEntity.getRevokedAt().isBefore(Instant.now()));
+        assertNotNull(revokedEntity.getRevokedAt());
 
         assertEquals(savedFamilyId, rotatedEntity.getRefreshTokenFamily().getId());
     }

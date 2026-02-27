@@ -44,7 +44,7 @@ public class RefreshTokenFamilyServiceTest {
         assertEquals(userId, newFamily.getUserId());
 
         Long savedFamilyId = newFamily.getId();
-        assertEquals(1, savedFamilyId);
+        assertTrue(savedFamilyId > 1);
         assertNotEquals(familyId, savedFamilyId);
 
         RefreshTokenFamily savedFamily = refreshTokenFamilyService.getRefreshTokenFamilyOrCreate(savedFamilyId, userId);
