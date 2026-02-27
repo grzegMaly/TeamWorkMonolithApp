@@ -163,6 +163,20 @@ public class TokenServiceTest {
                 () -> tokenService.refreshToken(userId, sessionId, tokenSet.getRefreshToken().getToken()));
     }
 
+    @Test
+    @DisplayName("Refresh Token Session Not Found")
+    void refreshTokenSessionNotFound() {
+        UUID userId = userRepository.findUserByRole_AppRole(AppRole.ROLE_ADMIN)
+                .orElseThrow()
+                .getUserId();
+        List<String> roles = List.of("ROLE_USER");
+
+        TokenSet tokenSet = tokenService.issue(userId, roles);
+
+        assertThrows(RuntimeException.class,
+                () -> tokenService.refreshToken(userId, UUID.randomUUID(), tokenSet.getRefreshToken().getToken()));
+    }
+
     private UUID getSessionIdFromJwtToken(String token) {
         String session = (String) Jwts.parser()
                 .verifyWith((SecretKey) jwtUtils.key())
