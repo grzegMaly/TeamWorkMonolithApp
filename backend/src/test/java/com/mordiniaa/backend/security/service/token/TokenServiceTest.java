@@ -1,7 +1,9 @@
 package com.mordiniaa.backend.security.service.token;
 
+import com.mordiniaa.backend.models.user.mysql.AppRole;
 import com.mordiniaa.backend.repositories.mysql.RefreshTokenFamilyRepository;
 import com.mordiniaa.backend.repositories.mysql.RefreshTokenRepository;
+import com.mordiniaa.backend.repositories.mysql.UserRepository;
 import com.mordiniaa.backend.security.service.SessionService;
 import com.mordiniaa.backend.security.token.JwtToken;
 import com.mordiniaa.backend.security.token.RefreshToken;
@@ -13,9 +15,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,10 +45,29 @@ public class TokenServiceTest {
     private SessionService sessionService;
     @Autowired
     private JwtUtils jwtUtils;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private UserRepository userRepository;
 
     @AfterEach
     void tearDown() {
         refreshTokenFamilyRepository.deleteAll();
+
+        ScanOptions options = ScanOptions.scanOptions()
+                .match("session:*")
+                .build();
+
+        assertNotNull(stringRedisTemplate.getConnectionFactory());
+        Cursor<byte[]> cursor = stringRedisTemplate.getConnectionFactory()
+                .getConnection()
+                .scan(options);
+        List<String> keysToDelete = new ArrayList<>();
+        while (cursor.hasNext()) {
+            keysToDelete.add(new String(cursor.next(), StandardCharsets.UTF_8));
+        }
+        if (!keysToDelete.isEmpty())
+            stringRedisTemplate.delete(keysToDelete);
     }
 
     @Test
@@ -73,6 +99,47 @@ public class TokenServiceTest {
         String idPart = refreshTokenString.substring(0, idx);
 
         UUID sessionId = getSessionIdFromJwtToken(jwtToken.getToken());
+        assertNotNull(sessionId);
+
+        Long tokenIdFromRedis = sessionService.getTokenIdBySessionId(sessionId);
+        assertNotNull(tokenIdFromRedis);
+        assertEquals(Long.parseLong(idPart), tokenIdFromRedis);
+    }
+
+    @Test
+    @DisplayName("Refresh Token Test")
+    void refreshTokenTest() {
+
+        UUID userId = userRepository.findUserByRole_AppRole(AppRole.ROLE_ADMIN)
+                .orElseThrow()
+                .getUserId();
+        List<String> roles = List.of("ROLE_USER");
+
+        TokenSet tokenSet = tokenService.issue(userId, roles);
+        UUID sessionId = getSessionIdFromJwtToken(tokenSet.getJwtToken().getToken());
+
+        TokenSet newSet = tokenService.refreshToken(userId, sessionId, tokenSet.getRefreshToken().getToken());
+        assertNotNull(newSet);
+
+        JwtToken jwtToken = newSet.getJwtToken();
+        RefreshToken refreshToken = newSet.getRefreshToken();
+
+        assertNotNull(jwtToken);
+        assertNotNull(refreshToken);
+
+        assertNotNull(jwtToken.getToken());
+        assertNotNull(jwtToken.getTokenName());
+        assertTrue(jwtToken.getTtl() > 1);
+
+        assertNotNull(refreshToken.getToken());
+        assertNotNull(refreshToken.getTokenName());
+        assertTrue(refreshToken.getTtl() > 1);
+
+        String refreshTokenString = refreshToken.getToken();
+        int idx = refreshTokenString.indexOf(".");
+        String idPart = refreshTokenString.substring(0, idx);
+
+        sessionId = getSessionIdFromJwtToken(jwtToken.getToken());
         assertNotNull(sessionId);
 
         Long tokenIdFromRedis = sessionService.getTokenIdBySessionId(sessionId);
